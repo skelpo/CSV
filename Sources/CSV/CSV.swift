@@ -1,4 +1,4 @@
-import Bits
+@_exported import Bits
 
 public struct CSV {
     public struct Column {
