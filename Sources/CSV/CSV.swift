@@ -1,12 +1,12 @@
 import Bits
 
-struct CSV {
-    struct Column {
+public struct CSV {
+    public struct Column {
         let header: String
         var fields: [String?]
     }
     
-    static func parse(_ bytes: Bytes) -> [String: [String?]] {
+    public static func parse(_ bytes: Bytes) -> [String: [String?]] {
         let parsed: [Column] = parse(bytes)
         var columns: [String: [String?]] = [:]
         
@@ -17,7 +17,7 @@ struct CSV {
         return columns
     }
     
-    static func parse(_ bytes: Bytes) -> [String: Column] {
+    public static func parse(_ bytes: Bytes) -> [String: Column] {
         let parsed: [Column] = parse(bytes)
         var columns: [String: Column] = [:]
         
@@ -29,7 +29,7 @@ struct CSV {
         
     }
     
-    static func parse(_ bytes: Bytes) -> [Column] {
+    public static func parse(_ bytes: Bytes) -> [Column] {
         var rows = bytes.split(separator: Byte.newLine)
         guard let headers = rows.first?.split(separator: Byte.comma) else {
             return []
