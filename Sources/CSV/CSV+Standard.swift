@@ -1,6 +1,8 @@
 import Bits
 
 extension CSV {
+    // Might seem a bit extraneous, but it is ~twice as fast as the original implimentation:
+    // https://github.com/skelpo/CSV/blob/cf98d15766b320ef6ced1e1096f48858dc4119e7/Sources/CSV/CSV.swift#L32-L53
     internal static func standardParse(_ bytes: Bytes) -> [Column] {
         var index: Int = 0
         var columnIndex: Int = 0
