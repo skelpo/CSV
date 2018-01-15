@@ -30,23 +30,46 @@ public struct CSV {
     }
     
     public static func parse(_ bytes: Bytes) -> [Column] {
-        var rows = bytes.split(separator: Byte.newLine)
-        guard let headers = rows.first?.split(separator: Byte.comma) else {
-            return []
-        }
-        rows.removeFirst()
+        var index: Int = 0
+        var columnIndex: Int = 0
+        var columns: [Column] = []
+        let count: Int = bytes.count
         
-        var columns: [Column]  = headers.map({ header in
-            let head = header.makeString()
-            let column = Column(header: head, fields: [])
-            return column
-        })
+        var stack: Bytes = []
         
-        for row in rows {
-            for (cell, columnIndex) in zip(row.split(separator: Byte.comma, omittingEmptySubsequences: false), 0...columns.count-1) {
-                let text = cell == [] ? nil : cell.makeString()
-                columns[columnIndex].fields.append(text)
+        while true {
+            let character = bytes[index]
+            if character == .comma  {
+                columns.append(Column(header: stack.makeString(), fields: []))
+                stack = []
+            } else if character == .newLine {
+                columns.append(Column(header: stack.makeString(), fields: []))
+                stack = []
+                index += 1
+                break
+            } else {
+                stack.append(character)
             }
+            
+            index += 1
+        }
+        
+        while index < count {
+            let character = bytes[index]
+            if character == .comma || character == .newLine {
+                if stack == [] {
+                    columns[columnIndex].fields.append(nil)
+                } else {
+                    columns[columnIndex].fields.append(stack.makeString())
+                }
+                
+                columnIndex = character == .comma ? columnIndex + 1 : 0
+                stack = []
+            } else {
+                stack.append(character)
+            }
+            
+            index += 1
         }
         
         return columns
