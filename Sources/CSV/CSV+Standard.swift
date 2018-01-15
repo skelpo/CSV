@@ -1,7 +1,7 @@
 import Bits
 
 extension CSV {
-    private static func standardParse(_ bytes: Bytes) -> [Column] {
+    internal static func standardParse(_ bytes: Bytes) -> [Column] {
         var index: Int = 0
         var columnIndex: Int = 0
         let count: Int = bytes.count
