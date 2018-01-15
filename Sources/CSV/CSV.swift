@@ -30,11 +30,15 @@ public struct CSV {
     }
     
     public static func parse(_ bytes: Bytes) -> [Column] {
+        return CSV.standardParse(bytes)
+    }
+    
+    private static func standardParse(_ bytes: Bytes) -> [Column] {
         var index: Int = 0
         var columnIndex: Int = 0
-        var columns: [Column] = []
         let count: Int = bytes.count
         
+        var columns: [Column] = []
         var stack: Bytes = []
         
         while true {
