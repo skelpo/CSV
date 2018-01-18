@@ -9,20 +9,18 @@ extension CSV {
         let count: Int = bytes.count
         
         var columns: [Column] = []
-        var stack: Bytes = []
+        var stack: Stack = []
         
         while true {
             let character = bytes[index]
             if character == .comma  {
-                columns.append(Column(header: stack.makeString(), fields: []))
-                stack = []
+                columns.append(Column(header: stack.release(), fields: []))
             } else if character == .newLine {
-                columns.append(Column(header: stack.makeString(), fields: []))
-                stack = []
+                columns.append(Column(header: stack.release(), fields: []))
                 index += 1
                 break
             } else {
-                stack.append(character)
+                stack.push(character)
             }
             
             index += 1
@@ -34,13 +32,12 @@ extension CSV {
                 if stack == [] {
                     columns[columnIndex].fields.append(nil)
                 } else {
-                    columns[columnIndex].fields.append(stack.makeString())
+                    columns[columnIndex].fields.append(stack.release())
                 }
                 
                 columnIndex = character == .comma ? columnIndex + 1 : 0
-                stack = []
             } else {
-                stack.append(character)
+                stack.push(character)
             }
             
             index += 1
