@@ -1,4 +1,5 @@
 @_exported import Bits
+import Foundation
 
 public struct CSV {
     public struct Column {
@@ -6,8 +7,8 @@ public struct CSV {
         var fields: [String?]
     }
     
-    public static func parse(_ bytes: Bytes) -> [String: [String?]] {
-        let parsed: [Column] = parse(bytes)
+    public static func parse(_ data: Data) -> [String: [String?]] {
+        let parsed: [Column] = parse(data)
         var columns: [String: [String?]] = [:]
         
         for column in parsed {
@@ -17,8 +18,8 @@ public struct CSV {
         return columns
     }
     
-    public static func parse(_ bytes: Bytes) -> [String: Column] {
-        let parsed: [Column] = parse(bytes)
+    public static func parse(_ data: Data) -> [String: Column] {
+        let parsed: [Column] = parse(data)
         var columns: [String: Column] = [:]
         
         for column in parsed {
@@ -29,7 +30,7 @@ public struct CSV {
         
     }
     
-    public static func parse(_ bytes: Bytes) -> [Column] {
-        return CSV.standardParse(bytes)
+    public static func parse(_ data: Data) -> [Column] {
+        return CSV.standardParse(data)
     }
 }
