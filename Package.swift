@@ -8,7 +8,7 @@ let package = Package(
         .library(name: "CSV", targets: ["CSV"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/vapor/bits.git", .exact("1.1.0"))
+        .package(url: "https://github.com/vapor/core.git", .branch("beta"))
     ],
     targets: [
         .target(name: "CSV", dependencies: ["Bits"]),
