@@ -1,12 +1,13 @@
 import Bits
+import Foundation
 
 internal struct Stack: ExpressibleByArrayLiteral {
     typealias ArrayLiteralElement = Byte
     
-    var store: Bytes
+    var store: Data
     
     init(arrayLiteral elements: Byte...) {
-        self.store = elements
+        self.store = Data(elements)
     }
     
     mutating func push(_ byte: Byte) {
@@ -14,11 +15,11 @@ internal struct Stack: ExpressibleByArrayLiteral {
     }
     
     mutating func release() -> String {
-        defer { store = [] }
-        return store.makeString()
+        defer { store.removeAll() }
+        return String(data: store, encoding: .utf8) ?? ""
     }
 }
 
 func ==(lhs: Stack, rhs: [Byte]) -> Bool {
-    return lhs.store == rhs
+    return lhs.store == Data(rhs)
 }
