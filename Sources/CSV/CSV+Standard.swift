@@ -1,18 +1,19 @@
 import Bits
+import Foundation
 
 extension CSV {
     // Might seem a bit extraneous, but it is ~twice as fast as the original implimentation:
     // https://github.com/skelpo/CSV/blob/cf98d15766b320ef6ced1e1096f48858dc4119e7/Sources/CSV/CSV.swift#L32-L53
-    internal static func standardParse(_ bytes: Bytes) -> [Column] {
+    internal static func standardParse(_ data: Data) -> [Column] {
         var index: Int = 0
         var columnIndex: Int = 0
-        let count: Int = bytes.count
+        let count: Int = data.count
         
         var columns: [Column] = []
         var stack: Stack = []
         
         while true {
-            let character = bytes[index]
+            let character = data[index]
             if character == .comma  {
                 columns.append(Column(header: stack.release(), fields: []))
             } else if character == .newLine {
@@ -27,7 +28,7 @@ extension CSV {
         }
         
         while index < count {
-            let character = bytes[index]
+            let character = data[index]
             if character == .comma || character == .newLine {
                 if stack == [] {
                     columns[columnIndex].fields.append(nil)
