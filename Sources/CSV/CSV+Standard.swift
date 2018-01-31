@@ -30,7 +30,7 @@ extension CSV {
         while index < count {
             let character = data[index]
             if character == .comma || character == .newLine {
-                if stack == [] {
+                if stack.empty {
                     columns[columnIndex].fields.append(nil)
                 } else {
                     columns[columnIndex].fields.append(stack.release())

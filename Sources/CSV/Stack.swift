@@ -10,6 +10,10 @@ internal struct Stack: ExpressibleByArrayLiteral {
         self.store = Data(elements)
     }
     
+    var empty: Bool {
+        return self.store.isEmpty
+    }
+    
     mutating func push(_ byte: Byte) {
         self.store.append(byte)
     }
@@ -18,8 +22,4 @@ internal struct Stack: ExpressibleByArrayLiteral {
         defer { store.removeAll() }
         return String(data: store, encoding: .utf8) ?? ""
     }
-}
-
-func ==(lhs: Stack, rhs: [Byte]) -> Bool {
-    return lhs.store == Data(rhs)
 }
