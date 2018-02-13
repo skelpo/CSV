@@ -5,17 +5,17 @@
         "package": "Async",
         "repositoryURL": "https://github.com/vapor/async.git",
         "state": {
-          "branch": "beta",
-          "revision": "1dca2de76d8986126ac624966210bc2213ac7f3d",
-          "version": null
+          "branch": null,
+          "revision": "7de2a117199c85100d21121c273de1ad76fa7bad",
+          "version": "1.0.0-beta.1"
         }
       },
       {
         "package": "Core",
         "repositoryURL": "https://github.com/vapor/core.git",
         "state": {
-          "branch": "beta",
-          "revision": "28ee9004bad3cb1d46b81459ea427ff3a41da68a",
+          "branch": "3.0.0-beta.1",
+          "revision": "caad4095e5a86aabfc6cc774dc384f56b972c110",
           "version": null
         }
       }
