@@ -6,17 +6,17 @@
         "repositoryURL": "https://github.com/vapor/async.git",
         "state": {
           "branch": null,
-          "revision": "7de2a117199c85100d21121c273de1ad76fa7bad",
-          "version": "1.0.0-beta.1"
+          "revision": "76ed7841b32dcc47168e8d9040ba03c024224d0c",
+          "version": "1.0.0-rc.1.1"
         }
       },
       {
         "package": "Core",
         "repositoryURL": "https://github.com/vapor/core.git",
         "state": {
-          "branch": "3.0.0-beta.1",
-          "revision": "caad4095e5a86aabfc6cc774dc384f56b972c110",
-          "version": null
+          "branch": null,
+          "revision": "0dd54c6e369f575a13f2c9964609b6c7d2dab909",
+          "version": "3.0.0-rc.1.0.1"
         }
       }
     ]
