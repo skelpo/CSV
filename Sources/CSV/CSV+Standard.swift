@@ -2,48 +2,24 @@ import Bits
 import Foundation
 
 extension CSV {
-    // Might seem a bit extraneous, but it is ~twice as fast as the original implimentation:
-    // https://github.com/skelpo/CSV/blob/cf98d15766b320ef6ced1e1096f48858dc4119e7/Sources/CSV/CSV.swift#L32-L53
     internal static func standardParse(_ data: Data) -> [Column] {
-        var index: Int = 0
-        var columnIndex: Int = 0
-        let count: Int = data.count
+        let rows = data.split(separator: .newLine, omittingEmptySubsequences: false)
+        var cells = rows.map({ $0.split(separator: .comma, omittingEmptySubsequences: false) })
+        let rowLength = cells[0].count - 1
         
-        var columns: [Column] = []
-        var stack: Stack = []
-        
-        while true {
-            let character = data[index]
-            if character == .comma  {
-                columns.append(Column(header: stack.release(), fields: []))
-            } else if character == .newLine {
-                columns.append(Column(header: stack.release(), fields: []))
-                index += 1
+        for count in 1...cells.count - 1 {
+            if cells[cells.count - count].count < rowLength {
+                _ = cells.removeLast()
+            } else {
                 break
-            } else {
-                stack.push(character)
             }
-            
-            index += 1
         }
         
-        while index < count {
-            let character = data[index]
-            if character == .comma || character == .newLine {
-                if stack.empty {
-                    columns[columnIndex].fields.append(nil)
-                } else {
-                    columns[columnIndex].fields.append(stack.release())
-                }
-                
-                columnIndex = character == .comma ? columnIndex + 1 : 0
-            } else {
-                stack.push(character)
-            }
-            
-            index += 1
+        return (0...rowLength).map { (cellIndex) -> CSV.Column in
+            var column = cells.map({ (row) -> String? in
+                return String(data: row[cellIndex], encoding: .utf8)
+            })
+            return CSV.Column(header: column.removeFirst()!, fields: column)
         }
-        
-        return columns
     }
 }
