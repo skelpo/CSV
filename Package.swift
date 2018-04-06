@@ -11,7 +11,7 @@ let package = Package(
         .package(url: "https://github.com/vapor/core.git", from: "3.0.0")
     ],
     targets: [
-        .target(name: "CSV", dependencies: ["Bits"]),
+        .target(name: "CSV", dependencies: ["Bits", "Debugging", "Async"]),
         .testTarget(name: "CSVTests", dependencies: ["CSV"]),
     ]
 )

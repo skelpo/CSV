@@ -1,25 +1,52 @@
 import Bits
 import Foundation
 
-internal struct Stack: ExpressibleByArrayLiteral {
-    typealias ArrayLiteralElement = Byte
+public struct Stack: ExpressibleByArrayLiteral {
+    public typealias ArrayLiteralElement = Byte
     
     var store: Data
     
-    init(arrayLiteral elements: Byte...) {
+    public init(arrayLiteral elements: Byte...) {
         self.store = Data(elements)
     }
     
-    var empty: Bool {
+    public var empty: Bool {
         return self.store.isEmpty
     }
     
-    mutating func push(_ byte: Byte) {
+    public mutating func push(_ byte: Byte) {
         self.store.append(byte)
     }
     
-    mutating func release() -> String {
+    public mutating func release() -> String {
         defer { store.removeAll() }
         return String(data: store, encoding: .utf8) ?? ""
+    }
+}
+
+extension Stack: RandomAccessCollection {
+    public typealias Index = Data.Index
+    public typealias Element = Data.Element
+    public typealias SubSequence = Data.SubSequence
+    public typealias Indices = Data.Indices
+    
+    public var startIndex: Data.Index {
+        return self.store.startIndex
+    }
+    
+    public var endIndex: Data.Index {
+        return self.store.endIndex
+    }
+    
+    public func index(before i: Data.Index) -> Data.Index {
+        return self.store.index(before: i)
+    }
+    
+    public func index(after i: Data.Index) -> Data.Index {
+        return self.store.index(after: i)
+    }
+    
+    public subscript(position: Data.Index) -> Data.Element {
+        return self.store[position]
     }
 }
