@@ -1,13 +1,17 @@
 import Bits
 import Foundation
 
-public struct Stack: ExpressibleByArrayLiteral {
+public struct Stack: ExpressibleByArrayLiteral, ExpressibleByStringLiteral {
     public typealias ArrayLiteralElement = Byte
     
     var store: Data
     
     public init(arrayLiteral elements: Byte...) {
         self.store = Data(elements)
+    }
+    
+    public init(stringLiteral value: String) {
+        self.store = Data(value.utf8)
     }
     
     public var empty: Bool {
