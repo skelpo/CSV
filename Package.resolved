@@ -2,21 +2,30 @@
   "object": {
     "pins": [
       {
-        "package": "Async",
-        "repositoryURL": "https://github.com/vapor/async.git",
-        "state": {
-          "branch": null,
-          "revision": "76ed7841b32dcc47168e8d9040ba03c024224d0c",
-          "version": "1.0.0-rc.1.1"
-        }
-      },
-      {
         "package": "Core",
         "repositoryURL": "https://github.com/vapor/core.git",
         "state": {
           "branch": null,
-          "revision": "0dd54c6e369f575a13f2c9964609b6c7d2dab909",
-          "version": "3.0.0-rc.1.0.1"
+          "revision": "5383e40f19d71da99e496afa9972c085abc2379d",
+          "version": "3.0.2"
+        }
+      },
+      {
+        "package": "swift-nio",
+        "repositoryURL": "https://github.com/apple/swift-nio.git",
+        "state": {
+          "branch": null,
+          "revision": "a0b7f646fba61402da384b3202f54c27debb5e13",
+          "version": "1.3.1"
+        }
+      },
+      {
+        "package": "swift-nio-zlib-support",
+        "repositoryURL": "https://github.com/apple/swift-nio-zlib-support.git",
+        "state": {
+          "branch": null,
+          "revision": "37760e9a52030bb9011972c5213c3350fa9d41fd",
+          "version": "1.0.0"
         }
       }
     ]
