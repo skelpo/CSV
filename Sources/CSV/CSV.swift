@@ -8,26 +8,15 @@ public struct CSV {
     }
     
     public static func parse(_ data: Data) -> [String: [String?]] {
-        let parsed: [Column] = parse(data)
-        var columns: [String: [String?]] = [:]
-        
-        for column in parsed {
+        return parse(data).reduce(into: [:]) { (columns, column) in
             columns[column.header] = column.fields
         }
-        
-        return columns
     }
     
     public static func parse(_ data: Data) -> [String: Column] {
-        let parsed: [Column] = parse(data)
-        var columns: [String: Column] = [:]
-        
-        for column in parsed {
+        return parse(data).reduce(into: [:]) { (columns, column) in
             columns[column.header] = column
         }
-        
-        return columns
-        
     }
     
     public static func parse(_ data: Data) -> [Column] {
