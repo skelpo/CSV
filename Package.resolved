@@ -6,8 +6,8 @@
         "repositoryURL": "https://github.com/vapor/core.git",
         "state": {
           "branch": null,
-          "revision": "5383e40f19d71da99e496afa9972c085abc2379d",
-          "version": "3.0.2"
+          "revision": "2ad95efabedc228ddbadee1974f6bbaac6c89abd",
+          "version": "3.0.3"
         }
       },
       {
