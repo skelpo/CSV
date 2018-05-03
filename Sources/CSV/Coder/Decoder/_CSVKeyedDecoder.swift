@@ -72,11 +72,12 @@ final class _CSVKeyedDecoder<K>: KeyedDecodingContainerProtocol where K: CodingK
     }
     
     func superDecoder() throws -> Decoder {
-        fatalError()
+        let key = K(stringValue: "super")!
+        throw DecodingError.keyNotFound(key, DecodingError.Context(codingPath: self.codingPath + [key], debugDescription: "Cannot create super decoder for CSV structure"))
     }
     
     func superDecoder(forKey key: K) throws -> Decoder {
-        fatalError()
+        throw DecodingError.keyNotFound(key, DecodingError.Context(codingPath: self.codingPath + [key], debugDescription: "Cannot create super decoder for CSV structure"))
     }
 }
 
