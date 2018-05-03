@@ -67,7 +67,8 @@ final class _CSVKeyedDecoder<K>: KeyedDecodingContainerProtocol where K: CodingK
     }
     
     func nestedUnkeyedContainer(forKey key: K) throws -> UnkeyedDecodingContainer {
-        fatalError()
+        let column = codingPath.map { $0.stringValue }.joined(separator: ".")
+        throw DecodingError.dataCorruptedError(forKey: key, in: self, debugDescription: "Found nested data in a cell in column '\(column)'")
     }
     
     func superDecoder() throws -> Decoder {
