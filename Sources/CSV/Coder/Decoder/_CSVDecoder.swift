@@ -72,7 +72,7 @@ final class _CSVDecoder: Decoder {
         return _CSVSingleValueDecoder(value: cell, path: self.codingPath)
     }
     
-    func decode<T>(_ type: T.Type, from data: Data)throws -> [T] where T: Decodable {
+    static func decode<T>(_ type: T.Type, from data: Data)throws -> [T] where T: Decodable {
         let csv: [String: [String?]] = CSV.parse(data)
         let decoder = _CSVDecoder(csv: csv)
         return try Array<T>(from: decoder)

@@ -19,4 +19,10 @@ extension Future where T == Data {
             return CSV.parse(data)
         }
     }
+    
+    public func csvTo<T>(_ type: T.Type) -> Future<[T]> where T: Decodable {
+        return self.map(to: [T].self) { (data) in
+            return try _CSVDecoder.decode(T.self, from: data)
+        }
+    }
 }
