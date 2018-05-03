@@ -10,4 +10,9 @@ extension DecodingError {
     static func nilKey<T>(_ key: CodingKey, type: T.Type, at path: CodingPath) -> DecodingError {
         return DecodingError.valueNotFound(type, Context(codingPath: path, debugDescription: "Cell in column \(key.stringValue) not populated"))
     }
+    
+    static func nilValue<T>(type: T.Type, at path: CodingPath) -> DecodingError {
+        let column = path.map { $0.stringValue }.joined(separator: ".")
+        return DecodingError.valueNotFound(type, Context(codingPath: path, debugDescription: "Cell in column '\(column)' not populated"))
+    }
 }
