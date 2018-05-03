@@ -2,7 +2,7 @@ import XCTest
 @testable import CSV
 
 class CSVTests: XCTestCase {
-    func testExample() {
+    func testSpeed() {
         do {
             let url = URL(string: "file:/Users/calebkleveter/Development/Fielding.csv")!
             let data = try Data(contentsOf: url)
@@ -19,6 +19,6 @@ class CSVTests: XCTestCase {
     }
     
     static var allTests = [
-        ("testExample", testExample),
+        ("testSpeed", testSpeed),
     ]
 }
