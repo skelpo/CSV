@@ -18,7 +18,25 @@ class CSVTests: XCTestCase {
         }
     }
     
+    func testRowSpeed() {
+        do {
+            let url = URL(string: "file:/Users/calebkleveter/Development/Fielding.csv")!
+            let data = try Data(contentsOf: url)
+            
+            let csv: [String: [String?]] = CSV.parse(data)
+            
+            let next = csv.makeRows()
+            
+            measure {
+                while let _ = next() {}
+            }
+        } catch let error {
+            XCTFail("\(error)")
+        }
+    }
+    
     static var allTests = [
         ("testSpeed", testSpeed),
+        ("testRowSpeed", testRowSpeed)
     ]
 }
