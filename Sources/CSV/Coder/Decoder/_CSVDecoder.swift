@@ -35,15 +35,41 @@ final class _CSVDecoder: Decoder {
     }
     
     func container<Key>(keyedBy type: Key.Type) throws -> KeyedDecodingContainer<Key> where Key : CodingKey {
-        fatalError()
+        guard let row = self.row else {
+            throw DecodingError.typeMismatch(
+                [String: String?].self,
+                DecodingError.Context(
+                    codingPath: self.codingPath,
+                    debugDescription: "Cannot get CSV row as expected format '[String: String?]'"
+                )
+            )
+        }
+        let container = _CSVKeyedDecoder<Key>(path: self.codingPath, row: row)
+        return KeyedDecodingContainer(container)
     }
     
     func unkeyedContainer() throws -> UnkeyedDecodingContainer {
-        fatalError()
+        guard let csv = self.csv else {
+            throw DecodingError.typeMismatch(
+                [String: [String?]].self,
+                DecodingError.Context(
+                    codingPath: self.codingPath,
+                    debugDescription: "Cannot get CSV data as expected format '[String: [String?]]'")
+            )
+        }
+        return _CSVUnkeyedDecoder(columns: csv, path: self.codingPath)
     }
     
     func singleValueContainer() throws -> SingleValueDecodingContainer {
-        fatalError()
+        guard let cell = self.cell else {
+            throw DecodingError.typeMismatch(
+                String?.self,
+                DecodingError.Context(
+                    codingPath: self.codingPath,
+                    debugDescription: "Cannot get CSV cell as expected format 'String?'")
+            )
+        }
+        return _CSVSingleValueDecoder(value: cell, path: self.codingPath)
     }
     
     func decode<T>(_ type: T.Type, from data: Data)throws -> [T] where T: Decodable {
