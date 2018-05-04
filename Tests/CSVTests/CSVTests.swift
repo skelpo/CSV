@@ -35,8 +35,21 @@ class CSVTests: XCTestCase {
         }
     }
     
+    func testCSVDecode()throws {
+        let url = URL(string: "file:/Users/calebkleveter/Development/Fielding.csv")!
+        let data = try Data(contentsOf: url)
+        let fielders = try CSVCoder.decode(data, to: Fielder.self)
+        XCTAssertEqual(fielders[0], Fielder(playerID: "abercda01", yearID: 1871, teamID: "TRO"))
+    }
+    
     static var allTests = [
         ("testSpeed", testSpeed),
         ("testRowSpeed", testRowSpeed)
     ]
+}
+
+struct Fielder: Decodable, Equatable {
+    let playerID: String
+    let yearID: Int
+    let teamID: String
 }
