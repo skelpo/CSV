@@ -83,7 +83,7 @@ final class _CSVUnkeyedDecoder: UnkeyedDecodingContainer {
 
 extension Dictionary where Key == String, Value == Array<String?> {
     public func makeRows() -> () -> [String: String?]? {
-        var rowIndex = 1
+        var rowIndex = 0
         
         func next() -> [String: String?]? {
             defer { rowIndex += 1 }
