@@ -9,7 +9,7 @@ final class _CSVUnkeyedDecoder: UnkeyedDecodingContainer {
     
     init(columns: [String: [String?]], path: CodingPath = []) {
         self.codingPath = path
-        self.count = columns.count
+        self.count = columns.first?.value.count
         self.currentIndex = 0
         self.columns = columns
         self.next = columns.makeRows()
