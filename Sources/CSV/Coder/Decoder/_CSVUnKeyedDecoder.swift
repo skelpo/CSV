@@ -16,7 +16,7 @@ final class _CSVUnkeyedDecoder: UnkeyedDecodingContainer {
     }
     
     var isAtEnd: Bool {
-        return currentIndex < (count ?? 0)
+        return self.currentIndex >= (self.count ?? 0)
     }
     
     func pop()throws -> [String: String?] {
