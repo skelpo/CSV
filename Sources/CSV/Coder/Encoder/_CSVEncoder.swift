@@ -4,11 +4,21 @@ final class _CSVEncoder: Encoder {
     let codingPath: [CodingKey]
     let userInfo: [CodingUserInfoKey : Any]
     let data: DataContainer
+    let boolEncoding: BoolEncodingStrategy
+    let stringEncoding: String.Encoding
     
-    init(data: DataContainer, path: CodingPath = [], info: [CodingUserInfoKey : Any] = [:]) {
+    init(
+        data: DataContainer,
+        path: CodingPath = [],
+        info: [CodingUserInfoKey : Any] = [:],
+        boolEncoding: BoolEncodingStrategy = .toString,
+        stringEncoding: String.Encoding = .utf8
+    ) {
         self.codingPath = path
         self.userInfo = info
         self.data = data
+        self.boolEncoding = boolEncoding
+        self.stringEncoding = stringEncoding
     }
     
     func container<Key>(keyedBy type: Key.Type) -> KeyedEncodingContainer<Key> where Key : CodingKey {
