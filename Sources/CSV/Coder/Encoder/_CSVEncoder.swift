@@ -1,12 +1,14 @@
 import Foundation
 
 final class _CSVEncoder: Encoder {
-    var codingPath: [CodingKey]
-    var userInfo: [CodingUserInfoKey : Any]
+    let codingPath: [CodingKey]
+    let userInfo: [CodingUserInfoKey : Any]
+    let data: DataContainer
     
-    init(path: CodingPath = [], info: [CodingUserInfoKey : Any] = [:]) {
+    init(data: DataContainer, path: CodingPath = [], info: [CodingUserInfoKey : Any] = [:]) {
         self.codingPath = path
         self.userInfo = info
+        self.data = data
     }
     
     func container<Key>(keyedBy type: Key.Type) -> KeyedEncodingContainer<Key> where Key : CodingKey {
@@ -19,5 +21,13 @@ final class _CSVEncoder: Encoder {
     
     func singleValueContainer() -> SingleValueEncodingContainer {
         fatalError()
+    }
+}
+
+final class DataContainer {
+    var data: Data
+    
+    init(data: Data = Data()) {
+        self.data = data
     }
 }
