@@ -32,8 +32,10 @@ final class _CSVEncoder: Encoder {
 
 final class DataContainer {
     var data: Data
+    var titlesCreated: Bool
     
     init(data: Data = Data()) {
         self.data = data
+        self.titlesCreated = false
     }
 }
