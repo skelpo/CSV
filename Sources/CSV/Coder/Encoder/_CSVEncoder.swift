@@ -22,6 +22,12 @@ final class _CSVEncoder: Encoder {
     func singleValueContainer() -> SingleValueEncodingContainer {
         fatalError()
     }
+    
+    static func encode<T>(_ objects: [T])throws -> Data where T: Encodable {
+        let encoder = _CSVEncoder(data: DataContainer())
+        try objects.encode(to: encoder)
+        return encoder.data.data
+    }
 }
 
 final class DataContainer {
