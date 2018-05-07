@@ -27,9 +27,16 @@ extension String {
 
 extension Array where Element == Data {
     func joined(separator: UInt8) -> Element {
-        return self.reduce(into: Data()) { data, subsequence in
+        let count = self.count
+        var data = Data()
+        var iterator = 0
+        
+        while iterator < count {
             if data.count > 0 { data.append(separator) }
-            data.append(contentsOf: subsequence)
+            data.append(contentsOf: self[iterator])
+            iterator += 1
         }
+        
+        return data
     }
 }
