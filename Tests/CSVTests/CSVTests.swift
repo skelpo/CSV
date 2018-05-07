@@ -60,16 +60,38 @@ class CSVTests: XCTestCase {
         }
     }
     
+    func testCSVEncodingSpeed()throws {
+        let url = URL(string: "file:/Users/calebkleveter/Development/Fielding.csv")!
+        let data = try Data(contentsOf: url)
+        let fielders = try CSVCoder.decode(data, to: Fielder.self)
+        let encoded = try CSVCoder.encode(fielders)
+        XCTAssertEqual(data, encoded)
+    }
+    
+    func testCSVEncodingSpeed()throws {
+        let url = URL(string: "file:/Users/calebkleveter/Development/Fielding.csv")!
+        let data = try Data(contentsOf: url)
+        let fielders = try CSVCoder.decode(data, to: Fielder.self)
+        
+        measure {
+            do {
+                _ = try CSVCoder.encode(fielders)
+            } catch { XCTFail(error.localizedDescription) }
+        }
+    }
+    
     static var allTests = [
         ("testSpeed", testSpeed),
         ("testRowSpeed", testRowSpeed),
         ("testCSVDecode", testCSVDecode),
         ("testCSVColumnSeralization", testCSVColumnSeralization),
-        ("testCSVColumnSeralizationSpeed", testCSVColumnSeralizationSpeed)
+        ("testCSVColumnSeralizationSpeed", testCSVColumnSeralizationSpeed),
+        ("testCSVEncoding", testCSVEncoding),
+        ("testCSVEncodingSpeed", testCSVEncodingSpeed)
     ]
 }
 
-struct Fielder: Decodable, Equatable {
+struct Fielder: Codable, Equatable {
     let playerID: String
     let yearID: Int
     let teamID: String
