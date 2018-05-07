@@ -1,3 +1,4 @@
+import Bits
 import XCTest
 @testable import CSV
 
@@ -42,9 +43,29 @@ class CSVTests: XCTestCase {
         XCTAssertEqual(fielders[0], Fielder(playerID: "abercda01", yearID: 1871, teamID: "TRO"))
     }
     
+    func testCSVColumnSeralization()throws {
+        let url = URL(string: "file:/Users/calebkleveter/Development/Fielding.csv")!
+        let data = try Data(contentsOf: url)
+        let parsed: [CSV.Column] = CSV.parse(data)
+        let _ = parsed.seralize()
+    }
+    
+    func testCSVColumnSeralizationSpeed()throws {
+        let url = URL(string: "file:/Users/calebkleveter/Development/Fielding.csv")!
+        let data = try Data(contentsOf: url)
+        let parsed: [CSV.Column] = CSV.parse(data)
+        
+        measure {
+            _ = parsed.seralize()
+        }
+    }
+    
     static var allTests = [
         ("testSpeed", testSpeed),
-        ("testRowSpeed", testRowSpeed)
+        ("testRowSpeed", testRowSpeed),
+        ("testCSVDecode", testCSVDecode),
+        ("testCSVColumnSeralization", testCSVColumnSeralization),
+        ("testCSVColumnSeralizationSpeed", testCSVColumnSeralizationSpeed)
     ]
 }
 
