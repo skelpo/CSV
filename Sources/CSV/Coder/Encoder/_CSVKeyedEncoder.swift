@@ -43,7 +43,7 @@ final class _CSVKeyedEncoder<K>: KeyedEncodingContainerProtocol where K: CodingK
     func encode<T>(_ value: T, forKey key: K) throws where T : Encodable {
         let encoder = _CSVEncoder(data: DataContainer(), path: self.codingPath, boolEncoding: self.boolEncoding, stringEncoding: self.stringEncoding)
         try value.encode(to: encoder)
-        self.container.data.append(contentsOf: encoder.data.data)
+        self.container.data.append(contentsOf: encoder.data.data + [.comma])
     }
     
     func nestedContainer<NestedKey>(keyedBy keyType: NestedKey.Type, forKey key: K) -> KeyedEncodingContainer<NestedKey> where NestedKey : CodingKey {
@@ -52,7 +52,7 @@ final class _CSVKeyedEncoder<K>: KeyedEncodingContainerProtocol where K: CodingK
     }
     
     func nestedUnkeyedContainer(forKey key: K) -> UnkeyedEncodingContainer {
-        fatalError()
+        return _CSVUnkeyedEncoder(container: self.container, path: self.codingPath, boolEncoding: self.boolEncoding, stringEncoding: self.stringEncoding)
     }
     
     func superEncoder() -> Encoder {
