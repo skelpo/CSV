@@ -19,6 +19,24 @@ extension Array where Element == CSV.Column {
     }
 }
 
+extension Dictionary where Key == String, Value == Array<String?> {
+    func seralize() -> Data {
+        guard let count = self.first?.value.count else {
+            return self.keys.map { $0.data }.joined(separator: .comma)
+        }
+        
+        var index = 0
+        var data: [Data] = [self.keys.map { $0.data }.joined(separator: .comma)]
+        
+        while index < count {
+            data.append(self.values.map { ($0[index] ?? "").data }.joined(separator: .comma))
+            index += 1
+        }
+        
+        return data.joined(separator: .newLine)
+    }
+}
+
 extension String {
     var data: Data {
         return Data(self.utf8)
