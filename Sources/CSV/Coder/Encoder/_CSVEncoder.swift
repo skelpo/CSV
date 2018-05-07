@@ -34,8 +34,8 @@ final class _CSVEncoder: Encoder {
         return _CSVSingleValueEncoder(container: self.data, path: self.codingPath, boolEncoding: self.boolEncoding, stringEncoding: self.stringEncoding)
     }
     
-    static func encode<T>(_ objects: [T])throws -> Data where T: Encodable {
-        let encoder = _CSVEncoder(data: DataContainer())
+    static func encode<T>(_ objects: [T], boolEncoding: BoolEncodingStrategy, stringEncoding: String.Encoding)throws -> Data where T: Encodable {
+        let encoder = _CSVEncoder(data: DataContainer(), boolEncoding: boolEncoding, stringEncoding: stringEncoding)
         try objects.encode(to: encoder)
         return encoder.data.data
     }
