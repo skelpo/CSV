@@ -22,15 +22,16 @@ final class _CSVEncoder: Encoder {
     }
     
     func container<Key>(keyedBy type: Key.Type) -> KeyedEncodingContainer<Key> where Key : CodingKey {
-        fatalError()
+        let container = _CSVKeyedEncoder<Key>(container: self.data, path: self.codingPath, boolEncoding: self.boolEncoding, stringEncoding: self.stringEncoding)
+        return KeyedEncodingContainer(container)
     }
     
     func unkeyedContainer() -> UnkeyedEncodingContainer {
-        fatalError()
+        return _CSVUnkeyedEncoder(container: self.data, path: self.codingPath, boolEncoding: self.boolEncoding, stringEncoding: self.stringEncoding)
     }
     
     func singleValueContainer() -> SingleValueEncodingContainer {
-        fatalError()
+        return _CSVSingleValueEncoder(container: self.data, path: self.codingPath, boolEncoding: self.boolEncoding, stringEncoding: self.stringEncoding)
     }
     
     static func encode<T>(_ objects: [T])throws -> Data where T: Encodable {
