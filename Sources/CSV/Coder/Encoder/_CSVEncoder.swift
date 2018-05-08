@@ -45,8 +45,8 @@ final class DataContainer {
     var data: Data
     var titlesCreated: Bool
     
-    init(data: Data = Data()) {
+    init(data: Data = Data(), titles: Bool = false) {
         self.data = data
-        self.titlesCreated = false
+        self.titlesCreated = titles
     }
 }
