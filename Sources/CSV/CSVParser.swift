@@ -17,7 +17,7 @@ extension CSV {
         var columns: [String: [String?]] = [:]
         (0...rowLength).forEach { (cellIndex) in
             var column = cells.map({ (row) -> String? in
-                return String(data: row[cellIndex], encoding: .utf8)
+                return row[cellIndex].count > 0 ? String(data: row[cellIndex], encoding: .utf8) : nil
             })
             let title = column.removeFirst()!
             columns[title] = column
@@ -41,7 +41,7 @@ extension CSV {
         var columns: [String: Column] = [:]
         (0...rowLength).forEach { (cellIndex) in
             var column = cells.map({ (row) -> String? in
-                return String(data: row[cellIndex], encoding: .utf8)
+                return row[cellIndex].count > 0 ? String(data: row[cellIndex], encoding: .utf8) : nil
             })
             let title = column.removeFirst()!
             columns[title] = CSV.Column(header: title, fields: column)
@@ -64,7 +64,7 @@ extension CSV {
         
         return (0...rowLength).map { (cellIndex) -> CSV.Column in
             var column = cells.map({ (row) -> String? in
-                return String(data: row[cellIndex], encoding: .utf8)
+                return row[cellIndex].count > 0 ? String(data: row[cellIndex], encoding: .utf8) : nil
             })
             return CSV.Column(header: column.removeFirst()!, fields: column)
         }
