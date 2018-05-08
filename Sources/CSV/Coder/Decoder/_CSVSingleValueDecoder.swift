@@ -2,17 +2,23 @@ import Foundation
 
 final class _CSVSingleValueDecoder: SingleValueDecodingContainer {
     let codingPath: [CodingKey]
-    let value: String?
+    let stringDecoding: String.Encoding
+    let value: Data?
     
-    init(value: String?, path: CodingPath) {
+    init(value: Data?, path: CodingPath, stringDecoding: String.Encoding) {
         self.codingPath = path
+        self.stringDecoding = stringDecoding
         self.value = value
     }
     
     func decodeNil() -> Bool { return self.value == nil }
     
     func decode(_ type: Bool.Type) throws -> Bool {
-        switch self.value?.lowercased() {
+        guard let cell = self.value else { throw DecodingError.nilValue(type: type, at: self.codingPath) }
+        guard let value = String(data: cell, encoding: self.stringDecoding) else {
+            throw DecodingError.dataToStringFailed(path: self.codingPath, encoding: self.stringDecoding)
+        }
+        switch value.lowercased() {
         case "true", "yes", "t", "y", "1": return true
         case "false", "no", "f", "n", "0": return false
         default: throw DecodingError.unableToExtract(type: type, at: self.codingPath)
@@ -20,25 +26,28 @@ final class _CSVSingleValueDecoder: SingleValueDecodingContainer {
     }
     
     func decode(_ type: String.Type) throws -> String {
-        guard let value = self.value else { throw DecodingError.nilValue(type: type, at: self.codingPath) }
+        guard let cell = self.value else { throw DecodingError.nilValue(type: type, at: self.codingPath) }
+        guard let value = String(data: cell, encoding: self.stringDecoding) else {
+            throw DecodingError.dataToStringFailed(path: self.codingPath, encoding: self.stringDecoding)
+        }
         return value
     }
     
     func decode(_ type: Double.Type) throws -> Double {
-        guard let value = self.value else { throw DecodingError.nilValue(type: type, at: self.codingPath) }
-        guard let double = Double(value) else { throw DecodingError.unableToExtract(type: type, at: self.codingPath) }
+        guard let cell = self.value else { throw DecodingError.nilValue(type: type, at: self.codingPath) }
+        guard let double = cell.double else { throw DecodingError.unableToExtract(type: type, at: self.codingPath) }
         return double
     }
     
     func decode(_ type: Float.Type) throws -> Float {
-        guard let value = self.value else { throw DecodingError.nilValue(type: type, at: self.codingPath) }
-        guard let float = Float(value) else { throw DecodingError.unableToExtract(type: type, at: self.codingPath) }
+        guard let cell = self.value else { throw DecodingError.nilValue(type: type, at: self.codingPath) }
+        guard let float = cell.float else { throw DecodingError.unableToExtract(type: type, at: self.codingPath) }
         return float
     }
     
     func decode(_ type: Int.Type) throws -> Int {
-        guard let value = self.value else { throw DecodingError.nilValue(type: type, at: self.codingPath) }
-        guard let int = Int(value) else { throw DecodingError.unableToExtract(type: type, at: self.codingPath) }
+        guard let cell = self.value else { throw DecodingError.nilValue(type: type, at: self.codingPath) }
+        guard let int = cell.int else { throw DecodingError.unableToExtract(type: type, at: self.codingPath) }
         return int
     }
     
