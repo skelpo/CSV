@@ -6,11 +6,11 @@ final class _CSVDecoder: Decoder {
     let codingPath: [CodingKey]
     let userInfo: [CodingUserInfoKey : Any]
     
-    let csv: [String: [String?]]?
-    let row: [String: String]?
-    let cell: String?
+    let csv: [String: [Data?]]?
+    let row: [String: Data]?
+    let cell: Data?
     
-    init(csv: [String: [String?]], path: CodingPath = [], info: [CodingUserInfoKey : Any] = [:]) {
+    init(csv: [String: [Data?]], path: CodingPath = [], info: [CodingUserInfoKey : Any] = [:]) {
         self.codingPath = path
         self.userInfo = info
         self.csv = csv
@@ -18,7 +18,7 @@ final class _CSVDecoder: Decoder {
         self.cell = nil
     }
 
-    init(row: [String: String], path: CodingPath = [], info: [CodingUserInfoKey : Any] = [:]) {
+    init(row: [String: Data], path: CodingPath = [], info: [CodingUserInfoKey : Any] = [:]) {
         self.codingPath = path
         self.userInfo = info
         self.csv = nil
@@ -26,7 +26,7 @@ final class _CSVDecoder: Decoder {
         self.cell = nil
     }
     
-    init(cell: String?, path: CodingPath = [], info: [CodingUserInfoKey : Any] = [:]) {
+    init(cell: Data?, path: CodingPath = [], info: [CodingUserInfoKey : Any] = [:]) {
         self.codingPath = path
         self.userInfo = info
         self.csv = nil
@@ -73,8 +73,34 @@ final class _CSVDecoder: Decoder {
     }
     
     static func decode<T>(_ type: T.Type, from data: Data)throws -> [T] where T: Decodable {
-        let csv: [String: [String?]] = CSV.parse(data)
+        let csv: [String: [Data?]] = try _CSVDecoder.organize(data)
         let decoder = _CSVDecoder(csv: csv)
         return try Array<T>(from: decoder)
+    }
+    
+    static func organize(_ data: Data)throws -> [String: [Data?]] {
+        let rows = data.split(separator: .newLine, omittingEmptySubsequences: false)
+        var cells = rows.map({ $0.split(separator: .comma, omittingEmptySubsequences: false) })
+        let rowLength = cells[0].count - 1
+        
+        for count in 1...cells.count - 1 {
+            if cells[cells.count - count].count < rowLength {
+                _ = cells.removeLast()
+            } else {
+                break
+            }
+        }
+        
+        var columns: [String: [Data?]] = [:]
+        try (0...rowLength).forEach { (cellIndex) in
+            var column = cells.map({ (row) -> Data? in
+                return row[cellIndex].count > 0 ? row[cellIndex] : nil
+            })
+            guard let title = String(data: column.removeFirst()!, encoding: .utf8) else {
+                throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: [], debugDescription: "Found colunm title wuth UTF-8 incompatible character"))
+            }
+            columns[title] = column
+        }
+        return columns
     }
 }
