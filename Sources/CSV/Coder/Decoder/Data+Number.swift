@@ -2,7 +2,7 @@ import Foundation
 
 extension Data {
     var int: Int? {
-        let count: Int = self.count
+        let count: Int = self.endIndex
         var result: Int = 0
         
         let direction: Int
@@ -38,7 +38,7 @@ extension Data {
     }
     
     var float: Float? {
-        let count: Int = self.count
+        let count: Int = self.endIndex
         var result: Int = 0
         var decimal: Float = 1
         
@@ -76,7 +76,7 @@ extension Data {
     }
     
     var double: Double? {
-        let count: Int = self.count
+        let count: Int = self.endIndex
         var result: Int = 0
         var decimal: Double = 1
         
