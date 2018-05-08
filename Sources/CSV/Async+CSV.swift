@@ -20,9 +20,9 @@ extension Future where T == Data {
         }
     }
     
-    public func csvTo<T>(_ type: T.Type) -> Future<[T]> where T: Decodable {
+    public func csvTo<T>(_ type: T.Type, stringEncoding: String.Encoding = .utf8) -> Future<[T]> where T: Decodable {
         return self.map(to: [T].self) { (data) in
-            return try _CSVDecoder.decode(T.self, from: data)
+            return try _CSVDecoder.decode(T.self, from: data, stringDecoding: stringEncoding)
         }
     }
 }
