@@ -9,10 +9,10 @@ extension Data {
         var iterator: Int
         
         if self.first == .hyphen {
-            iterator = 1
+            iterator = self.startIndex + 1
             direction = -1
         } else {
-            iterator = 0
+            iterator = self.startIndex
             direction = 1
         }
         
@@ -46,10 +46,10 @@ extension Data {
         var iterator: Int
         
         if self.first == .hyphen {
-            iterator = 1
+            iterator = self.startIndex + 1
             direction = -1
         } else {
-            iterator = 0
+            iterator = self.startIndex
             direction = 1
         }
         
@@ -84,10 +84,10 @@ extension Data {
         var iterator: Int
         
         if self.first == .hyphen {
-            iterator = 1
+            iterator = self.startIndex + 1
             direction = -1
         } else {
-            iterator = 0
+            iterator = self.startIndex
             direction = 1
         }
         
