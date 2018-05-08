@@ -76,8 +76,7 @@ class CSVTests: XCTestCase {
         let data = try Data(contentsOf: url)
         let fielders = try CSVCoder.decode(data, to: Fielder.self)
         let encoded = try CSVCoder.encode(fielders)
-        print(String(data: encoded, encoding: .utf8))
-        // XCTAssertEqual(data, encoded)
+        XCTAssertEqual(data, encoded)
     }
     
     func testCSVEncodingSpeed()throws {
