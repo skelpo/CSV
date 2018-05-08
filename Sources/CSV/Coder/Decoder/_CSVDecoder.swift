@@ -7,7 +7,7 @@ final class _CSVDecoder: Decoder {
     let userInfo: [CodingUserInfoKey : Any]
     
     let csv: [String: [String?]]?
-    let row: [String: String?]?
+    let row: [String: String]?
     let cell: String?
     
     init(csv: [String: [String?]], path: CodingPath = [], info: [CodingUserInfoKey : Any] = [:]) {
@@ -18,7 +18,7 @@ final class _CSVDecoder: Decoder {
         self.cell = nil
     }
 
-    init(row: [String: String?], path: CodingPath = [], info: [CodingUserInfoKey : Any] = [:]) {
+    init(row: [String: String], path: CodingPath = [], info: [CodingUserInfoKey : Any] = [:]) {
         self.codingPath = path
         self.userInfo = info
         self.csv = nil

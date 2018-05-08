@@ -3,9 +3,9 @@ import Foundation
 final class _CSVKeyedDecoder<K>: KeyedDecodingContainerProtocol where K: CodingKey {
     let codingPath: [CodingKey]
     let allKeys: [K]
-    let row: [String: String?]
+    let row: [String: String]
     
-    init(path: CodingPath, row: [String: String?]) {
+    init(path: CodingPath, row: [String: String]) {
         self.codingPath = path
         self.allKeys = Array(row.keys).compactMap(K.init)
         self.row = row
@@ -21,7 +21,7 @@ final class _CSVKeyedDecoder<K>: KeyedDecodingContainerProtocol where K: CodingK
     
     func decode(_ type: Bool.Type, forKey key: K) throws -> Bool {
         guard let value = row[key.stringValue] else { throw DecodingError.badKey(key, at: self.codingPath + [key]) }
-        switch value?.lowercased() {
+        switch value.lowercased() {
         case "true", "yes", "t", "y", "1": return true
         case "false", "no", "f", "n", "0": return false
         default: throw DecodingError.unableToExtract(type: type, at: self.codingPath + [key])
@@ -29,28 +29,24 @@ final class _CSVKeyedDecoder<K>: KeyedDecodingContainerProtocol where K: CodingK
     }
     
     func decode(_ type: String.Type, forKey key: K) throws -> String {
-        guard let cell = row[key.stringValue] else { throw DecodingError.badKey(key, at: self.codingPath + [key]) }
-        guard let value = cell else { throw DecodingError.nilKey(key, type: type, at: self.codingPath + [key]) }
+        guard let value = row[key.stringValue] else { throw DecodingError.badKey(key, at: self.codingPath + [key]) }
         return value
     }
     
     func decode(_ type: Double.Type, forKey key: K) throws -> Double {
-        guard let cell = row[key.stringValue] else { throw DecodingError.badKey(key, at: self.codingPath + [key]) }
-        guard let value = cell else { throw DecodingError.nilKey(key, type: type, at: self.codingPath + [key]) }
+        guard let value = row[key.stringValue] else { throw DecodingError.badKey(key, at: self.codingPath + [key]) }
         guard let double = Double(value) else { throw DecodingError.unableToExtract(type: type, at: self.codingPath + [key]) }
         return double
     }
     
     func decode(_ type: Float.Type, forKey key: K) throws -> Float {
-        guard let cell = row[key.stringValue] else { throw DecodingError.badKey(key, at: self.codingPath + [key]) }
-        guard let value = cell else { throw DecodingError.nilKey(key, type: type, at: self.codingPath + [key]) }
+        guard let value = row[key.stringValue] else { throw DecodingError.badKey(key, at: self.codingPath + [key]) }
         guard let float = Float(value) else { throw DecodingError.unableToExtract(type: type, at: self.codingPath + [key]) }
         return float
     }
     
     func decode(_ type: Int.Type, forKey key: K) throws -> Int {
-        guard let cell = row[key.stringValue] else { throw DecodingError.badKey(key, at: self.codingPath + [key]) }
-        guard let value = cell else { throw DecodingError.nilKey(key, type: type, at: self.codingPath + [key]) }
+        guard let value = row[key.stringValue] else { throw DecodingError.badKey(key, at: self.codingPath + [key]) }
         guard let int = Int(value) else { throw DecodingError.unableToExtract(type: type, at: self.codingPath + [key]) }
         return int
     }

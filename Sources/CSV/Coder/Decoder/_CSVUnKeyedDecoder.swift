@@ -5,7 +5,7 @@ final class _CSVUnkeyedDecoder: UnkeyedDecodingContainer {
     let count: Int?
     var currentIndex: Int
     let columns: [String: [String?]]
-    let next: () -> [String: String?]?
+    let next: () -> [String: String]?
     
     init(columns: [String: [String?]], path: CodingPath = []) {
         self.codingPath = path
@@ -19,7 +19,7 @@ final class _CSVUnkeyedDecoder: UnkeyedDecodingContainer {
         return self.currentIndex >= (self.count ?? 0)
     }
     
-    func pop()throws -> [String: String?] {
+    func pop()throws -> [String: String] {
         guard let row = next() else {
             throw DecodingError.valueNotFound([String: String?].self, DecodingError.Context(codingPath: self.codingPath, debugDescription: "No row exists at the current index"))
         }
@@ -82,14 +82,14 @@ final class _CSVUnkeyedDecoder: UnkeyedDecodingContainer {
 }
 
 extension Dictionary where Key == String, Value == Array<String?> {
-    public func makeRows() -> () -> [String: String?]? {
+    public func makeRows() -> () -> [String: String]? {
         var rowIndex = 0
         
-        func next() -> [String: String?]? {
+        func next() -> [String: String]? {
             defer { rowIndex += 1 }
             guard let first = self.first else { return nil }
             guard rowIndex < first.value.count else { return nil }
-            return self.mapValues { $0[rowIndex] }
+            return self.mapValues { $0[rowIndex] }.filter { $0.value != nil }.mapValues { $0! }
         }
         
         return next
