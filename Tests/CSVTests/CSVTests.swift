@@ -43,6 +43,17 @@ class CSVTests: XCTestCase {
         XCTAssertEqual(fielders[0], Fielder(playerID: "abercda01", yearID: 1871, stint: 1, teamID: "TRO", lgID: "NA", POS: "SS", G: 1, GS: nil, InnOuts: nil, PO: 1, A: 3, E: 2, DP: 0, PB: nil, WP: nil, SB: nil, CS: nil, ZR: nil))
     }
     
+    func testCSVDecodeSpeed()throws {
+        let url = URL(string: "file:/Users/calebkleveter/Development/Fielding.csv")!
+        let data = try Data(contentsOf: url)
+        
+        measure {
+            do {
+                _ = try CSVCoder.decode(data, to: Fielder.self)
+            } catch { XCTFail(error.localizedDescription) }
+        }
+    }
+    
     func testCSVColumnSeralization()throws {
         let url = URL(string: "file:/Users/calebkleveter/Development/Fielding.csv")!
         let data = try Data(contentsOf: url)
@@ -85,6 +96,7 @@ class CSVTests: XCTestCase {
         ("testSpeed", testSpeed),
         ("testRowSpeed", testRowSpeed),
         ("testCSVDecode", testCSVDecode),
+        ("testCSVDecodeSpeed", testCSVDecodeSpeed),
         ("testCSVColumnSeralization", testCSVColumnSeralization),
         ("testCSVColumnSeralizationSpeed", testCSVColumnSeralizationSpeed),
         ("testCSVEncoding", testCSVEncoding),
