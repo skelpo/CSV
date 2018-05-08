@@ -14,6 +14,7 @@ final class _CSVDecoder: Decoder {
     init(csv: [String: [Data?]], path: CodingPath = [], info: [CodingUserInfoKey : Any] = [:], stringDecoding: String.Encoding) {
         self.codingPath = path
         self.userInfo = info
+        self.stringDecoding = stringDecoding
         self.csv = csv
         self.row = nil
         self.cell = nil
@@ -22,6 +23,7 @@ final class _CSVDecoder: Decoder {
     init(row: [String: Data], path: CodingPath = [], info: [CodingUserInfoKey : Any] = [:], stringDecoding: String.Encoding) {
         self.codingPath = path
         self.userInfo = info
+        self.stringDecoding = stringDecoding
         self.csv = nil
         self.row = row
         self.cell = nil
@@ -30,6 +32,7 @@ final class _CSVDecoder: Decoder {
     init(cell: Data?, path: CodingPath = [], info: [CodingUserInfoKey : Any] = [:], stringDecoding: String.Encoding) {
         self.codingPath = path
         self.userInfo = info
+        self.stringDecoding = stringDecoding
         self.csv = nil
         self.row = nil
         self.cell = cell
