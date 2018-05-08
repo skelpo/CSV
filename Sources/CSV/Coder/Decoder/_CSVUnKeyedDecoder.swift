@@ -1,4 +1,5 @@
 import Foundation
+import Core
 
 final class _CSVUnkeyedDecoder: UnkeyedDecodingContainer {
     let codingPath: [CodingKey]
@@ -80,15 +81,15 @@ final class _CSVUnkeyedDecoder: UnkeyedDecodingContainer {
     }
 }
 
-extension Dictionary where Key == String, Value == Array<Data?> {
-    public func makeRows() -> () -> [String: Data]? {
+extension Dictionary where Key == String, Value: Collection, Value.Element: OptionalType, Value.Index == Int {
+    public func makeRows() -> () -> [String: Value.Element.WrappedType]? {
         guard let columnCount = self.first?.value.count else { return { return nil } }
         var rowIndex = 0
         
-        func next() -> [String: Data]? {
+        func next() -> [String: Value.Element.WrappedType]? {
             defer { rowIndex += 1 }
             guard rowIndex < columnCount else { return nil }
-            return self.mapValues { $0[rowIndex] }.filter { $0.value != nil }.mapValues { $0! }
+            return self.mapValues { $0[rowIndex] }.filter { $0.value.wrapped != nil }.mapValues { $0.wrapped! }
         }
         
         return next
