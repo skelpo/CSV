@@ -15,4 +15,9 @@ extension DecodingError {
         let column = path.map { $0.stringValue }.joined(separator: ".")
         return DecodingError.valueNotFound(type, Context(codingPath: path, debugDescription: "Cell in column '\(column)' not populated"))
     }
+    
+    static func dataToStringFailed(path: CodingPath, encoding: String.Encoding) -> DecodingError {
+        let column = path.map { $0.stringValue }.joined(separator: ".")
+        return DecodingError.dataCorrupted(DecodingError.Context(codingPath: path, debugDescription: "Unable to convert data to string with \(encoding) encoding at \(column)"))
+    }
 }
