@@ -19,14 +19,6 @@ final class _CSVUnkeyedDecoder: UnkeyedDecodingContainer {
         return self.currentIndex >= (self.count ?? 0)
     }
     
-    func pop()throws -> [String: String] {
-        guard let row = next() else {
-            throw DecodingError.valueNotFound([String: String?].self, DecodingError.Context(codingPath: self.codingPath, debugDescription: "No row exists at the current index"))
-        }
-        self.currentIndex += 1
-        return row
-    }
-    
     func decodeNil() throws -> Bool {
         return self.isAtEnd
     }
@@ -52,7 +44,11 @@ final class _CSVUnkeyedDecoder: UnkeyedDecodingContainer {
     }
     
     func decode<T>(_ type: T.Type) throws -> T where T : Decodable {
-        let decoder = try _CSVDecoder(row: self.pop(), path: self.codingPath)
+        defer { self.currentIndex += 1 }
+        guard let row = next() else {
+            throw DecodingError.valueNotFound([String: String?].self, DecodingError.Context(codingPath: self.codingPath, debugDescription: "No row exists at the current index"))
+        }
+        let decoder = _CSVDecoder(row: row, path: self.codingPath)
         return try T(from: decoder)
     }
     
