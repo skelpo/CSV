@@ -58,7 +58,7 @@ final class _CSVDecoder: Decoder {
                     debugDescription: "Cannot get CSV data as expected format '[String: [String?]]'")
             )
         }
-        return _CSVUnkeyedDecoder(columns: csv, path: self.codingPath)
+        return _CSVUnkeyedDecoder(columns: csv, path: self.codingPath, stringDecoding: self.stringDecoding)
     }
     
     func singleValueContainer() throws -> SingleValueDecodingContainer {
@@ -75,7 +75,7 @@ final class _CSVDecoder: Decoder {
     
     static func decode<T>(_ type: T.Type, from data: Data, stringDecoding: String.Encoding)throws -> [T] where T: Decodable {
         let csv: [String: [Data?]] = try _CSVDecoder.organize(data, stringDecoding: stringDecoding)
-        let decoder = _CSVDecoder(csv: csv)
+        let decoder = _CSVDecoder(csv: csv, stringDecoding: stringDecoding)
         return try Array<T>(from: decoder)
     }
     

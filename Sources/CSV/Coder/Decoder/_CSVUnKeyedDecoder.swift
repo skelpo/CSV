@@ -4,13 +4,16 @@ final class _CSVUnkeyedDecoder: UnkeyedDecodingContainer {
     let codingPath: [CodingKey]
     let count: Int?
     var currentIndex: Int
-    let columns: [String: [String?]]
-    let next: () -> [String: String]?
     
-    init(columns: [String: [String?]], path: CodingPath = []) {
+    let stringDecoding: String.Encoding
+    let columns: [String: [Data?]]
+    let next: () -> [String: Data]?
+    
+    init(columns: [String: [Data?]], path: CodingPath = [], stringDecoding: String.Encoding) {
         self.codingPath = path
         self.count = columns.first?.value.count
         self.currentIndex = 0
+        self.stringDecoding = stringDecoding
         self.columns = columns
         self.next = columns.makeRows()
     }
@@ -48,7 +51,7 @@ final class _CSVUnkeyedDecoder: UnkeyedDecodingContainer {
         guard let row = next() else {
             throw DecodingError.valueNotFound([String: String?].self, DecodingError.Context(codingPath: self.codingPath, debugDescription: "No row exists at the current index"))
         }
-        let decoder = _CSVDecoder(row: row, path: self.codingPath)
+        let decoder = _CSVDecoder(row: row, path: self.codingPath, stringDecoding: stringDecoding)
         return try T(from: decoder)
     }
     
@@ -77,12 +80,12 @@ final class _CSVUnkeyedDecoder: UnkeyedDecodingContainer {
     }
 }
 
-extension Dictionary where Key == String, Value == Array<String?> {
-    public func makeRows() -> () -> [String: String]? {
+extension Dictionary where Key == String, Value == Array<Data?> {
+    public func makeRows() -> () -> [String: Data]? {
         guard let columnCount = self.first?.value.count else { return { return nil } }
         var rowIndex = 0
         
-        func next() -> [String: String]? {
+        func next() -> [String: Data]? {
             defer { rowIndex += 1 }
             guard rowIndex < columnCount else { return nil }
             return self.mapValues { $0[rowIndex] }.filter { $0.value != nil }.mapValues { $0! }
