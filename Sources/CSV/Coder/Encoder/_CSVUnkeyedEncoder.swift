@@ -29,7 +29,7 @@ final class _CSVUnkeyedEncoder: UnkeyedEncodingContainer {
     func encode(_ value: Int) throws { throw self.fail(with: value) }
     
     func encode<T>(_ value: T) throws where T : Encodable {
-        let encoder = _CSVEncoder(data: DataContainer(), path: self.codingPath, boolEncoding: self.boolEncoding, stringEncoding: self.stringEncoding)
+        let encoder = _CSVEncoder(data: DataContainer(titles: self.container.data.count > 0), path: self.codingPath, boolEncoding: self.boolEncoding, stringEncoding: self.stringEncoding)
         try value.encode(to: encoder)
         self.container.data.append(contentsOf: encoder.data.data.dropLast() + [.newLine])
     }
