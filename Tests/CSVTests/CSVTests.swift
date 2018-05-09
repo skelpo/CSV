@@ -36,6 +36,17 @@ class CSVTests: XCTestCase {
         }
     }
     
+    func testCSVDataOrganizeSpeed()throws {
+        let url = URL(string: "file:/Users/calebkleveter/Development/Fielding.csv")!
+        let data = try Data(contentsOf: url)
+        
+        measure {
+            do {
+               _ = try _CSVDecoder.organize(data, stringDecoding: .utf8)
+            } catch { XCTFail(error.localizedDescription) }
+        }
+    }
+    
     func testCSVDecode()throws {
         let url = URL(string: "file:/Users/calebkleveter/Development/Fielding.csv")!
         let data = try Data(contentsOf: url)
@@ -94,6 +105,7 @@ class CSVTests: XCTestCase {
     static var allTests = [
         ("testSpeed", testSpeed),
         ("testRowSpeed", testRowSpeed),
+        ("testCSVDataOrganizeSpeed", testCSVDataOrganizeSpeed),
         ("testCSVDecode", testCSVDecode),
         ("testCSVDecodeSpeed", testCSVDecodeSpeed),
         ("testCSVColumnSeralization", testCSVColumnSeralization),
