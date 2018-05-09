@@ -89,7 +89,11 @@ extension Dictionary where Key == String, Value: Collection, Value.Element: Opti
         func next() -> [String: Value.Element.WrappedType]? {
             defer { rowIndex += 1 }
             guard rowIndex < columnCount else { return nil }
-            return self.mapValues { $0[rowIndex] }.reduce(into: [:]) { if let value = $1.value.wrapped { $0![$1.key] = value } }
+            return self.reduce(into: [:]) { row, cell in
+                if let value = cell.value[rowIndex].wrapped {
+                    row![cell.key] = value
+                }
+            }
         }
         
         return next
