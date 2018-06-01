@@ -23,29 +23,19 @@ final class _CSVUnkeyedDecoder: UnkeyedDecodingContainer {
         return self.currentIndex >= (self.count ?? 0)
     }
     
+    func error<T>(for type: T.Type) -> Error {
+        return DecodingError.typeMismatch(type, DecodingError.Context(codingPath: self.codingPath, debugDescription: "Cannot get \(T.self) value from string array"))
+    }
+    
     func decodeNil() throws -> Bool {
         return self.isAtEnd
     }
     
-    func decode(_ type: Bool.Type) throws -> Bool {
-        throw DecodingError.typeMismatch(type, DecodingError.Context(codingPath: self.codingPath, debugDescription: "Cannot get \(type) value from string array"))
-    }
-    
-    func decode(_ type: String.Type) throws -> String {
-        throw DecodingError.typeMismatch(type, DecodingError.Context(codingPath: self.codingPath, debugDescription: "Cannot get \(type) value from string array"))
-    }
-    
-    func decode(_ type: Double.Type) throws -> Double {
-        throw DecodingError.typeMismatch(type, DecodingError.Context(codingPath: self.codingPath, debugDescription: "Cannot get \(type) value from string array"))
-    }
-    
-    func decode(_ type: Float.Type) throws -> Float {
-        throw DecodingError.typeMismatch(type, DecodingError.Context(codingPath: self.codingPath, debugDescription: "Cannot get \(type) value from string array"))
-    }
-    
-    func decode(_ type: Int.Type) throws -> Int {
-        throw DecodingError.typeMismatch(type, DecodingError.Context(codingPath: self.codingPath, debugDescription: "Cannot get \(type) value from string array"))
-    }
+    func decode(_ type: Bool.Type) throws -> Bool { throw self.error(for: type) }
+    func decode(_ type: String.Type) throws -> String { throw self.error(for: type) }
+    func decode(_ type: Double.Type) throws -> Double { throw self.error(for: type) }
+    func decode(_ type: Float.Type) throws -> Float { throw self.error(for: type) }
+    func decode(_ type: Int.Type) throws -> Int { throw self.error(for: type) }
     
     func decode<T>(_ type: T.Type) throws -> T where T : Decodable {
         defer { self.currentIndex += 1 }
