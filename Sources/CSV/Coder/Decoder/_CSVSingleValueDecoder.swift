@@ -11,7 +11,9 @@ final class _CSVSingleValueDecoder: SingleValueDecodingContainer {
         self.value = value
     }
     
-    func decodeNil() -> Bool { return self.value == nil }
+    func decodeNil() -> Bool {
+        return value == nil || value == Data([.N, .forwardSlash, .A]) || value == Data([.N, .A])
+    }
     
     func decode(_ type: Bool.Type) throws -> Bool {
         guard let cell = self.value else { throw DecodingError.nilValue(type: type, at: self.codingPath) }

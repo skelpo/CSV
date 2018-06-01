@@ -18,7 +18,8 @@ final class _CSVKeyedDecoder<K>: KeyedDecodingContainerProtocol where K: CodingK
     }
     
     func decodeNil(forKey key: K) throws -> Bool {
-        return row[key.stringValue] == nil
+        let cell = row[key.stringValue]
+        return cell == nil || cell == Data([.N, .forwardSlash, .A]) || cell == Data([.N, .A])
     }
     
     func decode(_ type: Bool.Type, forKey key: K) throws -> Bool {
