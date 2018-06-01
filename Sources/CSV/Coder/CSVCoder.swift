@@ -6,6 +6,6 @@ public final class CSVCoder {
     }
     
     public static func encode<T>(_ objects: [T], boolEncoding: BoolEncodingStrategy = .toString, stringEncoding: String.Encoding = .utf32)throws -> Data where T: Encodable {
-        return try _CSVEncoder.encode(objects, boolEncoding: boolEncoding, stringEncoding: stringEncoding)
+        return try Data(_CSVEncoder.encode(objects, boolEncoding: boolEncoding, stringEncoding: stringEncoding))
     }
 }
