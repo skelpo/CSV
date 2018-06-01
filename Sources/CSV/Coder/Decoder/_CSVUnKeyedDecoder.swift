@@ -7,10 +7,10 @@ final class _CSVUnkeyedDecoder: UnkeyedDecodingContainer {
     var currentIndex: Int
     
     let stringDecoding: String.Encoding
-    let columns: [String: [Data?]]
-    let next: () -> [String: Data]?
+    let columns: [String: [Bytes?]]
+    let next: () -> [String: Bytes]?
     
-    init(columns: [String: [Data?]], path: CodingPath = [], stringDecoding: String.Encoding) {
+    init(columns: [String: [Bytes?]], path: CodingPath = [], stringDecoding: String.Encoding) {
         self.codingPath = path
         self.count = columns.first?.value.count
         self.currentIndex = 0

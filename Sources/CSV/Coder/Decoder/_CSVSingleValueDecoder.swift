@@ -3,21 +3,21 @@ import Foundation
 final class _CSVSingleValueDecoder: SingleValueDecodingContainer {
     let codingPath: [CodingKey]
     let stringDecoding: String.Encoding
-    let value: Data?
+    let value: Bytes?
     
-    init(value: Data?, path: CodingPath, stringDecoding: String.Encoding) {
+    init(value: Bytes?, path: CodingPath, stringDecoding: String.Encoding) {
         self.codingPath = path
         self.stringDecoding = stringDecoding
         self.value = value
     }
     
     func decodeNil() -> Bool {
-        return value == nil || value == Data([.N, .forwardSlash, .A]) || value == Data([.N, .A])
+        return value == nil || value == [.N, .forwardSlash, .A] || value == [.N, .A]
     }
     
     func decode(_ type: Bool.Type) throws -> Bool {
         guard let cell = self.value else { throw DecodingError.nilValue(type: type, at: self.codingPath) }
-        guard let value = String(data: cell, encoding: self.stringDecoding) else {
+        guard let value = String(data: Data(cell), encoding: self.stringDecoding) else {
             throw DecodingError.dataToStringFailed(path: self.codingPath, encoding: self.stringDecoding)
         }
         switch value.lowercased() {
@@ -29,7 +29,7 @@ final class _CSVSingleValueDecoder: SingleValueDecodingContainer {
     
     func decode(_ type: String.Type) throws -> String {
         guard let cell = self.value else { throw DecodingError.nilValue(type: type, at: self.codingPath) }
-        guard let value = String(data: cell, encoding: self.stringDecoding) else {
+        guard let value = String(data: Data(cell), encoding: self.stringDecoding) else {
             throw DecodingError.dataToStringFailed(path: self.codingPath, encoding: self.stringDecoding)
         }
         return value

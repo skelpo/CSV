@@ -4,9 +4,9 @@ final class _CSVKeyedDecoder<K>: KeyedDecodingContainerProtocol where K: CodingK
     let codingPath: [CodingKey]
     let allKeys: [K]
     let stringDecoding: String.Encoding
-    let row: [String: Data]
+    let row: [String: Bytes]
     
-    init(path: CodingPath, row: [String: Data], stringDecoding: String.Encoding) {
+    init(path: CodingPath, row: [String: Bytes], stringDecoding: String.Encoding) {
         self.codingPath = path
         self.allKeys = Array(row.keys).compactMap(K.init)
         self.stringDecoding = stringDecoding
@@ -19,12 +19,12 @@ final class _CSVKeyedDecoder<K>: KeyedDecodingContainerProtocol where K: CodingK
     
     func decodeNil(forKey key: K) throws -> Bool {
         let cell = row[key.stringValue]
-        return cell == nil || cell == Data([.N, .forwardSlash, .A]) || cell == Data([.N, .A])
+        return cell == nil || cell == [.N, .forwardSlash, .A] || cell == [.N, .A]
     }
     
     func decode(_ type: Bool.Type, forKey key: K) throws -> Bool {
         guard let cell = row[key.stringValue] else { throw DecodingError.badKey(key, at: self.codingPath + [key]) }
-        guard let value = String(data: cell, encoding: self.stringDecoding) else {
+        guard let value = String(data: Data(cell), encoding: self.stringDecoding) else {
             throw DecodingError.dataToStringFailed(path: self.codingPath + [key], encoding: self.stringDecoding)
         }
         switch value.lowercased() {
@@ -36,7 +36,7 @@ final class _CSVKeyedDecoder<K>: KeyedDecodingContainerProtocol where K: CodingK
     
     func decode(_ type: String.Type, forKey key: K) throws -> String {
         guard let cell = row[key.stringValue] else { throw DecodingError.badKey(key, at: self.codingPath + [key]) }
-        guard let value = String(data: cell, encoding: self.stringDecoding) else {
+        guard let value = String(data: Data(cell), encoding: self.stringDecoding) else {
             throw DecodingError.dataToStringFailed(path: self.codingPath + [key], encoding: self.stringDecoding)
         }
         return value

@@ -1,72 +1,79 @@
 import Foundation
 
 extension CSV {
-    public static func parse(_ data: Data) -> [String: [String?]] {
-        let rows = data.split(separator: .newLine, omittingEmptySubsequences: false)
-        var cells = rows.map({ $0.split(separator: .comma, omittingEmptySubsequences: false) })
-        let rowLength = cells[0].count - 1
+    public static func parse(_ data: Data, stringEncoding: String.Encoding = .utf8) -> [String: [String?]] {
+        let end = data.endIndex
         
-        for count in 1...cells.count - 1 {
-            if cells[cells.count - count].count < rowLength {
-                _ = cells.removeLast()
-            } else {
-                break
+        var columns: [(title: String, cells: [String?])] = []
+        var columnIndex = 0
+        var iterator = data.startIndex
+        var inQuotes = false
+        var currentCell: Bytes = []
+        
+        header: while iterator < end {
+            let byte = data[iterator]
+            switch byte {
+            case .quote: inQuotes = !inQuotes
+            case .comma, .newLine:
+                if inQuotes { currentCell.append(byte); break }
+                guard let title = String(data: Data(currentCell), encoding: stringEncoding) else { return [:] }
+                columns.append((title, []))
+                
+                currentCell = []
+                if byte == .newLine { iterator += 1; break header }
+            default: currentCell.append(byte)
             }
+            iterator += 1
         }
         
-        var columns: [String: [String?]] = [:]
-        (0...rowLength).forEach { (cellIndex) in
-            var column = cells.map({ (row) -> String? in
-                return row[cellIndex].count > 0 ? String(data: row[cellIndex], encoding: .utf8) : nil
-            })
-            let title = column.removeFirst()!
-            columns[title] = column
+        while iterator < end {
+            let byte = data[iterator]
+            switch byte {
+            case .quote: inQuotes = !inQuotes
+            case .comma:
+                if inQuotes { currentCell.append(.comma); break }
+                columns[columnIndex].cells.append(currentCell.count > 0 ? nil : String(data: Data(currentCell), encoding: stringEncoding))
+                
+                columnIndex += 1
+                currentCell = []
+            case .newLine:
+                if inQuotes { currentCell.append(.newLine); break }
+                columns[columnIndex].cells.append(currentCell.count > 0 ? nil : String(data: Data(currentCell), encoding: stringEncoding))
+                
+                columnIndex = 0
+                currentCell = []
+            default: currentCell.append(byte)
+            }
+            iterator += 1
         }
-        return columns
+        
+        var dictionaryResult: [String: [String?]] = [:]
+        var resultIterator = columns.startIndex
+        
+        while resultIterator < columns.endIndex {
+            let column = columns[resultIterator]
+            dictionaryResult[column.title] = column.cells
+            
+            resultIterator += 1
+        }
+        
+        return dictionaryResult
+        
     }
     
-    public static func parse(_ data: Data) -> [String: Column] {
-        let rows = data.split(separator: .newLine, omittingEmptySubsequences: false)
-        var cells = rows.map({ $0.split(separator: .comma, omittingEmptySubsequences: false) })
-        let rowLength = cells[0].count - 1
+    public static func parse(_ data: Data, stringEncoding: String.Encoding = .utf8) -> [String: Column] {
+        let elements: [String: [String?]] = self.parse(data, stringEncoding: stringEncoding)
         
-        for count in 1...cells.count - 1 {
-            if cells[cells.count - count].count < rowLength {
-                _ = cells.removeLast()
-            } else {
-                break
-            }
+        return elements.reduce(into: [:]) { columns, element in
+            columns[element.key] = Column(header: element.key, fields: element.value)
         }
-        
-        var columns: [String: Column] = [:]
-        (0...rowLength).forEach { (cellIndex) in
-            var column = cells.map({ (row) -> String? in
-                return row[cellIndex].count > 0 ? String(data: row[cellIndex], encoding: .utf8) : nil
-            })
-            let title = column.removeFirst()!
-            columns[title] = CSV.Column(header: title, fields: column)
-        }
-        return columns
     }
     
-    public static func parse(_ data: Data) -> [Column] {
-        let rows = data.split(separator: .newLine, omittingEmptySubsequences: false)
-        var cells = rows.map({ $0.split(separator: .comma, omittingEmptySubsequences: false) })
-        let rowLength = cells[0].count - 1
+    public static func parse(_ data: Data, stringEncoding: String.Encoding = .utf8) -> [Column] {
+        let elements: [String: [String?]] = self.parse(data, stringEncoding: stringEncoding)
         
-        for count in 1...cells.count - 1 {
-            if cells[cells.count - count].count < rowLength {
-                _ = cells.removeLast()
-            } else {
-                break
-            }
-        }
-        
-        return (0...rowLength).map { (cellIndex) -> CSV.Column in
-            var column = cells.map({ (row) -> String? in
-                return row[cellIndex].count > 0 ? String(data: row[cellIndex], encoding: .utf8) : nil
-            })
-            return CSV.Column(header: column.removeFirst()!, fields: column)
+        return elements.reduce(into: []) { columns, element in
+            columns.append(Column(header: element.key, fields: element.value))
         }
     }
 }

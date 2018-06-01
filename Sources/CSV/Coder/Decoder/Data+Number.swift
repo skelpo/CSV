@@ -1,6 +1,6 @@
 import Foundation
 
-extension Data {
+extension Array where Element == UInt8 {
     var int: Int? {
         let count: Int = self.endIndex
         var result: Int = 0

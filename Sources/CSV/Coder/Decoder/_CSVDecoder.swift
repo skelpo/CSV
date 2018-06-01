@@ -7,11 +7,11 @@ final class _CSVDecoder: Decoder {
     let userInfo: [CodingUserInfoKey : Any]
     let stringDecoding: String.Encoding
     
-    let csv: [String: [Data?]]?
-    let row: [String: Data]?
-    let cell: Data?
+    let csv: [String: [Bytes?]]?
+    let row: [String: Bytes]?
+    let cell: Bytes?
     
-    init(csv: [String: [Data?]], path: CodingPath = [], info: [CodingUserInfoKey : Any] = [:], stringDecoding: String.Encoding) {
+    init(csv: [String: [Bytes?]], path: CodingPath = [], info: [CodingUserInfoKey : Any] = [:], stringDecoding: String.Encoding) {
         self.codingPath = path
         self.userInfo = info
         self.stringDecoding = stringDecoding
@@ -20,7 +20,7 @@ final class _CSVDecoder: Decoder {
         self.cell = nil
     }
 
-    init(row: [String: Data], path: CodingPath = [], info: [CodingUserInfoKey : Any] = [:], stringDecoding: String.Encoding) {
+    init(row: [String: Bytes], path: CodingPath = [], info: [CodingUserInfoKey : Any] = [:], stringDecoding: String.Encoding) {
         self.codingPath = path
         self.userInfo = info
         self.stringDecoding = stringDecoding
@@ -29,7 +29,7 @@ final class _CSVDecoder: Decoder {
         self.cell = nil
     }
     
-    init(cell: Data?, path: CodingPath = [], info: [CodingUserInfoKey : Any] = [:], stringDecoding: String.Encoding) {
+    init(cell: Bytes?, path: CodingPath = [], info: [CodingUserInfoKey : Any] = [:], stringDecoding: String.Encoding) {
         self.codingPath = path
         self.userInfo = info
         self.stringDecoding = stringDecoding
@@ -77,34 +77,69 @@ final class _CSVDecoder: Decoder {
     }
     
     static func decode<T>(_ type: T.Type, from data: Data, stringDecoding: String.Encoding)throws -> [T] where T: Decodable {
-        let csv: [String: [Data?]] = try _CSVDecoder.organize(data, stringDecoding: stringDecoding)
+        let csv: [String: [Bytes?]] = try _CSVDecoder.organize(data, stringDecoding: stringDecoding)
         let decoder = _CSVDecoder(csv: csv, stringDecoding: stringDecoding)
         return try Array<T>(from: decoder)
     }
     
-    static func organize(_ data: Data, stringDecoding: String.Encoding)throws -> [String: [Data?]] {
-        let rows = data.split(separator: .newLine, omittingEmptySubsequences: false)
-        var cells = rows.map({ $0.split(separator: .comma, omittingEmptySubsequences: false) })
-        let rowLength = cells[0].count - 1
+    static func organize(_ data: Data, stringDecoding: String.Encoding)throws -> [String: [Bytes?]] {
+        let end = data.endIndex
         
-        for count in 1...cells.count - 1 {
-            if cells[cells.count - count].count < rowLength {
-                _ = cells.removeLast()
-            } else {
-                break
+        var columns: [(title: String, cells: [Bytes?])] = []
+        var columnIndex = 0
+        var iterator = data.startIndex
+        var inQuotes = false
+        var currentCell: Bytes = []
+        
+        header: while iterator < end {
+            let byte = data[iterator]
+            switch byte {
+            case .quote: inQuotes = !inQuotes
+            case .comma, .newLine:
+                if inQuotes { currentCell.append(byte); break }
+                guard let title = String(data: Data(currentCell), encoding: stringDecoding) else {
+                    fatalError()
+                }
+                columns.append((title, []))
+                
+                currentCell = []
+                if byte == .newLine { iterator += 1; break header }
+            default: currentCell.append(byte)
             }
+            iterator += 1
         }
         
-        var columns: [String: [Data?]] = [:]
-        try (0...rowLength).forEach { (cellIndex) in
-            var column = cells.map({ (row) -> Data? in
-                return row[cellIndex].count > 0 ? row[cellIndex] : nil
-            })
-            guard let title = String(data: column.removeFirst()!, encoding: stringDecoding) else {
-                throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: [], debugDescription: "Found colunm title with \(stringDecoding) incompatible character"))
+        while iterator < end {
+            let byte = data[iterator]
+            switch byte {
+            case .quote: inQuotes = !inQuotes
+            case .comma:
+                if inQuotes { currentCell.append(.comma); break }
+                columns[columnIndex].cells.append(currentCell.count > 0 ? nil : currentCell)
+                
+                columnIndex += 1
+                currentCell = []
+            case .newLine:
+                if inQuotes { currentCell.append(.newLine); break }
+                columns[columnIndex].cells.append(currentCell.count > 0 ? nil : currentCell)
+            
+                columnIndex = 0
+                currentCell = []
+            default: currentCell.append(byte)
             }
-            columns[title] = column
+            iterator += 1
         }
-        return columns
+        
+        var dictionaryResult: [String: [Bytes?]] = [:]
+        var resultIterator = columns.startIndex
+        
+        while resultIterator < columns.endIndex {
+            let column = columns[resultIterator]
+            dictionaryResult[column.title] = column.cells
+            
+            resultIterator += 1
+        }
+        
+        return dictionaryResult
     }
 }
