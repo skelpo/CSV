@@ -13,7 +13,9 @@ final class _CSVSingleValueEncoder: SingleValueEncodingContainer {
         self.stringEncoding = stringEncoding
     }
     
-    func encodeNil() throws {}
+    func encodeNil() throws {
+        self.container.data = Data()
+    }
     
     func encode(_ value: Bool) throws {
         self.container.data = boolEncoding.convert(value)
