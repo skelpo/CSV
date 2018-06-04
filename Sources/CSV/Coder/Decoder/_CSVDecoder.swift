@@ -1,4 +1,5 @@
 import Foundation
+import Core
 
 public typealias CodingPath = [CodingKey]
 
@@ -98,7 +99,11 @@ final class _CSVDecoder: Decoder {
             case .comma, .newLine:
                 if inQuotes { currentCell.append(byte); break }
                 guard let title = String(data: Data(currentCell), encoding: stringDecoding) else {
-                    fatalError()
+                    throw CoreError(
+                        identifier: "dataToString",
+                        reason: "Converting byte array to string failed",
+                        possibleCauses: ["This could be due to an incorrect string encoding type"]
+                    )
                 }
                 columns.append((title, []))
                 
