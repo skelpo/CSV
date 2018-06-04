@@ -120,13 +120,13 @@ final class _CSVDecoder: Decoder {
             case .quote: inQuotes = !inQuotes
             case .comma:
                 if inQuotes { currentCell.append(.comma); break }
-                columns[columnIndex].cells.append(currentCell.count > 0 ? nil : currentCell)
+                columns[columnIndex].cells.append(currentCell.count > 0 ? currentCell : nil)
                 
                 columnIndex += 1
                 currentCell = []
             case .newLine:
                 if inQuotes { currentCell.append(.newLine); break }
-                columns[columnIndex].cells.append(currentCell.count > 0 ? nil : currentCell)
+                columns[columnIndex].cells.append(currentCell.count > 0 ? currentCell: nil)
             
                 columnIndex = 0
                 currentCell = []
