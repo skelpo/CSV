@@ -98,14 +98,7 @@ final class _CSVDecoder: Decoder {
             case .quote: inQuotes = !inQuotes
             case .comma, .newLine:
                 if inQuotes { currentCell.append(byte); break }
-                guard let title = String(data: Data(currentCell), encoding: stringDecoding) else {
-                    throw CoreError(
-                        identifier: "dataToString",
-                        reason: "Converting byte array to string failed",
-                        possibleCauses: ["This could be due to an incorrect string encoding type"]
-                    )
-                }
-                columns.append((title, []))
+                try columns.append((String(currentCell), []))
                 
                 currentCell = []
                 if byte == .newLine { iterator += 1; break header }
@@ -146,5 +139,14 @@ final class _CSVDecoder: Decoder {
         }
         
         return dictionaryResult
+    }
+}
+
+extension String {
+    init(_ bytes: Bytes)throws {
+        guard let string = String(bytes: bytes, encoding: .utf8) else {
+            throw CoreError(identifier: "dataToString", reason: "Converting byte array to string using UTF-8 encoding failed")
+        }
+        self = string
     }
 }

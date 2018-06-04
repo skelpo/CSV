@@ -24,10 +24,8 @@ final class _CSVKeyedDecoder<K>: KeyedDecodingContainerProtocol where K: CodingK
     
     func decode(_ type: Bool.Type, forKey key: K) throws -> Bool {
         guard let cell = row[key.stringValue] else { throw DecodingError.badKey(key, at: self.codingPath + [key]) }
-        guard let value = String(data: Data(cell), encoding: self.stringDecoding) else {
-            throw DecodingError.dataToStringFailed(path: self.codingPath + [key], encoding: self.stringDecoding)
-        }
-        switch value.lowercased() {
+        let value = try String(cell).lowercased()
+        switch value {
         case "true", "yes", "t", "y", "1": return true
         case "false", "no", "f", "n", "0": return false
         default: throw DecodingError.unableToExtract(type: type, at: self.codingPath + [key])
@@ -36,10 +34,7 @@ final class _CSVKeyedDecoder<K>: KeyedDecodingContainerProtocol where K: CodingK
     
     func decode(_ type: String.Type, forKey key: K) throws -> String {
         guard let cell = row[key.stringValue] else { throw DecodingError.badKey(key, at: self.codingPath + [key]) }
-        guard let value = String(data: Data(cell), encoding: self.stringDecoding) else {
-            throw DecodingError.dataToStringFailed(path: self.codingPath + [key], encoding: self.stringDecoding)
-        }
-        return value
+        return try String(cell)
     }
     
     func decode(_ type: Double.Type, forKey key: K) throws -> Double {

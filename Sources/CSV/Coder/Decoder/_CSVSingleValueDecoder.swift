@@ -17,10 +17,8 @@ final class _CSVSingleValueDecoder: SingleValueDecodingContainer {
     
     func decode(_ type: Bool.Type) throws -> Bool {
         guard let cell = self.value else { throw DecodingError.nilValue(type: type, at: self.codingPath) }
-        guard let value = String(data: Data(cell), encoding: self.stringDecoding) else {
-            throw DecodingError.dataToStringFailed(path: self.codingPath, encoding: self.stringDecoding)
-        }
-        switch value.lowercased() {
+        let value = try String(cell).lowercased()
+        switch value {
         case "true", "yes", "t", "y", "1": return true
         case "false", "no", "f", "n", "0": return false
         default: throw DecodingError.unableToExtract(type: type, at: self.codingPath)
@@ -29,10 +27,7 @@ final class _CSVSingleValueDecoder: SingleValueDecodingContainer {
     
     func decode(_ type: String.Type) throws -> String {
         guard let cell = self.value else { throw DecodingError.nilValue(type: type, at: self.codingPath) }
-        guard let value = String(data: Data(cell), encoding: self.stringDecoding) else {
-            throw DecodingError.dataToStringFailed(path: self.codingPath, encoding: self.stringDecoding)
-        }
-        return value
+        return try String(cell)
     }
     
     func decode(_ type: Double.Type) throws -> Double {
