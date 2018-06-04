@@ -28,6 +28,7 @@ extension Array where Element == UInt8 {
             case .seven: result = (result &* 10) &+ 7
             case .eight: result = (result &* 10) &+ 8
             case .nine: result = (result &* 10) &+ 9
+            case .comma: break
             default: return nil
             }
             
@@ -66,6 +67,7 @@ extension Array where Element == UInt8 {
             case .eight: result = (result &* 10) &+ 8
             case .nine: result = (result &* 10) &+ 9
             case .period: decimal = pow(10, Float(count - 1 - iterator))
+            case .comma: break
             default: return nil
             }
             
@@ -104,6 +106,7 @@ extension Array where Element == UInt8 {
             case .eight: result = (result &* 10) &+ 8
             case .nine: result = (result &* 10) &+ 9
             case .period: decimal = pow(10, Double(count - 1 - iterator))
+            case .comma: break
             default: return nil
             }
             
