@@ -1,5 +1,4 @@
 import Foundation
-import Core
 
 public typealias CodingPath = [CodingKey]
 
@@ -139,14 +138,5 @@ final class _CSVDecoder: Decoder {
         }
         
         return dictionaryResult
-    }
-}
-
-extension String {
-    init(_ bytes: Bytes)throws {
-        guard let string = String(bytes: bytes, encoding: .utf8) else {
-            throw CoreError(identifier: "dataToString", reason: "Converting byte array to string using UTF-8 encoding failed")
-        }
-        self = string
     }
 }

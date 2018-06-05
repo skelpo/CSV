@@ -14,9 +14,3 @@ public enum BoolEncodingStrategy {
         }
     }
 }
-
-extension CustomStringConvertible {
-    var bytes: Bytes {
-        return Array(self.description.utf8)
-    }
-}
