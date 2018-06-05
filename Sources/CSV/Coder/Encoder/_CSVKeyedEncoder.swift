@@ -20,7 +20,7 @@ final class _CSVKeyedEncoder<K>: KeyedEncodingContainerProtocol where K: CodingK
             let lines = self.container.data.split(separator: .newLine)
             let headers = lines.first == nil ? [] : lines.first! + [.comma]
             let body = lines.last == nil ? [] : lines.last! + [.comma]
-            try self.container.data = (headers + key.stringValue.data) + [.newLine] + (body + converter())
+            try self.container.data = (headers + key.stringValue.bytes) + [.newLine] + (body + converter())
         }
     }
     
