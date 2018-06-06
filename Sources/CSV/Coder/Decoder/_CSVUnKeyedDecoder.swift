@@ -5,16 +5,14 @@ final class _CSVUnkeyedDecoder: UnkeyedDecodingContainer {
     let codingPath: [CodingKey]
     let count: Int?
     var currentIndex: Int
+
+    let decoder: _CSVDecoder
     
-    let columns: [String: [Bytes?]]
-    let next: () -> [String: Bytes]?
-    
-    init(columns: [String: [Bytes?]], path: CodingPath = []) {
+    init(decoder: _CSVDecoder, path: CodingPath = []) {
         self.codingPath = path
-        self.count = columns.first?.value.count
+        self.count = decoder.container.columns.first?.value.count
         self.currentIndex = 0
-        self.columns = columns
-        self.next = columns.makeRows()
+        self.decoder = decoder
     }
     
     var isAtEnd: Bool {
@@ -37,11 +35,8 @@ final class _CSVUnkeyedDecoder: UnkeyedDecodingContainer {
     
     func decode<T>(_ type: T.Type) throws -> T where T : Decodable {
         defer { self.currentIndex += 1 }
-        guard let row = next() else {
-            throw DecodingError.valueNotFound([String: String?].self, DecodingError.Context(codingPath: self.codingPath, debugDescription: "No row exists at the current index"))
-        }
-        let decoder = _CSVDecoder(row: row, path: self.codingPath)
-        return try T(from: decoder)
+        self.decoder.container.incremetRow()
+        return try T(from: self.decoder)
     }
     
     func nestedContainer<NestedKey>(keyedBy type: NestedKey.Type) throws -> KeyedDecodingContainer<NestedKey> where NestedKey : CodingKey {
@@ -66,24 +61,5 @@ final class _CSVUnkeyedDecoder: UnkeyedDecodingContainer {
     
     func superDecoder() throws -> Decoder {
         throw DecodingError.valueNotFound(Decoder.self, DecodingError.Context(codingPath: self.codingPath, debugDescription: "Cannot create super decoder from CSV Unkeyed Decoder"))
-    }
-}
-
-extension Dictionary where Key == String, Value: Collection, Value.Element: OptionalType, Value.Index == Int {
-    public func makeRows() -> () -> [String: Value.Element.WrappedType]? {
-        guard let columnCount = self.first?.value.count else { return { return nil } }
-        var rowIndex = 0
-        
-        func next() -> [String: Value.Element.WrappedType]? {
-            defer { rowIndex += 1 }
-            guard rowIndex < columnCount else { return nil }
-            return self.reduce(into: [:]) { row, cell in
-                if let value = cell.value[rowIndex].wrapped {
-                    row![cell.key] = value
-                }
-            }
-        }
-        
-        return next
     }
 }

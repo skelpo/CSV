@@ -3,39 +3,19 @@ import Foundation
 public typealias CodingPath = [CodingKey]
 
 final class _CSVDecoder: Decoder {
-    let codingPath: [CodingKey]
     let userInfo: [CodingUserInfoKey : Any]
+    var codingPath: [CodingKey]
     
-    let csv: [String: [Bytes?]]?
-    let row: [String: Bytes]?
-    let cell: Bytes?
+    let container: DecoderDataContainer
     
     init(csv: [String: [Bytes?]], path: CodingPath = [], info: [CodingUserInfoKey : Any] = [:]) {
         self.codingPath = path
         self.userInfo = info
-        self.csv = csv
-        self.row = nil
-        self.cell = nil
-    }
-
-    init(row: [String: Bytes], path: CodingPath = [], info: [CodingUserInfoKey : Any] = [:]) {
-        self.codingPath = path
-        self.userInfo = info
-        self.csv = nil
-        self.row = row
-        self.cell = nil
-    }
-    
-    init(cell: Bytes?, path: CodingPath = [], info: [CodingUserInfoKey : Any] = [:]) {
-        self.codingPath = path
-        self.userInfo = info
-        self.csv = nil
-        self.row = nil
-        self.cell = cell
+        self.container = DecoderDataContainer(columns: csv)
     }
     
     func container<Key>(keyedBy type: Key.Type) throws -> KeyedDecodingContainer<Key> where Key : CodingKey {
-        guard let row = self.row else {
+        guard self.container.row != nil else {
             throw DecodingError.typeMismatch(
                 [String: String?].self,
                 DecodingError.Context(
@@ -44,32 +24,16 @@ final class _CSVDecoder: Decoder {
                 )
             )
         }
-        let container = _CSVKeyedDecoder<Key>(path: self.codingPath, row: row)
+        let container = _CSVKeyedDecoder<Key>(decoder: self)
         return KeyedDecodingContainer(container)
     }
     
     func unkeyedContainer() throws -> UnkeyedDecodingContainer {
-        guard let csv = self.csv else {
-            throw DecodingError.typeMismatch(
-                [String: [String?]].self,
-                DecodingError.Context(
-                    codingPath: self.codingPath,
-                    debugDescription: "Cannot get CSV data as expected format '[String: [String?]]'")
-            )
-        }
-        return _CSVUnkeyedDecoder(columns: csv, path: self.codingPath)
+        return _CSVUnkeyedDecoder(decoder: self, path: self.codingPath)
     }
     
     func singleValueContainer() throws -> SingleValueDecodingContainer {
-        guard let cell = self.cell else {
-            throw DecodingError.typeMismatch(
-                String?.self,
-                DecodingError.Context(
-                    codingPath: self.codingPath,
-                    debugDescription: "Cannot get CSV cell as expected format 'String?'")
-            )
-        }
-        return _CSVSingleValueDecoder(value: cell, path: self.codingPath)
+        return _CSVSingleValueDecoder(decoder: self)
     }
     
     static func decode<T>(_ type: T.Type, from data: Data)throws -> [T] where T: Decodable {

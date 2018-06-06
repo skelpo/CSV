@@ -3,25 +3,33 @@ import Foundation
 final class _CSVKeyedDecoder<K>: KeyedDecodingContainerProtocol where K: CodingKey {
     let codingPath: [CodingKey]
     let allKeys: [K]
-    let row: [String: Bytes]
     
-    init(path: CodingPath, row: [String: Bytes]) {
-        self.codingPath = path
-        self.allKeys = Array(row.keys).compactMap(K.init)
-        self.row = row
+    let decoder: _CSVDecoder
+    
+    init(decoder: _CSVDecoder) {
+        self.codingPath = []
+        self.decoder = decoder
+        
+        if let allKeys = decoder.container.allKeys as? [K] {
+            self.allKeys = allKeys
+        } else {
+            let keys = Array(decoder.container.row.keys).compactMap(K.init)
+            self.allKeys = keys
+            self.decoder.container.allKeys = keys
+        }
     }
     
     func contains(_ key: K) -> Bool {
-        return row[key.stringValue] != nil
+        return self.decoder.container.row[key.stringValue] != nil
     }
     
     func decodeNil(forKey key: K) throws -> Bool {
-        let cell = row[key.stringValue]
+        let cell = self.decoder.container.row[key.stringValue]
         return cell == nil || cell == [.N, .forwardSlash, .A] || cell == [.N, .A]
     }
     
     func decode(_ type: Bool.Type, forKey key: K) throws -> Bool {
-        let cell = try row.value(for: key)
+        let cell = try self.decoder.container.row.value(for: key)
         let value = try String(cell).lowercased()
         switch value {
         case "true", "yes", "t", "y", "1": return true
@@ -31,32 +39,33 @@ final class _CSVKeyedDecoder<K>: KeyedDecodingContainerProtocol where K: CodingK
     }
     
     func decode(_ type: String.Type, forKey key: K) throws -> String {
-        let cell = try row.value(for: key)
+        let cell = try self.decoder.container.row.value(for: key)
         return try String(cell)
     }
     
     func decode(_ type: Double.Type, forKey key: K) throws -> Double {
-        let value = try row.value(for: key)
+        let value = try self.decoder.container.row.value(for: key)
         guard let double = value.double else { throw DecodingError.unableToExtract(type: type, at: self.codingPath + [key]) }
         return double
     }
     
     func decode(_ type: Float.Type, forKey key: K) throws -> Float {
-        let value = try row.value(for: key)
+        let value = try self.decoder.container.row.value(for: key)
         guard let float = value.float else { throw DecodingError.unableToExtract(type: type, at: self.codingPath + [key]) }
         return float
     }
     
     func decode(_ type: Int.Type, forKey key: K) throws -> Int {
-        let value = try row.value(for: key)
+        let value = try self.decoder.container.row.value(for: key)
         guard let int = value.int else { throw DecodingError.unableToExtract(type: type, at: self.codingPath + [key]) }
         return int
     }
     
     func decode<T>(_ type: T.Type, forKey key: K) throws -> T where T : Decodable {
-        let cell = try row.value(for: key)
-        let decoder = _CSVDecoder(cell: cell, path: self.codingPath + [key])
-        return try T(from: decoder)
+        let cell = try self.decoder.container.row.value(for: key)
+        self.decoder.container.cell = cell
+        self.decoder.codingPath += [key]
+        return try T(from: self.decoder)
     }
     
     func nestedContainer<NestedKey>(keyedBy type: NestedKey.Type, forKey key: K) throws -> KeyedDecodingContainer<NestedKey> where NestedKey : CodingKey {
