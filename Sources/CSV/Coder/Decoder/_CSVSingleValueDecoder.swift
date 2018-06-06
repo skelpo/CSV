@@ -2,12 +2,10 @@ import Foundation
 
 final class _CSVSingleValueDecoder: SingleValueDecodingContainer {
     let codingPath: [CodingKey]
-    let stringDecoding: String.Encoding
     let value: Bytes?
     
-    init(value: Bytes?, path: CodingPath, stringDecoding: String.Encoding) {
+    init(value: Bytes?, path: CodingPath) {
         self.codingPath = path
-        self.stringDecoding = stringDecoding
         self.value = value
     }
     

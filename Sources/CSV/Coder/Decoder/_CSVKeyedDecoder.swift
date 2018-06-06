@@ -3,13 +3,11 @@ import Foundation
 final class _CSVKeyedDecoder<K>: KeyedDecodingContainerProtocol where K: CodingKey {
     let codingPath: [CodingKey]
     let allKeys: [K]
-    let stringDecoding: String.Encoding
     let row: [String: Bytes]
     
-    init(path: CodingPath, row: [String: Bytes], stringDecoding: String.Encoding) {
+    init(path: CodingPath, row: [String: Bytes]) {
         self.codingPath = path
         self.allKeys = Array(row.keys).compactMap(K.init)
-        self.stringDecoding = stringDecoding
         self.row = row
     }
     
@@ -57,7 +55,7 @@ final class _CSVKeyedDecoder<K>: KeyedDecodingContainerProtocol where K: CodingK
     
     func decode<T>(_ type: T.Type, forKey key: K) throws -> T where T : Decodable {
         let cell = try row.value(for: key)
-        let decoder = _CSVDecoder(cell: cell, path: self.codingPath + [key], stringDecoding: self.stringDecoding)
+        let decoder = _CSVDecoder(cell: cell, path: self.codingPath + [key])
         return try T(from: decoder)
     }
     

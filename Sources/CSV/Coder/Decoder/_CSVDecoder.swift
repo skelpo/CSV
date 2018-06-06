@@ -5,34 +5,30 @@ public typealias CodingPath = [CodingKey]
 final class _CSVDecoder: Decoder {
     let codingPath: [CodingKey]
     let userInfo: [CodingUserInfoKey : Any]
-    let stringDecoding: String.Encoding
     
     let csv: [String: [Bytes?]]?
     let row: [String: Bytes]?
     let cell: Bytes?
     
-    init(csv: [String: [Bytes?]], path: CodingPath = [], info: [CodingUserInfoKey : Any] = [:], stringDecoding: String.Encoding) {
+    init(csv: [String: [Bytes?]], path: CodingPath = [], info: [CodingUserInfoKey : Any] = [:]) {
         self.codingPath = path
         self.userInfo = info
-        self.stringDecoding = stringDecoding
         self.csv = csv
         self.row = nil
         self.cell = nil
     }
 
-    init(row: [String: Bytes], path: CodingPath = [], info: [CodingUserInfoKey : Any] = [:], stringDecoding: String.Encoding) {
+    init(row: [String: Bytes], path: CodingPath = [], info: [CodingUserInfoKey : Any] = [:]) {
         self.codingPath = path
         self.userInfo = info
-        self.stringDecoding = stringDecoding
         self.csv = nil
         self.row = row
         self.cell = nil
     }
     
-    init(cell: Bytes?, path: CodingPath = [], info: [CodingUserInfoKey : Any] = [:], stringDecoding: String.Encoding) {
+    init(cell: Bytes?, path: CodingPath = [], info: [CodingUserInfoKey : Any] = [:]) {
         self.codingPath = path
         self.userInfo = info
-        self.stringDecoding = stringDecoding
         self.csv = nil
         self.row = nil
         self.cell = cell
@@ -48,7 +44,7 @@ final class _CSVDecoder: Decoder {
                 )
             )
         }
-        let container = _CSVKeyedDecoder<Key>(path: self.codingPath, row: row, stringDecoding: self.stringDecoding)
+        let container = _CSVKeyedDecoder<Key>(path: self.codingPath, row: row)
         return KeyedDecodingContainer(container)
     }
     
@@ -61,7 +57,7 @@ final class _CSVDecoder: Decoder {
                     debugDescription: "Cannot get CSV data as expected format '[String: [String?]]'")
             )
         }
-        return _CSVUnkeyedDecoder(columns: csv, path: self.codingPath, stringDecoding: self.stringDecoding)
+        return _CSVUnkeyedDecoder(columns: csv, path: self.codingPath)
     }
     
     func singleValueContainer() throws -> SingleValueDecodingContainer {
@@ -73,16 +69,16 @@ final class _CSVDecoder: Decoder {
                     debugDescription: "Cannot get CSV cell as expected format 'String?'")
             )
         }
-        return _CSVSingleValueDecoder(value: cell, path: self.codingPath, stringDecoding: self.stringDecoding)
+        return _CSVSingleValueDecoder(value: cell, path: self.codingPath)
     }
     
-    static func decode<T>(_ type: T.Type, from data: Data, stringDecoding: String.Encoding)throws -> [T] where T: Decodable {
-        let csv: [String: [Bytes?]] = try _CSVDecoder.organize(data, stringDecoding: stringDecoding)
-        let decoder = _CSVDecoder(csv: csv, stringDecoding: stringDecoding)
+    static func decode<T>(_ type: T.Type, from data: Data)throws -> [T] where T: Decodable {
+        let csv: [String: [Bytes?]] = try _CSVDecoder.organize(data)
+        let decoder = _CSVDecoder(csv: csv)
         return try Array<T>(from: decoder)
     }
     
-    static func organize(_ data: Data, stringDecoding: String.Encoding)throws -> [String: [Bytes?]] {
+    static func organize(_ data: Data)throws -> [String: [Bytes?]] {
         let end = data.endIndex
         
         var columns: [(title: String, cells: [Bytes?])] = []

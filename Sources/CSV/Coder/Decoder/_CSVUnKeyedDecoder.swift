@@ -6,15 +6,13 @@ final class _CSVUnkeyedDecoder: UnkeyedDecodingContainer {
     let count: Int?
     var currentIndex: Int
     
-    let stringDecoding: String.Encoding
     let columns: [String: [Bytes?]]
     let next: () -> [String: Bytes]?
     
-    init(columns: [String: [Bytes?]], path: CodingPath = [], stringDecoding: String.Encoding) {
+    init(columns: [String: [Bytes?]], path: CodingPath = []) {
         self.codingPath = path
         self.count = columns.first?.value.count
         self.currentIndex = 0
-        self.stringDecoding = stringDecoding
         self.columns = columns
         self.next = columns.makeRows()
     }
@@ -42,7 +40,7 @@ final class _CSVUnkeyedDecoder: UnkeyedDecodingContainer {
         guard let row = next() else {
             throw DecodingError.valueNotFound([String: String?].self, DecodingError.Context(codingPath: self.codingPath, debugDescription: "No row exists at the current index"))
         }
-        let decoder = _CSVDecoder(row: row, path: self.codingPath, stringDecoding: stringDecoding)
+        let decoder = _CSVDecoder(row: row, path: self.codingPath)
         return try T(from: decoder)
     }
     
