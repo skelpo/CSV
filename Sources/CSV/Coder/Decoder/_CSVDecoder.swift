@@ -1,4 +1,6 @@
 import Foundation
+import NIO
+import NIOConcurrencyHelpers
 
 public typealias CodingPath = [CodingKey]
 
@@ -55,12 +57,20 @@ final class _CSVDecoder: Decoder {
             let byte = data[iterator]
             switch byte {
             case .quote: inQuotes = !inQuotes
-            case .comma, .newLine:
+            case .comma:
                 if inQuotes { currentCell.append(byte); break }
                 try columns.append((String(currentCell), []))
                 
                 currentCell = []
-                if byte == .newLine { iterator += 1; break header }
+            case .newLine, .carriageReturn:
+                if inQuotes { currentCell.append(byte); break }
+                try columns.append((String(currentCell), []))
+                
+                if byte == .newLine { iterator += 1 }
+                else if byte == .carriageReturn { iterator += 2 }
+                currentCell = []
+                
+                break header
             default: currentCell.append(byte)
             }
             iterator += 1
@@ -76,7 +86,7 @@ final class _CSVDecoder: Decoder {
                 
                 columnIndex += 1
                 currentCell = []
-            case .newLine:
+            case .newLine, .carriageReturn:
                 if inQuotes { currentCell.append(.newLine); break }
                 columns[columnIndex].cells.append(currentCell.count > 0 ? currentCell: nil)
             
@@ -84,7 +94,11 @@ final class _CSVDecoder: Decoder {
                 currentCell = []
             default: currentCell.append(byte)
             }
-            iterator += 1
+            
+            switch byte {
+            case .carriageReturn: iterator += 2
+            default: iterator += 1
+            }
         }
         
         var dictionaryResult: [String: [Bytes?]] = [:]
