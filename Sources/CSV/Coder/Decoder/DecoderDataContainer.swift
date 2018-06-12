@@ -43,6 +43,10 @@ final class DecoderDataContainer {
         }
     }
     
+    func cell(for key: CodingKey) {
+        self.cell = row[key.stringValue]
+    }
+    
     func incremetRow() {
         guard self.dataIndex < data.endIndex else {
             self.row = nil

@@ -62,8 +62,7 @@ final class _CSVKeyedDecoder<K>: KeyedDecodingContainerProtocol where K: CodingK
     }
     
     func decode<T>(_ type: T.Type, forKey key: K) throws -> T where T : Decodable {
-        let cell = try self.decoder.container.row.value(for: key)
-        self.decoder.container.cell = cell
+        self.decoder.container.cell(for: key)
         self.decoder.codingPath += [key]
         return try T(from: self.decoder)
     }
