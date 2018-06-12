@@ -10,10 +10,10 @@ final class _CSVDecoder: Decoder {
     
     let container: DecoderDataContainer
     
-    init(csv: [String: [Bytes?]], path: CodingPath = [], info: [CodingUserInfoKey : Any] = [:]) {
+    init(csv: [UInt8], path: CodingPath = [], info: [CodingUserInfoKey : Any] = [:])throws {
         self.codingPath = path
         self.userInfo = info
-        self.container = DecoderDataContainer(columns: csv)
+        self.container = try DecoderDataContainer(data: csv)
     }
     
     func container<Key>(keyedBy type: Key.Type) throws -> KeyedDecodingContainer<Key> where Key : CodingKey {
@@ -39,78 +39,7 @@ final class _CSVDecoder: Decoder {
     }
     
     static func decode<T>(_ type: T.Type, from data: Data)throws -> [T] where T: Decodable {
-        let csv: [String: [Bytes?]] = try _CSVDecoder.organize(data)
-        let decoder = _CSVDecoder(csv: csv)
+        let decoder = try _CSVDecoder(csv: Array(data))
         return try Array<T>(from: decoder)
-    }
-    
-    static func organize(_ data: Data)throws -> [String: [Bytes?]] {
-        let end = data.endIndex
-        
-        var columns: [(title: String, cells: [Bytes?])] = []
-        var columnIndex = 0
-        var iterator = data.startIndex
-        var inQuotes = false
-        var currentCell: Bytes = []
-        
-        header: while iterator < end {
-            let byte = data[iterator]
-            switch byte {
-            case .quote: inQuotes = !inQuotes
-            case .comma:
-                if inQuotes { currentCell.append(byte); break }
-                try columns.append((String(currentCell), []))
-                
-                currentCell = []
-            case .newLine, .carriageReturn:
-                if inQuotes { currentCell.append(byte); break }
-                try columns.append((String(currentCell), []))
-                
-                if byte == .newLine { iterator += 1 }
-                else if byte == .carriageReturn { iterator += 2 }
-                currentCell = []
-                
-                break header
-            default: currentCell.append(byte)
-            }
-            iterator += 1
-        }
-        
-        while iterator < end {
-            let byte = data[iterator]
-            switch byte {
-            case .quote: inQuotes = !inQuotes
-            case .comma:
-                if inQuotes { currentCell.append(.comma); break }
-                columns[columnIndex].cells.append(currentCell.count > 0 ? currentCell : nil)
-                
-                columnIndex += 1
-                currentCell = []
-            case .newLine, .carriageReturn:
-                if inQuotes { currentCell.append(.newLine); break }
-                columns[columnIndex].cells.append(currentCell.count > 0 ? currentCell: nil)
-            
-                columnIndex = 0
-                currentCell = []
-            default: currentCell.append(byte)
-            }
-            
-            switch byte {
-            case .carriageReturn: iterator += 2
-            default: iterator += 1
-            }
-        }
-        
-        var dictionaryResult: [String: [Bytes?]] = [:]
-        var resultIterator = columns.startIndex
-        
-        while resultIterator < columns.endIndex {
-            let column = columns[resultIterator]
-            dictionaryResult[column.title] = column.cells
-            
-            resultIterator += 1
-        }
-        
-        return dictionaryResult
     }
 }

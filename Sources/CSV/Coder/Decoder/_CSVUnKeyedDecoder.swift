@@ -10,13 +10,14 @@ final class _CSVUnkeyedDecoder: UnkeyedDecodingContainer {
     
     init(decoder: _CSVDecoder, path: CodingPath = []) {
         self.codingPath = path
-        self.count = decoder.container.columns.first?.value.count
+        self.count = nil
         self.currentIndex = 0
         self.decoder = decoder
+        self.decoder.container.incremetRow()
     }
     
     var isAtEnd: Bool {
-        return self.currentIndex >= (self.count ?? 0)
+        return self.decoder.container.row == nil
     }
     
     func error<T>(for type: T.Type) -> Error {
@@ -34,8 +35,10 @@ final class _CSVUnkeyedDecoder: UnkeyedDecodingContainer {
     func decode(_ type: Int.Type) throws -> Int { throw self.error(for: type) }
     
     func decode<T>(_ type: T.Type) throws -> T where T : Decodable {
-        defer { self.currentIndex += 1 }
-        self.decoder.container.incremetRow()
+        defer {
+            self.currentIndex += 1
+            self.decoder.container.incremetRow()
+        }
         return try T(from: self.decoder)
     }
     

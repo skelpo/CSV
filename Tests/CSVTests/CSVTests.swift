@@ -18,34 +18,6 @@ class CSVTests: XCTestCase {
         }
     }
     
-    func testRowSpeed() {
-        do {
-            let url = URL(string: "file:/Users/calebkleveter/Development/developer_survey_2018.csv")!
-            let data = try Data(contentsOf: url)
-            
-            let csv: [String: [String?]] = CSV.parse(data)
-            
-            let next = csv.makeRows()
-            
-            measure {
-                while let _ = next() {}
-            }
-        } catch let error {
-            XCTFail("\(error)")
-        }
-    }
-    
-    func testCSVDataOrganizeSpeed()throws {
-        let url = URL(string: "file:/Users/calebkleveter/Development/developer_survey_2018.csv")!
-        let data = try Data(contentsOf: url)
-        
-        measure {
-            do {
-                let _: [String: [Bytes?]] = try _CSVDecoder.organize(data)
-            } catch { XCTFail(error.localizedDescription) }
-        }
-    }
-    
     func testCSVDecode()throws {
         let url = URL(string: "file:/Users/calebkleveter/Development/developer_survey_2018.csv")!
         let data = try Data(contentsOf: url)
@@ -134,21 +106,15 @@ class CSVTests: XCTestCase {
     
     func testKeyinitSpeed()throws {
         let url = URL(string: "file:/Users/calebkleveter/Development/developer_survey_2018.csv")!
-        let data = try _CSVDecoder.organize(Data(contentsOf: url))
-//        guard let row = data.makeRows()() else {
-//            XCTFail()
-//            return
-//        }
+        let data = try Data(contentsOf: url)
         
         measure {
-            _ = Response.makeKeys(from: data)
+            _ = Array.init(data)
         }
     }
     
     static var allTests = [
         ("testSpeed", testSpeed),
-        ("testRowSpeed", testRowSpeed),
-        ("testCSVDataOrganizeSpeed", testCSVDataOrganizeSpeed),
         ("testCSVDecode", testCSVDecode),
         ("testCSVDecodeSpeed", testCSVDecodeSpeed),
         ("testCSVColumnSeralization", testCSVColumnSeralization),
