@@ -18,6 +18,22 @@ class CSVTests: XCTestCase {
         }
     }
     
+    func testRowIterate()throws {
+        let url = URL(string: "file:/Users/calebkleveter/Development/developer_survey_2018.csv")!
+        let data = try Array(Data(contentsOf: url))
+        
+        measure {
+            do {
+                let container = try DecoderDataContainer(data: data)
+                while container.row != nil {
+                    container.incremetRow()
+                }
+            } catch let error {
+                XCTFail(error.localizedDescription)
+            }
+        }
+    }
+    
     func testCSVDecode()throws {
         let url = URL(string: "file:/Users/calebkleveter/Development/developer_survey_2018.csv")!
         let data = try Data(contentsOf: url)
@@ -115,6 +131,7 @@ class CSVTests: XCTestCase {
     
     static var allTests = [
         ("testSpeed", testSpeed),
+        ("testRowIterate", testRowIterate),
         ("testCSVDecode", testCSVDecode),
         ("testCSVDecodeSpeed", testCSVDecodeSpeed),
         ("testCSVColumnSeralization", testCSVColumnSeralization),
