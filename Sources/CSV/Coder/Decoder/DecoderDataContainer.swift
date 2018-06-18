@@ -57,7 +57,7 @@ final class DecoderDataContainer {
         var inQuote: Bool = false
         var columnIndex: Int = 0
         
-        header: while self.dataIndex < data.endIndex {
+        while self.dataIndex < data.endIndex {
             let byte = data[self.dataIndex]
             switch byte {
             case .quote: inQuote.toggle()
