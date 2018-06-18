@@ -3,9 +3,9 @@ import Bits
 final class DecoderDataContainer {
     var allKeys: [CodingKey]?
     let data: [UInt8]
-    var cell: Bytes?
     
     private(set) var row: [String: Bytes]!
+    private(set) var cell: Bytes?
     private(set) var header: [String]
     
     private var dataIndex: Int
