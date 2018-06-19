@@ -92,9 +92,11 @@ class CSVTests: XCTestCase {
     
     func testDataToIntSpeed() {
         measure {
-            guard let _ = [.one, .two, .four, .nine, .five, .seven, .six, .eight, .zero, .one, .four].int else {
-                XCTFail()
-                return
+            for _ in  0...1_000_000 {
+                guard let _ = [.one, .two, .four, .nine, .five, .seven, .six, .eight, .zero, .one, .four].int else {
+                    XCTFail()
+                    return
+                }
             }
         }
         
@@ -122,10 +124,12 @@ class CSVTests: XCTestCase {
     
     func testKeyinitSpeed()throws {
         let url = URL(string: "file:/Users/calebkleveter/Development/developer_survey_2018.csv")!
-        let data = try Data(contentsOf: url)
+        let data = try Array(Data(contentsOf: url))
         
         measure {
-            _ = Array.init(data)
+            autoreleasepool {
+                _ = data.split(separator: .newLine).count
+            }
         }
     }
     

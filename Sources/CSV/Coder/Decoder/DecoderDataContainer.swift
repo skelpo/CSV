@@ -1,3 +1,4 @@
+import Foundation
 import Bits
 
 final class DecoderDataContainer {
@@ -23,6 +24,8 @@ final class DecoderDataContainer {
     }
     
     private func configure()throws {
+        self.header.reserveCapacity(self.data.lazy.split(separator: .newLine).first?.reduce(0) { $1 == .comma ? $0 + 1 : $0 } ?? 0)
+        
         var currentCell: [UInt8] = []
         var inQuote: Bool = false
         header: while self.dataIndex < data.endIndex {
@@ -45,6 +48,8 @@ final class DecoderDataContainer {
             }
             self.dataIndex += 1
         }
+        
+        self.row.reserveCapacity(self.header.count)
     }
     
     func cell(for key: CodingKey) {
