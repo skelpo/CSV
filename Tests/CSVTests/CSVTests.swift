@@ -138,7 +138,8 @@ class CSVTests: XCTestCase {
         ("testCSVColumnSeralizationSpeed", testCSVColumnSeralizationSpeed),
         ("testCSVEncoding", testCSVEncoding),
         ("testCSVEncodingSpeed", testCSVEncodingSpeed),
-        ("testDataToIntSpeed", testDataToIntSpeed)
+        ("testDataToIntSpeed", testDataToIntSpeed),
+        ("testBytesToStringSpeed", testBytesToStringSpeed)
     ]
 }
 

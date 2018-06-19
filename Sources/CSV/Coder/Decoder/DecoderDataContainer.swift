@@ -19,6 +19,10 @@ final class DecoderDataContainer {
         self.header = []
         self.dataIndex = data.startIndex
         
+        try self.configure()
+    }
+    
+    private func configure()throws {
         var currentCell: [UInt8] = []
         var inQuote: Bool = false
         header: while self.dataIndex < data.endIndex {
