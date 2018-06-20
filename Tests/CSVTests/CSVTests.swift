@@ -46,7 +46,7 @@ class CSVTests: XCTestCase {
         let url = URL(string: "file:/Users/calebkleveter/Development/developer_survey_2018.csv")!
         let data = try Data(contentsOf: url)
         
-        // 58.806
+        // 18.489
         measure {
             do {
                 _ = try CSVCoder.decode(data, to: Response.self)
