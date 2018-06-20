@@ -38,7 +38,8 @@ class CSVTests: XCTestCase {
         let url = URL(string: "file:/Users/calebkleveter/Development/developer_survey_2018.csv")!
         let data = try Data(contentsOf: url)
         let responses = try CSVCoder.decode(data, to: Response.self)
-        XCTAssertEqual(responses.first, .test)
+        self.compare(responses.first, to: .first)
+        XCTAssertEqual(responses.last, .last)
     }
     
     func testCSVDecodeSpeed()throws {
@@ -145,6 +146,138 @@ class CSVTests: XCTestCase {
         ("testDataToIntSpeed", testDataToIntSpeed),
         ("testBytesToStringSpeed", testBytesToStringSpeed)
     ]
+    
+    func compare(_ lhs: Response?, to rhs: Response?) {
+        XCTAssertEqual(lhs?.Respondent, rhs?.Respondent)
+        XCTAssertEqual(lhs?.Hobby, rhs?.Hobby)
+        XCTAssertEqual(lhs?.OpenSource, rhs?.OpenSource)
+        XCTAssertEqual(lhs?.Country, rhs?.Country)
+        XCTAssertEqual(lhs?.Student, rhs?.Student)
+        XCTAssertEqual(lhs?.Employment, rhs?.Employment)
+        XCTAssertEqual(lhs?.FormalEducation, rhs?.FormalEducation)
+        XCTAssertEqual(lhs?.UndergradMajor, rhs?.UndergradMajor)
+        XCTAssertEqual(lhs?.CompanySize, rhs?.CompanySize)
+        XCTAssertEqual(lhs?.DevType, rhs?.DevType)
+        XCTAssertEqual(lhs?.YearsCoding, rhs?.YearsCoding)
+        XCTAssertEqual(lhs?.YearsCodingProf, rhs?.YearsCodingProf)
+        XCTAssertEqual(lhs?.JobSatisfaction, rhs?.JobSatisfaction)
+        XCTAssertEqual(lhs?.CareerSatisfaction, rhs?.CareerSatisfaction)
+        XCTAssertEqual(lhs?.HopeFiveYears, rhs?.HopeFiveYears)
+        XCTAssertEqual(lhs?.JobSearchStatus, rhs?.JobSearchStatus)
+        XCTAssertEqual(lhs?.LastNewJob, rhs?.LastNewJob)
+        XCTAssertEqual(lhs?.AssessJob1, rhs?.AssessJob1)
+        XCTAssertEqual(lhs?.AssessJob2, rhs?.AssessJob2)
+        XCTAssertEqual(lhs?.AssessJob3, rhs?.AssessJob3)
+        XCTAssertEqual(lhs?.AssessJob4, rhs?.AssessJob4)
+        XCTAssertEqual(lhs?.AssessJob5, rhs?.AssessJob5)
+        XCTAssertEqual(lhs?.AssessJob6, rhs?.AssessJob6)
+        XCTAssertEqual(lhs?.AssessJob7, rhs?.AssessJob7)
+        XCTAssertEqual(lhs?.AssessJob8, rhs?.AssessJob8)
+        XCTAssertEqual(lhs?.AssessJob9, rhs?.AssessJob9)
+        XCTAssertEqual(lhs?.AssessJob10, rhs?.AssessJob10)
+        XCTAssertEqual(lhs?.AssessBenefits1, rhs?.AssessBenefits1)
+        XCTAssertEqual(lhs?.AssessBenefits2, rhs?.AssessBenefits2)
+        XCTAssertEqual(lhs?.AssessBenefits3, rhs?.AssessBenefits3)
+        XCTAssertEqual(lhs?.AssessBenefits4, rhs?.AssessBenefits4)
+        XCTAssertEqual(lhs?.AssessBenefits5, rhs?.AssessBenefits5)
+        XCTAssertEqual(lhs?.AssessBenefits6, rhs?.AssessBenefits6)
+        XCTAssertEqual(lhs?.AssessBenefits7, rhs?.AssessBenefits7)
+        XCTAssertEqual(lhs?.AssessBenefits8, rhs?.AssessBenefits8)
+        XCTAssertEqual(lhs?.AssessBenefits9, rhs?.AssessBenefits9)
+        XCTAssertEqual(lhs?.AssessBenefits10, rhs?.AssessBenefits10)
+        XCTAssertEqual(lhs?.AssessBenefits11, rhs?.AssessBenefits11)
+        XCTAssertEqual(lhs?.JobContactPriorities1, rhs?.JobContactPriorities1)
+        XCTAssertEqual(lhs?.JobContactPriorities2, rhs?.JobContactPriorities2)
+        XCTAssertEqual(lhs?.JobContactPriorities3, rhs?.JobContactPriorities3)
+        XCTAssertEqual(lhs?.JobContactPriorities4, rhs?.JobContactPriorities4)
+        XCTAssertEqual(lhs?.JobContactPriorities5, rhs?.JobContactPriorities5)
+        XCTAssertEqual(lhs?.JobEmailPriorities1, rhs?.JobEmailPriorities1)
+        XCTAssertEqual(lhs?.JobEmailPriorities2, rhs?.JobEmailPriorities2)
+        XCTAssertEqual(lhs?.JobEmailPriorities3, rhs?.JobEmailPriorities3)
+        XCTAssertEqual(lhs?.JobEmailPriorities4, rhs?.JobEmailPriorities4)
+        XCTAssertEqual(lhs?.JobEmailPriorities5, rhs?.JobEmailPriorities5)
+        XCTAssertEqual(lhs?.JobEmailPriorities6, rhs?.JobEmailPriorities6)
+        XCTAssertEqual(lhs?.JobEmailPriorities7, rhs?.JobEmailPriorities7)
+        XCTAssertEqual(lhs?.UpdateCV, rhs?.UpdateCV)
+        XCTAssertEqual(lhs?.Currency, rhs?.Currency)
+        XCTAssertEqual(lhs?.Salary, rhs?.Salary)
+        XCTAssertEqual(lhs?.SalaryType, rhs?.SalaryType)
+        XCTAssertEqual(lhs?.ConvertedSalary, rhs?.ConvertedSalary)
+        XCTAssertEqual(lhs?.CurrencySymbol, rhs?.CurrencySymbol)
+        XCTAssertEqual(lhs?.CommunicationTools, rhs?.CommunicationTools)
+        XCTAssertEqual(lhs?.TimeFullyProductive, rhs?.TimeFullyProductive)
+        XCTAssertEqual(lhs?.EducationTypes, rhs?.EducationTypes)
+        XCTAssertEqual(lhs?.SelfTaughtTypes, rhs?.SelfTaughtTypes)
+        XCTAssertEqual(lhs?.TimeAfterBootcamp, rhs?.TimeAfterBootcamp)
+        XCTAssertEqual(lhs?.HackathonReasons, rhs?.HackathonReasons)
+        XCTAssertEqual(lhs?.AgreeDisagree1, rhs?.AgreeDisagree1)
+        XCTAssertEqual(lhs?.AgreeDisagree2, rhs?.AgreeDisagree2)
+        XCTAssertEqual(lhs?.AgreeDisagree3, rhs?.AgreeDisagree3)
+        XCTAssertEqual(lhs?.LanguageWorkedWith, rhs?.LanguageWorkedWith)
+        XCTAssertEqual(lhs?.LanguageDesireNextYear, rhs?.LanguageDesireNextYear)
+        XCTAssertEqual(lhs?.DatabaseWorkedWith, rhs?.DatabaseWorkedWith)
+        XCTAssertEqual(lhs?.DatabaseDesireNextYear, rhs?.DatabaseDesireNextYear)
+        XCTAssertEqual(lhs?.PlatformWorkedWith, rhs?.PlatformWorkedWith)
+        XCTAssertEqual(lhs?.PlatformDesireNextYear, rhs?.PlatformDesireNextYear)
+        XCTAssertEqual(lhs?.FrameworkWorkedWith, rhs?.FrameworkWorkedWith)
+        XCTAssertEqual(lhs?.FrameworkDesireNextYear, rhs?.FrameworkDesireNextYear)
+        XCTAssertEqual(lhs?.IDE, rhs?.IDE)
+        XCTAssertEqual(lhs?.OperatingSystem, rhs?.OperatingSystem)
+        XCTAssertEqual(lhs?.NumberMonitors, rhs?.NumberMonitors)
+        XCTAssertEqual(lhs?.Methodology, rhs?.Methodology)
+        XCTAssertEqual(lhs?.VersionControl, rhs?.VersionControl)
+        XCTAssertEqual(lhs?.CheckInCode, rhs?.CheckInCode)
+        XCTAssertEqual(lhs?.AdBlocker, rhs?.AdBlocker)
+        XCTAssertEqual(lhs?.AdBlockerDisable, rhs?.AdBlockerDisable)
+        XCTAssertEqual(lhs?.AdBlockerReasons, rhs?.AdBlockerReasons)
+        XCTAssertEqual(lhs?.AdsAgreeDisagree1, rhs?.AdsAgreeDisagree1)
+        XCTAssertEqual(lhs?.AdsAgreeDisagree2, rhs?.AdsAgreeDisagree2)
+        XCTAssertEqual(lhs?.AdsAgreeDisagree3, rhs?.AdsAgreeDisagree3)
+        XCTAssertEqual(lhs?.AdsActions, rhs?.AdsActions)
+        XCTAssertEqual(lhs?.AdsPriorities1, rhs?.AdsPriorities1)
+        XCTAssertEqual(lhs?.AdsPriorities2, rhs?.AdsPriorities2)
+        XCTAssertEqual(lhs?.AdsPriorities3, rhs?.AdsPriorities3)
+        XCTAssertEqual(lhs?.AdsPriorities4, rhs?.AdsPriorities4)
+        XCTAssertEqual(lhs?.AdsPriorities5, rhs?.AdsPriorities5)
+        XCTAssertEqual(lhs?.AdsPriorities6, rhs?.AdsPriorities6)
+        XCTAssertEqual(lhs?.AdsPriorities7, rhs?.AdsPriorities7)
+        XCTAssertEqual(lhs?.AIDangerous, rhs?.AIDangerous)
+        XCTAssertEqual(lhs?.AIInteresting, rhs?.AIInteresting)
+        XCTAssertEqual(lhs?.AIResponsible, rhs?.AIResponsible)
+        XCTAssertEqual(lhs?.AIFuture, rhs?.AIFuture)
+        XCTAssertEqual(lhs?.EthicsChoice, rhs?.EthicsChoice)
+        XCTAssertEqual(lhs?.EthicsReport, rhs?.EthicsReport)
+        XCTAssertEqual(lhs?.EthicsResponsible, rhs?.EthicsResponsible)
+        XCTAssertEqual(lhs?.EthicalImplications, rhs?.EthicalImplications)
+        XCTAssertEqual(lhs?.StackOverflowRecommend, rhs?.StackOverflowRecommend)
+        XCTAssertEqual(lhs?.StackOverflowVisit, rhs?.StackOverflowVisit)
+        XCTAssertEqual(lhs?.StackOverflowHasAccount, rhs?.StackOverflowHasAccount)
+        XCTAssertEqual(lhs?.StackOverflowParticipate, rhs?.StackOverflowParticipate)
+        XCTAssertEqual(lhs?.StackOverflowJobs, rhs?.StackOverflowJobs)
+        XCTAssertEqual(lhs?.StackOverflowDevStory, rhs?.StackOverflowDevStory)
+        XCTAssertEqual(lhs?.StackOverflowJobsRecommend, rhs?.StackOverflowJobsRecommend)
+        XCTAssertEqual(lhs?.StackOverflowConsiderMember, rhs?.StackOverflowConsiderMember)
+        XCTAssertEqual(lhs?.HypotheticalTools1, rhs?.HypotheticalTools1)
+        XCTAssertEqual(lhs?.HypotheticalTools2, rhs?.HypotheticalTools2)
+        XCTAssertEqual(lhs?.HypotheticalTools3, rhs?.HypotheticalTools3)
+        XCTAssertEqual(lhs?.HypotheticalTools4, rhs?.HypotheticalTools4)
+        XCTAssertEqual(lhs?.HypotheticalTools5, rhs?.HypotheticalTools5)
+        XCTAssertEqual(lhs?.WakeTime, rhs?.WakeTime)
+        XCTAssertEqual(lhs?.HoursComputer, rhs?.HoursComputer)
+        XCTAssertEqual(lhs?.HoursOutside, rhs?.HoursOutside)
+        XCTAssertEqual(lhs?.SkipMeals, rhs?.SkipMeals)
+        XCTAssertEqual(lhs?.ErgonomicDevices, rhs?.ErgonomicDevices)
+        XCTAssertEqual(lhs?.Exercise, rhs?.Exercise)
+        XCTAssertEqual(lhs?.Gender, rhs?.Gender)
+        XCTAssertEqual(lhs?.SexualOrientation, rhs?.SexualOrientation)
+        XCTAssertEqual(lhs?.EducationParents, rhs?.EducationParents)
+        XCTAssertEqual(lhs?.RaceEthnicity, rhs?.RaceEthnicity)
+        XCTAssertEqual(lhs?.Age, rhs?.Age)
+        XCTAssertEqual(lhs?.Dependents, rhs?.Dependents)
+        XCTAssertEqual(lhs?.MilitaryUS, rhs?.MilitaryUS)
+        XCTAssertEqual(lhs?.SurveyTooLong, rhs?.SurveyTooLong)
+        XCTAssertEqual(lhs?.SurveyEasy, rhs?.SurveyEasy)
+    }
 }
 
 struct Response: Codable, Equatable {
@@ -283,7 +416,7 @@ struct Response: Codable, Equatable {
     let SurveyTooLong: String?
     let SurveyEasy: String?
     
-    static let test = Response(
+    static let first = Response(
         Respondent: 1,
         Hobby: true,
         OpenSource: false,
@@ -413,5 +546,137 @@ struct Response: Codable, Equatable {
         MilitaryUS: nil,
         SurveyTooLong: "The survey was an appropriate length",
         SurveyEasy: "Very easy"
+    )
+    
+    static let last = Response(
+        Respondent: 101548,
+        Hobby: true,
+        OpenSource: true,
+        Country: "Cambodia",
+        Student: "NA",
+        Employment: "NA",
+        FormalEducation: "NA",
+        UndergradMajor: nil,
+        CompanySize: "NA",
+        DevType: "NA",
+        YearsCoding: "NA",
+        YearsCodingProf: nil,
+        JobSatisfaction: nil,
+        CareerSatisfaction: nil,
+        HopeFiveYears: nil,
+        JobSearchStatus: nil,
+        LastNewJob: nil,
+        AssessJob1: nil,
+        AssessJob2: nil,
+        AssessJob3: nil,
+        AssessJob4: nil,
+        AssessJob5: nil,
+        AssessJob6: nil,
+        AssessJob7: nil,
+        AssessJob8: nil,
+        AssessJob9: nil,
+        AssessJob10: nil,
+        AssessBenefits1: nil,
+        AssessBenefits2: nil,
+        AssessBenefits3: nil,
+        AssessBenefits4: nil,
+        AssessBenefits5: nil,
+        AssessBenefits6: nil,
+        AssessBenefits7: nil,
+        AssessBenefits8: nil,
+        AssessBenefits9: nil,
+        AssessBenefits10: nil,
+        AssessBenefits11: nil,
+        JobContactPriorities1: nil,
+        JobContactPriorities2: nil,
+        JobContactPriorities3: nil,
+        JobContactPriorities4: nil,
+        JobContactPriorities5: nil,
+        JobEmailPriorities1: nil,
+        JobEmailPriorities2: nil,
+        JobEmailPriorities3: nil,
+        JobEmailPriorities4: nil,
+        JobEmailPriorities5: nil,
+        JobEmailPriorities6: nil,
+        JobEmailPriorities7: nil,
+        UpdateCV: nil,
+        Currency: nil,
+        Salary: nil,
+        SalaryType: nil,
+        ConvertedSalary: nil,
+        CurrencySymbol: nil,
+        CommunicationTools: nil,
+        TimeFullyProductive: nil,
+        EducationTypes: nil,
+        SelfTaughtTypes: nil,
+        TimeAfterBootcamp: nil,
+        HackathonReasons: nil,
+        AgreeDisagree1: nil,
+        AgreeDisagree2: nil,
+        AgreeDisagree3: nil,
+        LanguageWorkedWith: nil,
+        LanguageDesireNextYear: nil,
+        DatabaseWorkedWith: nil,
+        DatabaseDesireNextYear: nil,
+        PlatformWorkedWith: nil,
+        PlatformDesireNextYear: nil,
+        FrameworkWorkedWith: nil,
+        FrameworkDesireNextYear: nil,
+        IDE: nil,
+        OperatingSystem: nil,
+        NumberMonitors: nil,
+        Methodology: nil,
+        VersionControl: nil,
+        CheckInCode: nil,
+        AdBlocker: nil,
+        AdBlockerDisable: nil,
+        AdBlockerReasons: nil,
+        AdsAgreeDisagree1: nil,
+        AdsAgreeDisagree2: nil,
+        AdsAgreeDisagree3: nil,
+        AdsActions: nil,
+        AdsPriorities1: nil,
+        AdsPriorities2: nil,
+        AdsPriorities3: nil,
+        AdsPriorities4: nil,
+        AdsPriorities5: nil,
+        AdsPriorities6: nil,
+        AdsPriorities7: nil,
+        AIDangerous: nil,
+        AIInteresting: nil,
+        AIResponsible: nil,
+        AIFuture: nil,
+        EthicsChoice: nil,
+        EthicsReport: nil,
+        EthicsResponsible: nil,
+        EthicalImplications: nil,
+        StackOverflowRecommend: nil,
+        StackOverflowVisit: nil,
+        StackOverflowHasAccount: nil,
+        StackOverflowParticipate: nil,
+        StackOverflowJobs: nil,
+        StackOverflowDevStory: nil,
+        StackOverflowJobsRecommend: nil,
+        StackOverflowConsiderMember: nil,
+        HypotheticalTools1: nil,
+        HypotheticalTools2: nil,
+        HypotheticalTools3: nil,
+        HypotheticalTools4: nil,
+        HypotheticalTools5: nil,
+        WakeTime: nil,
+        HoursComputer: nil,
+        HoursOutside: nil,
+        SkipMeals: nil,
+        ErgonomicDevices: nil,
+        Exercise: nil,
+        Gender: nil,
+        SexualOrientation: nil,
+        EducationParents: nil,
+        RaceEthnicity: nil,
+        Age: nil,
+        Dependents: nil,
+        MilitaryUS: nil,
+        SurveyTooLong: nil,
+        SurveyEasy: nil
     )
 }

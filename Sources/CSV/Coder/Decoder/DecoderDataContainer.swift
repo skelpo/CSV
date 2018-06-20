@@ -26,25 +26,32 @@ final class DecoderDataContainer {
     private func configure()throws {
         self.header.reserveCapacity(self.data.lazy.split(separator: .newLine).first?.reduce(0) { $1 == .comma ? $0 + 1 : $0 } ?? 0)
         
-        var currentCell: [UInt8] = []
+        var cellStart = self.dataIndex
+        var cellEnd = self.dataIndex
         var inQuote: Bool = false
         header: while self.dataIndex < data.endIndex {
             let byte = data[self.dataIndex]
             switch byte {
-            case .quote: inQuote.toggle()
+            case .quote:
+                inQuote.toggle()
+                cellEnd += 1
             case .comma:
                 if inQuote { fallthrough }
-                try self.header.append(String(currentCell))
+                var cell = Array(self.data[cellStart...cellEnd-1])
+                cell.removeAll { $0 == .quote }
+                try self.header.append(String(cell))
                 
-                currentCell = []
+                cellStart = self.dataIndex + 1
+                cellEnd = self.dataIndex + 1
             case .newLine, .carriageReturn:
                 if inQuote { fallthrough }
-                try self.header.append(String(currentCell))
+                var cell = Array(self.data[cellStart...cellEnd-1])
+                cell.removeAll { $0 == .quote }
+                try self.header.append(String(cell))
                 
-                currentCell = []
                 self.dataIndex = byte == .newLine ? self.dataIndex + 1 : self.dataIndex + 2
                 break header
-            default: currentCell.append(byte)
+            default: cellEnd += 1
             }
             self.dataIndex += 1
         }
@@ -62,27 +69,35 @@ final class DecoderDataContainer {
             return
         }
         
-        var currentCell: [UInt8] = []
+        var cellStart = self.dataIndex
+        var cellEnd = self.dataIndex
         var inQuote: Bool = false
         var columnIndex: Int = 0
         
         while self.dataIndex < data.endIndex {
             let byte = data[self.dataIndex]
             switch byte {
-            case .quote: inQuote.toggle()
+            case .quote:
+                inQuote.toggle()
+                cellEnd += 1
             case .comma:
                 if inQuote { fallthrough }
-                self.row[header[columnIndex]] = currentCell
+                var cell = Array(self.data[cellStart...cellEnd-1])
+                cell.removeAll { $0 == .quote }
+                self.row[header[columnIndex]] = cell
                 
-                currentCell = []
+                cellStart = self.dataIndex + 1
+                cellEnd = self.dataIndex + 1
                 columnIndex += 1
             case .newLine, .carriageReturn:
                 if inQuote { fallthrough }
-                self.row[header[columnIndex]] = currentCell
+                var cell = Array(self.data[cellStart...cellEnd-1])
+                cell.removeAll { $0 == .quote }
+                self.row[header[columnIndex]] = cell
                 
                 self.dataIndex = byte == .newLine ? self.dataIndex + 1 : self.dataIndex + 2
                 return
-            default: currentCell.append(byte)
+            default: cellEnd += 1
             }
             self.dataIndex += 1
         }
