@@ -10,7 +10,9 @@ class CSVTests: XCTestCase {
             let data = try Data(contentsOf: url)
             
             measure {
-                let _: [CSV.Column] = CSV.parse(data)
+                autoreleasepool {
+                    let _: [CSV.Column] = CSV.parse(data)
+                }
             }
             
         } catch let error {
