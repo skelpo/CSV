@@ -85,7 +85,7 @@ class CSVTests: XCTestCase {
         let data = try Data(contentsOf: url)
         let fielders = try CSVCoder.decode(data, to: Response.self)
 
-        // 17.876
+        // 7.391
         measure {
             do {
                 _ = try CSVCoder.encode(fielders)
