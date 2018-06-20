@@ -85,6 +85,12 @@ extension CSV {
             iterator += 1
         }
         
+        if cellEnd > cellStart {
+            var cell = Array(data[cellStart...cellEnd-1])
+            cell.removeAll { $0 == .quote }
+            columns[columnIndex].cells.append(cell.count > 0 ? String(bytes: cell, encoding: .utf8) : nil)
+        }
+        
         return columns.reduce(into: [:]) { result, column in
             result[column.title] = column.cells
         }
