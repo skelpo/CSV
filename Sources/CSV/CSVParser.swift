@@ -63,7 +63,7 @@ extension CSV {
                 if inQuotes { cellEnd += 1; break }
                 var cell = Array(data[cellStart...cellEnd-1])
                 cell.removeAll { $0 == .quote }
-                columns[columnIndex].cells.append(cell.count > 0 ? nil : String(bytes: cell, encoding: .utf8))
+                columns[columnIndex].cells.append(cell.count > 0 ? String(bytes: cell, encoding: .utf8) : nil)
                 
                 columnIndex += 1
                 cellStart = iterator + 1
@@ -72,7 +72,7 @@ extension CSV {
                 if inQuotes { cellEnd += 1; break }
                 var cell = Array(data[cellStart...cellEnd-1])
                 cell.removeAll { $0 == .quote }
-                columns[columnIndex].cells.append(cell.count > 0 ? nil : String(bytes: cell, encoding: .utf8))
+                columns[columnIndex].cells.append(cell.count > 0 ? String(bytes: cell, encoding: .utf8) : nil)
                 
                 columnIndex = 0
                 let increment = byte == .newLine ? 1 : 2
