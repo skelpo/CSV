@@ -9,6 +9,7 @@ extension Array where Element == CSV.Column {
 
         var index = 0
         var data: [Data] = [self.map { $0.header.data }.joined(separator: .comma)]
+        data.reserveCapacity((self.first?.fields.count ?? 0) + 1)
         
         while index < count {
             data.append(self.map { ($0.fields[index] ?? "").data }.joined(separator: .comma))
@@ -27,6 +28,7 @@ extension Dictionary where Key == String, Value == Array<String?> {
         
         var index = 0
         var data: [Data] = [self.keys.map { $0.data }.joined(separator: .comma)]
+        data.reserveCapacity((self.first?.value.count ?? 0) + 1)
         
         while index < count {
             data.append(self.values.map { ($0[index] ?? "").data }.joined(separator: .comma))
