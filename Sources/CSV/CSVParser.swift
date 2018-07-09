@@ -17,7 +17,7 @@ extension CSV {
             let byte = data[iterator]
             switch byte {
             case .quote:
-                inQuotes.toggle()
+                inQuotes = !inQuotes
                 cellEnd += 1
             case .comma:
                 if inQuotes { cellEnd += 1; break }
@@ -57,7 +57,7 @@ extension CSV {
             let byte = data[iterator]
             switch byte {
             case .quote:
-                inQuotes.toggle()
+                inQuotes = !inQuotes
                 cellEnd += 1
             case .comma:
                 if inQuotes { cellEnd += 1; break }

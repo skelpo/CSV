@@ -33,7 +33,7 @@ final class DecoderDataContainer {
             let byte = data[self.dataIndex]
             switch byte {
             case .quote:
-                inQuote.toggle()
+                inQuote = !inQuote
                 cellEnd += 1
             case .comma:
                 if inQuote { fallthrough }
@@ -78,7 +78,7 @@ final class DecoderDataContainer {
             let byte = data[self.dataIndex]
             switch byte {
             case .quote:
-                inQuote.toggle()
+                inQuote = !inQuote
                 cellEnd += 1
             case .comma:
                 if inQuote { fallthrough }
