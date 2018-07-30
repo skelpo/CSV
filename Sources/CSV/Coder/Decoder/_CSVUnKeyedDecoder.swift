@@ -25,7 +25,7 @@ final class _CSVUnkeyedDecoder: UnkeyedDecodingContainer {
     }
     
     func decodeNil() throws -> Bool {
-        return self.isAtEnd
+        return false
     }
     
     func decode(_ type: Bool.Type) throws -> Bool { throw self.error(for: type) }
