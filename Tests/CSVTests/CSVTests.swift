@@ -23,7 +23,34 @@ class CSVTests: XCTestCase {
         let lastRow = parsed.reduce(into: [:]) { result, column in
             result[column.header] = column.fields.last ?? nil
         }
-        let expected = ["YearsCodingProf": "NA", "AgreeDisagree1": "NA", "AssessBenefits5": "NA", "FormalEducation": "NA", "StackOverflowDevStory": "NA", "CommunicationTools": "NA", "CompanySize": "NA", "Dependents": "NA", "HypotheticalTools2": "NA", "AssessBenefits7": "NA", "SurveyEasy": "NA", "UpdateCV": "NA", "AIInteresting": "NA", "CheckInCode": "NA", "UndergradMajor": "NA", "OpenSource": "Yes", "JobEmailPriorities1": "NA", "SalaryType": "NA", "HypotheticalTools4": "NA", "TimeFullyProductive": "NA", "SkipMeals": "NA", "AdsPriorities4": "NA", "YearsCoding": "NA", "AdsPriorities6": "NA", "StackOverflowJobs": "NA", "Student": "NA", "AssessJob9": "NA", "AssessBenefits2": "NA", "Country": "Cambodia", "MilitaryUS": "NA", "AssessBenefits1": "NA", "AdsPriorities7": "NA", "SexualOrientation": "NA", "LastNewJob": "NA", "Salary": "NA", "SurveyTooLong": "NA", "DatabaseDesireNextYear": "NA", "ConvertedSalary": "NA", "AdsAgreeDisagree3": "NA", "AssessBenefits4": "NA", "StackOverflowRecommend": "NA", "AdBlockerReasons": "NA", "Respondent": "101548", "HoursOutside": "NA", "CareerSatisfaction": "NA", "HopeFiveYears": "NA", "JobContactPriorities2": "NA", "TimeAfterBootcamp": "NA", "JobContactPriorities3": "NA", "AdsPriorities3": "NA", "AssessJob2": "NA", "AssessJob6": "NA", "AdsPriorities1": "NA", "AdsActions": "NA", "Exercise": "NA", "AssessJob8": "NA", "JobSearchStatus": "NA", "JobSatisfaction": "NA", "JobContactPriorities4": "NA", "HackathonReasons": "NA", "RaceEthnicity": "NA", "LanguageWorkedWith": "NA", "AIFuture": "NA", "HoursComputer": "NA", "FrameworkDesireNextYear": "NA", "HypotheticalTools1": "NA", "Currency": "NA", "AgreeDisagree2": "NA", "Employment": "NA", "HypotheticalTools3": "NA", "IDE": "NA", "SelfTaughtTypes": "NA", "AssessJob10": "NA", "AIResponsible": "NA", "DevType": "NA", "HypotheticalTools5": "NA", "AdsAgreeDisagree1": "NA", "EthicsResponsible": "NA", "EducationTypes": "NA", "AdsPriorities5": "NA", "EthicalImplications": "NA", "AssessBenefits3": "NA", "JobEmailPriorities2": "NA", "EducationParents": "NA", "WakeTime": "NA", "EthicsChoice": "NA", "StackOverflowVisit": "NA", "StackOverflowJobsRecommend": "NA", "PlatformDesireNextYear": "NA", "StackOverflowParticipate": "NA", "Methodology": "NA", "AssessBenefits11": "NA", "StackOverflowHasAccount": "NA", "OperatingSystem": "NA", "FrameworkWorkedWith": "NA", "EthicsReport": "NA", "StackOverflowConsiderMember": "NA", "AdsAgreeDisagree2": "NA", "AssessBenefits10": "NA", "AssessJob4": "NA", "JobEmailPriorities7": "NA", "AssessJob7": "NA", "AssessJob1": "NA", "Age": "NA", "Gender": "NA", "JobContactPriorities5": "NA", "AdBlockerDisable": "NA", "VersionControl": "NA", "JobContactPriorities1": "NA", "JobEmailPriorities5": "NA", "DatabaseWorkedWith": "NA", "PlatformWorkedWith": "NA", "AssessBenefits6": "NA", "AssessJob5": "NA", "JobEmailPriorities4": "NA", "CurrencySymbol": "NA", "ErgonomicDevices": "NA", "LanguageDesireNextYear": "NA", "AgreeDisagree3": "NA", "AIDangerous": "NA", "JobEmailPriorities3": "NA", "NumberMonitors": "NA", "Hobby": "Yes", "JobEmailPriorities6": "NA", "AdsPriorities2": "NA", "AdBlocker": "NA", "AssessJob3": "NA", "AssessBenefits8": "NA", "AssessBenefits9": "NA"]
+        let expected = [
+            "YearsCodingProf": "NA", "AgreeDisagree1": "NA", "AssessBenefits5": "NA", "FormalEducation": "NA", "StackOverflowDevStory": "NA",
+            "CommunicationTools": "NA", "CompanySize": "NA", "Dependents": "NA", "HypotheticalTools2": "NA", "AssessBenefits7": "NA",
+            "SurveyEasy": "NA", "UpdateCV": "NA", "AIInteresting": "NA", "CheckInCode": "NA", "UndergradMajor": "NA", "OpenSource": "Yes",
+            "JobEmailPriorities1": "NA", "SalaryType": "NA", "HypotheticalTools4": "NA", "TimeFullyProductive": "NA", "SkipMeals": "NA",
+            "AdsPriorities4": "NA", "YearsCoding": "NA", "AdsPriorities6": "NA", "StackOverflowJobs": "NA", "Student": "NA", "AssessJob9": "NA",
+            "AssessBenefits2": "NA", "Country": "Cambodia", "MilitaryUS": "NA", "AssessBenefits1": "NA", "AdsPriorities7": "NA",
+            "SexualOrientation": "NA", "LastNewJob": "NA", "Salary": "NA", "SurveyTooLong": "NA", "DatabaseDesireNextYear": "NA",
+            "ConvertedSalary": "NA", "AdsAgreeDisagree3": "NA", "AssessBenefits4": "NA", "StackOverflowRecommend": "NA", "AdBlockerReasons": "NA",
+            "Respondent": "101548", "HoursOutside": "NA", "CareerSatisfaction": "NA", "HopeFiveYears": "NA", "JobContactPriorities2": "NA",
+            "TimeAfterBootcamp": "NA", "JobContactPriorities3": "NA", "AdsPriorities3": "NA", "AssessJob2": "NA", "AssessJob6": "NA",
+            "AdsPriorities1": "NA", "AdsActions": "NA", "Exercise": "NA", "AssessJob8": "NA", "JobSearchStatus": "NA", "JobSatisfaction": "NA",
+            "JobContactPriorities4": "NA", "HackathonReasons": "NA", "RaceEthnicity": "NA", "LanguageWorkedWith": "NA", "AIFuture": "NA",
+            "HoursComputer": "NA", "FrameworkDesireNextYear": "NA", "HypotheticalTools1": "NA", "Currency": "NA", "AgreeDisagree2": "NA",
+            "Employment": "NA", "HypotheticalTools3": "NA", "IDE": "NA", "SelfTaughtTypes": "NA", "AssessJob10": "NA", "AIResponsible": "NA",
+            "DevType": "NA", "HypotheticalTools5": "NA", "AdsAgreeDisagree1": "NA", "EthicsResponsible": "NA", "EducationTypes": "NA",
+            "AdsPriorities5": "NA", "EthicalImplications": "NA", "AssessBenefits3": "NA", "JobEmailPriorities2": "NA", "EducationParents": "NA",
+            "WakeTime": "NA", "EthicsChoice": "NA", "StackOverflowVisit": "NA", "StackOverflowJobsRecommend": "NA", "PlatformDesireNextYear": "NA",
+            "StackOverflowParticipate": "NA", "Methodology": "NA", "AssessBenefits11": "NA", "StackOverflowHasAccount": "NA",
+            "OperatingSystem": "NA", "FrameworkWorkedWith": "NA", "EthicsReport": "NA", "StackOverflowConsiderMember": "NA",
+            "AdsAgreeDisagree2": "NA", "AssessBenefits10": "NA", "AssessJob4": "NA", "JobEmailPriorities7": "NA", "AssessJob7": "NA",
+            "AssessJob1": "NA", "Age": "NA", "Gender": "NA", "JobContactPriorities5": "NA", "AdBlockerDisable": "NA", "VersionControl": "NA",
+            "JobContactPriorities1": "NA", "JobEmailPriorities5": "NA", "DatabaseWorkedWith": "NA", "PlatformWorkedWith": "NA",
+            "AssessBenefits6": "NA", "AssessJob5": "NA", "JobEmailPriorities4": "NA", "CurrencySymbol": "NA", "ErgonomicDevices": "NA",
+            "LanguageDesireNextYear": "NA", "AgreeDisagree3": "NA", "AIDangerous": "NA", "JobEmailPriorities3": "NA", "NumberMonitors": "NA",
+            "Hobby": "Yes", "JobEmailPriorities6": "NA", "AdsPriorities2": "NA", "AdBlocker": "NA", "AssessJob3": "NA", "AssessBenefits8": "NA",
+            "AssessBenefits9": "NA"
+        ]
         
         for (parsed, expected) in zip(lastRow.sorted(by: { $0.key < $1.key }), expected.sorted(by: { $0.key < $1.key })) {
             XCTAssertEqual(parsed.key, expected.key)
