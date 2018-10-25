@@ -3,7 +3,12 @@ import Foundation
 
 public struct CSV {
     public struct Column {
-        let header: String
-        var fields: [String?]
+        public let header: String
+        public var fields: [String?]
+        
+        public init(header: String, fields: [String?]) {
+            self.header = header
+            self.fields = fields
+        }
     }
 }
