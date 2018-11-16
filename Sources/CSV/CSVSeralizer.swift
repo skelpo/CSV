@@ -49,10 +49,15 @@ extension Array where Element == Data {
     func joined(separator: UInt8) -> Element {
         let count = self.count
         var data = Data()
-        var iterator = 0
+        var iterator = self.startIndex
+        
+        if self.count > 0 {
+            data.append(contentsOf: self[iterator])
+            iterator += 1
+        }
         
         while iterator < count {
-            if data.count > 0 { data.append(separator) }
+            data.append(separator)
             data.append(contentsOf: self[iterator])
             iterator += 1
         }
