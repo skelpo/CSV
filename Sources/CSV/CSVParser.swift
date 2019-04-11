@@ -161,7 +161,7 @@ extension CSV {
     public static func parse(_ csv: Data) -> [String: [String?]] {
         let data = Array(csv)
         let end = data.endIndex
-        let estimatedRowCount = data.reduce(0) { $1 == .newLine ? $0 + 1 : $0 }
+        let estimatedRowCount = data.reduce(0) { $1 == Delimiter.newLine ? $0 + 1 : $0 }
         
         var columns: [(title: String, cells: [String?])] = []
         var columnIndex = 0
@@ -173,14 +173,14 @@ extension CSV {
         header: while iterator < end {
             let byte = data[iterator]
             switch byte {
-            case .quote:
+            case Delimiter.quote:
                 inQuotes = !inQuotes
                 cellEnd += 1
-            case .comma:
+            case Delimiter.comma:
                 if inQuotes { cellEnd += 1; break }
                 
                 var cell = Array(data[cellStart...cellEnd-1])
-                cell.removeAll { $0 == .quote }
+                cell.removeAll { $0 == Delimiter.quote }
                 
                 guard let title = String(bytes: cell, encoding: .utf8) else { return [:] }
                 var cells: [String?] = []
@@ -189,18 +189,18 @@ extension CSV {
                 
                 cellStart = iterator + 1
                 cellEnd = iterator + 1
-            case .newLine, .carriageReturn:
+            case Delimiter.newLine, Delimiter.carriageReturn:
                 if inQuotes { cellEnd += 1; break }
                 
                 var cell = Array(data[cellStart...cellEnd-1])
-                cell.removeAll { $0 == .quote }
+                cell.removeAll { $0 == Delimiter.quote }
                 
                 guard let title = String(bytes: cell, encoding: .utf8) else { return [:] }
                 var cells: [String?] = []
                 cells.reserveCapacity(estimatedRowCount)
                 columns.append((title, cells))
                 
-                let increment = byte == .newLine ? 1 : 2
+                let increment = byte == Delimiter.newLine ? 1 : 2
                 cellStart = iterator + increment
                 cellEnd = iterator + increment
                 iterator += increment
@@ -213,26 +213,26 @@ extension CSV {
         while iterator < end {
             let byte = data[iterator]
             switch byte {
-            case .quote:
+            case Delimiter.quote:
                 inQuotes = !inQuotes
                 cellEnd += 1
-            case .comma:
+            case Delimiter.comma:
                 if inQuotes { cellEnd += 1; break }
                 var cell = Array(data[cellStart...cellEnd-1])
-                cell.removeAll { $0 == .quote }
+                cell.removeAll { $0 == Delimiter.quote }
                 columns[columnIndex].cells.append(cell.count > 0 ? String(bytes: cell, encoding: .utf8) : nil)
                 
                 columnIndex += 1
                 cellStart = iterator + 1
                 cellEnd = iterator + 1
-            case .newLine, .carriageReturn:
+            case Delimiter.newLine, Delimiter.carriageReturn:
                 if inQuotes { cellEnd += 1; break }
                 var cell = Array(data[cellStart...cellEnd-1])
-                cell.removeAll { $0 == .quote }
+                cell.removeAll { $0 == Delimiter.quote }
                 columns[columnIndex].cells.append(cell.count > 0 ? String(bytes: cell, encoding: .utf8) : nil)
                 
                 columnIndex = 0
-                let increment = byte == .newLine ? 1 : 2
+                let increment = byte == Delimiter.newLine ? 1 : 2
                 cellStart = iterator + increment
                 cellEnd = iterator + increment
                 iterator += increment
@@ -244,7 +244,7 @@ extension CSV {
         
         if cellEnd > cellStart {
             var cell = Array(data[cellStart...cellEnd-1])
-            cell.removeAll { $0 == .quote }
+            cell.removeAll { $0 == Delimiter.quote }
             columns[columnIndex].cells.append(cell.count > 0 ? String(bytes: cell, encoding: .utf8) : nil)
         }
         
