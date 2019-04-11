@@ -121,7 +121,7 @@ extension CSV {
     public struct SyncParser {
         public init() {}
         
-        public mutating func syncParse(_ data: [UInt8]) -> [[UInt8]: [[UInt8]?]] {
+        public func parse(_ data: [UInt8]) -> [[UInt8]: [[UInt8]?]] {
             var results: [[UInt8]: [[UInt8]?]] = [:]
             var parser = Parser(
                 onHeader: { header in
@@ -136,7 +136,7 @@ extension CSV {
             return results
         }
         
-        public mutating func syncParse(_ data: String) -> [String: [String?]] {
+        public func parse(_ data: String) -> [String: [String?]] {
             var results: [String: [String?]] = [:]
             var parser = Parser(
                 onHeader: { header in
