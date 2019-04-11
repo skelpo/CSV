@@ -118,6 +118,42 @@ extension CSV {
         }
     }
     
+    public struct SyncParser {
+        public init() {}
+        
+        public mutating func syncParse(_ data: [UInt8]) -> [[UInt8]: [[UInt8]?]] {
+            var results: [[UInt8]: [[UInt8]?]] = [:]
+            var parser = Parser(
+                onHeader: { header in
+                    results[header] = []
+                },
+                onCell: { header, cell in
+                    results[header, default: []].append(cell.count > 0 ? cell : nil)
+                }
+            )
+            
+            parser.parse(data)
+            return results
+        }
+        
+        public mutating func syncParse(_ data: String) -> [String: [String?]] {
+            var results: [String: [String?]] = [:]
+            var parser = Parser(
+                onHeader: { header in
+                    if let title = String(bytes: header, encoding: .utf8) {
+                        results[title] = []
+                    }
+                },
+                onCell: { header, cell in
+                    if let title = String(bytes: header, encoding: .utf8), let contents = String(bytes: cell, encoding: .utf8) {
+                        results[title, default: []].append(cell.count > 0 ? contents : nil)
+                    }
+                }
+            )
+            
+            parser.parse(Array(data.utf8))
+            return results
+        }
     }
 }
 
