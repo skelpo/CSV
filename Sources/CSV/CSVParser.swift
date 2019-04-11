@@ -5,6 +5,11 @@ extension CSV {
         public typealias HeaderHandler = (_ title: [UInt8]) -> ()
         public typealias CellHandler = (_ title: [UInt8], _ contents: [UInt8]) -> ()
         
+        internal enum Position {
+            case headers
+            case cells
+        }
+        
         private struct State {
             var headers: [[UInt8]]
             var position: Position
@@ -46,32 +51,32 @@ extension CSV {
             while index < data.endIndex {
                 let byte = data[index]
                 switch byte {
-                case Characters.quote:
-                    if self.state.inQuotes, index + 1 < data.endIndex, data[index + 1] == Characters.quote {
-                        currentCell.append(Characters.quote)
+                case Delimiter.quote:
+                    if self.state.inQuotes, index + 1 < data.endIndex, data[index + 1] == Delimiter.quote {
+                        currentCell.append(Delimiter.quote)
                         index += 1
                     } else {
                         self.state.inQuotes.toggle()
                     }
-                case Characters.carriageReturn:
+                case Delimiter.carriageReturn:
                     if self.state.inQuotes {
-                        currentCell.append(Characters.carriageReturn)
+                        currentCell.append(Delimiter.carriageReturn)
                     } else {
-                        if index + 1 < data.endIndex, data[index + 1] == Characters.newLine {
+                        if index + 1 < data.endIndex, data[index + 1] == Delimiter.newLine {
                             index += 1
                         }
                         fallthrough
                     }
-                case Characters.newLine:
+                case Delimiter.newLine:
                     if self.state.inQuotes {
-                        currentCell.append(Characters.newLine)
+                        currentCell.append(Delimiter.newLine)
                     } else {
                         if self.state.position == .headers { updateState = true }
                         fallthrough
                     }
-                case Characters.comma:
+                case Delimiter.comma:
                     if self.state.inQuotes {
-                        currentCell.append(Characters.comma)
+                        currentCell.append(Delimiter.comma)
                     } else {
                         switch self.state.position {
                         case .headers:
@@ -111,18 +116,8 @@ extension CSV {
                 self.onCell?(self.currentHeader, currentCell)
             }
         }
-        
-        public enum Position {
-            case headers
-            case cells
-        }
     }
     
-    internal struct Characters {
-        static let comma = UInt8(ascii: ",")
-        static let quote = UInt8(ascii: "\"")
-        static let newLine = UInt8(ascii: "\n")
-        static let carriageReturn = UInt8(ascii: "\r")
     }
 }
 

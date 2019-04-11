@@ -1,4 +1,3 @@
-@_exported import Bits
 import Foundation
 
 public struct CSV {
@@ -10,5 +9,12 @@ public struct CSV {
             self.header = header
             self.fields = fields
         }
+    }
+    
+    internal struct Delimiter {
+        static let comma = UInt8(ascii: ",")
+        static let quote = UInt8(ascii: "\"")
+        static let newLine = UInt8(ascii: "\n")
+        static let carriageReturn = UInt8(ascii: "\r")
     }
 }
