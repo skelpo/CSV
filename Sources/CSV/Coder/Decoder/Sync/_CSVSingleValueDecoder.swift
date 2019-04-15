@@ -10,12 +10,12 @@ final class _CSVSingleValueDecoder: SingleValueDecodingContainer {
     }
     
     func decodeNil() -> Bool {
-        return decoder.container.cell == nil || decoder.container.cell == [.N, .forwardSlash, .A] || decoder.container.cell == [.N, .A]
+        return decoder.container.cell == nil || decoder.container.cell == "N/A" || decoder.container.cell == "NA"
     }
     
     func decode(_ type: Bool.Type) throws -> Bool {
         guard let cell = self.decoder.container.cell else { throw DecodingError.nilValue(type: type, at: self.codingPath) }
-        let value = try String(cell).lowercased()
+        let value = String(cell).lowercased()
         switch value {
         case "true", "yes", "t", "y", "1": return true
         case "false", "no", "f", "n", "0": return false
@@ -25,7 +25,7 @@ final class _CSVSingleValueDecoder: SingleValueDecodingContainer {
     
     func decode(_ type: String.Type) throws -> String {
         guard let cell = self.decoder.container.cell else { throw DecodingError.nilValue(type: type, at: self.codingPath) }
-        return try String(cell)
+        return String(cell)
     }
     
     func decode(_ type: Double.Type) throws -> Double {

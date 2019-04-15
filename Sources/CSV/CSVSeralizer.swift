@@ -1,41 +1,40 @@
 import Foundation
-import Bits
 
 extension Array where Element == CSV.Column {
     func seralize() -> Data {
         guard let count = self.first?.fields.count else {
-            return self.map { $0.header.data }.joined(separator: .comma)
+            return self.map { $0.header.data }.joined(separator: ",")
         }
 
         var index = 0
-        var data: [Data] = [self.map { $0.header.data }.joined(separator: .comma)]
+        var data: [Data] = [self.map { $0.header.data }.joined(separator: ",")]
         data.reserveCapacity((self.first?.fields.count ?? 0) + 1)
         
         while index < count {
-            data.append(self.map { ($0.fields[index] ?? "").data }.joined(separator: .comma))
+            data.append(self.map { ($0.fields[index] ?? "").data }.joined(separator: ","))
             index += 1
         }
         
-        return data.joined(separator: .newLine)
+        return data.joined(separator: "\n")
     }
 }
 
 extension Dictionary where Key == String, Value == Array<String?> {
     func seralize() -> Data {
         guard let count = self.first?.value.count else {
-            return self.keys.map { $0.data }.joined(separator: .comma)
+            return self.keys.map { $0.data }.joined(separator: ",")
         }
         
         var index = 0
-        var data: [Data] = [self.keys.map { $0.data }.joined(separator: .comma)]
+        var data: [Data] = [self.keys.map { $0.data }.joined(separator: ",")]
         data.reserveCapacity((self.first?.value.count ?? 0) + 1)
         
         while index < count {
-            data.append(self.values.map { ($0[index] ?? "").data }.joined(separator: .comma))
+            data.append(self.values.map { ($0[index] ?? "").data }.joined(separator: ","))
             index += 1
         }
         
-        return data.joined(separator: .newLine)
+        return data.joined(separator: "\n")
     }
 }
 

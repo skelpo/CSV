@@ -1,12 +1,11 @@
 import Foundation
-import Bits
 
 final class DecoderDataContainer {
     var allKeys: [CodingKey]?
     let data: [UInt8]
     
-    private(set) var row: [String: Bytes]!
-    private(set) var cell: Bytes?
+    private(set) var row: [String: [UInt8]]!
+    private(set) var cell: [UInt8]?
     private(set) var header: [String]
     
     private var dataIndex: Int
@@ -24,7 +23,7 @@ final class DecoderDataContainer {
     }
     
     private func configure()throws {
-        self.header.reserveCapacity(self.data.lazy.split(separator: .newLine).first?.reduce(0) { $1 == .comma ? $0 + 1 : $0 } ?? 0)
+        self.header.reserveCapacity(self.data.lazy.split(separator: "\n").first?.reduce(0) { $1 == "," ? $0 + 1 : $0 } ?? 0)
         
         var cellStart = self.dataIndex
         var cellEnd = self.dataIndex
@@ -32,24 +31,24 @@ final class DecoderDataContainer {
         header: while self.dataIndex < data.endIndex {
             let byte = data[self.dataIndex]
             switch byte {
-            case .quote:
+            case "\"":
                 inQuote = !inQuote
                 cellEnd += 1
-            case .comma:
+            case ",":
                 if inQuote { fallthrough }
                 var cell = Array(self.data[cellStart...cellEnd-1])
-                cell.removeAll { $0 == .quote }
-                try self.header.append(String(cell))
+                cell.removeAll { $0 == "\"" }
+                self.header.append(String(cell))
                 
                 cellStart = self.dataIndex + 1
                 cellEnd = self.dataIndex + 1
-            case .newLine, .carriageReturn:
+            case "\n", "\r":
                 if inQuote { fallthrough }
                 var cell = Array(self.data[cellStart...cellEnd-1])
-                cell.removeAll { $0 == .quote }
-                try self.header.append(String(cell))
+                cell.removeAll { $0 == "\"" }
+                self.header.append(String(cell))
                 
-                self.dataIndex = byte == .newLine ? self.dataIndex + 1 : self.dataIndex + 2
+                self.dataIndex = byte == "\n" ? self.dataIndex + 1 : self.dataIndex + 2
                 break header
             default: cellEnd += 1
             }
@@ -77,25 +76,25 @@ final class DecoderDataContainer {
         while self.dataIndex < data.endIndex {
             let byte = data[self.dataIndex]
             switch byte {
-            case .quote:
+            case "\"":
                 inQuote = !inQuote
                 cellEnd += 1
-            case .comma:
+            case ",":
                 if inQuote { fallthrough }
                 var cell = Array(self.data[cellStart...cellEnd-1])
-                cell.removeAll { $0 == .quote }
+                cell.removeAll { $0 == "\"" }
                 self.row[header[columnIndex]] = cell
                 
                 cellStart = self.dataIndex + 1
                 cellEnd = self.dataIndex + 1
                 columnIndex += 1
-            case .newLine, .carriageReturn:
+            case "\n", "\r":
                 if inQuote { fallthrough }
                 var cell = Array(self.data[cellStart...cellEnd-1])
-                cell.removeAll { $0 == .quote }
+                cell.removeAll { $0 == "\"" }
                 self.row[header[columnIndex]] = cell
                 
-                self.dataIndex = byte == .newLine ? self.dataIndex + 1 : self.dataIndex + 2
+                self.dataIndex = byte == "\n" ? self.dataIndex + 1 : self.dataIndex + 2
                 return
             default: cellEnd += 1
             }

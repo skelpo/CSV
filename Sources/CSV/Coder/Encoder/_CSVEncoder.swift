@@ -34,7 +34,7 @@ final class _CSVEncoder: Encoder {
         return _CSVSingleValueEncoder(container: self.container, path: self.codingPath, boolEncoding: self.boolEncoding, stringEncoding: self.stringEncoding)
     }
     
-    static func encode<T>(_ objects: [T], boolEncoding: BoolEncodingStrategy, stringEncoding: String.Encoding)throws -> Bytes where T: Encodable {
+    static func encode<T>(_ objects: [T], boolEncoding: BoolEncodingStrategy, stringEncoding: String.Encoding)throws -> [UInt8] where T: Encodable {
         let encoder = _CSVEncoder(container: DataContainer(), boolEncoding: boolEncoding, stringEncoding: stringEncoding)
         try objects.encode(to: encoder)
         return encoder.container.data
@@ -42,10 +42,10 @@ final class _CSVEncoder: Encoder {
 }
 
 final class DataContainer {
-    var data: Bytes
+    var data: [UInt8]
     var titlesCreated: Bool
     
-    init(data: Bytes = [], titles: Bool = false) {
+    init(data: [UInt8] = [], titles: Bool = false) {
         self.data = data
         self.titlesCreated = titles
     }

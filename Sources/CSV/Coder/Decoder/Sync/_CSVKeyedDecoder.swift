@@ -25,12 +25,12 @@ final class _CSVKeyedDecoder<K>: KeyedDecodingContainerProtocol where K: CodingK
     
     func decodeNil(forKey key: K) throws -> Bool {
         let cell = self.decoder.container.row[key.stringValue]
-        return cell == nil || cell == [.N, .forwardSlash, .A] || cell == [.N, .A]
+        return cell == nil || cell == "N/A" || cell == "NA"
     }
     
     func decode(_ type: Bool.Type, forKey key: K) throws -> Bool {
         let cell = try self.decoder.container.row.value(for: key)
-        let value = try String(cell).lowercased()
+        let value = String(cell).lowercased()
         switch value {
         case "true", "yes", "t", "y", "1": return true
         case "false", "no", "f", "n", "0": return false
@@ -40,7 +40,7 @@ final class _CSVKeyedDecoder<K>: KeyedDecodingContainerProtocol where K: CodingK
     
     func decode(_ type: String.Type, forKey key: K) throws -> String {
         let cell = try self.decoder.container.row.value(for: key)
-        return try String(cell)
+        return String(cell)
     }
     
     func decode(_ type: Double.Type, forKey key: K) throws -> Double {

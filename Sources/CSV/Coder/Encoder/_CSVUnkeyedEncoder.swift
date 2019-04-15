@@ -14,7 +14,7 @@ final class _CSVUnkeyedEncoder: UnkeyedEncodingContainer {
     }
     
     var count: Int {
-        return container.data.split(separator: .newLine).count
+        return container.data.split(separator: "\n").count
     }
     
     func fail(with value: Any) -> Error {
@@ -31,7 +31,7 @@ final class _CSVUnkeyedEncoder: UnkeyedEncodingContainer {
     func encode<T>(_ value: T) throws where T : Encodable {
         let encoder = _CSVEncoder(container: DataContainer(titles: self.container.data.count > 0), path: self.codingPath, boolEncoding: self.boolEncoding, stringEncoding: self.stringEncoding)
         try value.encode(to: encoder)
-        self.container.data.append(contentsOf: encoder.container.data.dropLast() + [.newLine])
+        self.container.data.append(contentsOf: encoder.container.data.dropLast() + ["\n"])
     }
     
     func nestedContainer<NestedKey>(keyedBy keyType: NestedKey.Type) -> KeyedEncodingContainer<NestedKey> where NestedKey : CodingKey {

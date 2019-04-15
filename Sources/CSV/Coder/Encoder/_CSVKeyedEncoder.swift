@@ -13,14 +13,14 @@ final class _CSVKeyedEncoder<K>: KeyedEncodingContainerProtocol where K: CodingK
         self.stringEncoding = stringEncoding
     }
     
-    func titleEncode(for key: K, converter: ()throws -> Bytes)rethrows {
+    func titleEncode(for key: K, converter: ()throws -> [UInt8])rethrows {
         if self.container.titlesCreated {
-            try self.container.data.append(contentsOf: converter() + [.comma])
+            try self.container.data.append(contentsOf: converter() + ",")
         } else {
-            let lines = self.container.data.split(separator: .newLine)
-            let headers = lines.first == nil ? [] : lines.first! + [.comma]
-            let body = lines.last == nil ? [] : lines.last! + [.comma]
-            try self.container.data = (headers + key.stringValue.bytes) + [.newLine] + (body + converter())
+            let lines = self.container.data.split(separator: "\n")
+            let headers = lines.first == nil ? [] : lines.first! + ","
+            let body = lines.last == nil ? [] : lines.last! + ","
+            try self.container.data = (headers + key.stringValue.bytes) + "\n" + (body + converter())
         }
     }
     

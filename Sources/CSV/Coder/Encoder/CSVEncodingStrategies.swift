@@ -1,15 +1,14 @@
 import Foundation
-import Bits
 
 public enum BoolEncodingStrategy {
     case toInteger
     case toString
-    case custom(`true`:Bytes,`false`:Bytes)
+    case custom(`true`: [UInt8],`false`: [UInt8])
     
-    public func convert(_ bool: Bool) -> Bytes {
+    public func convert(_ bool: Bool) -> [UInt8] {
         switch self {
-        case .toInteger: return bool ? [.one] : [.zero]
-        case .toString: return bool ? [.t, .r, .u, .e] : [.f, .a, .l, .s, .e]
+        case .toInteger: return bool ? "1" : "0"
+        case .toString: return bool ? "true" : "false"
         case let .custom(`true`, `false`): return bool ? `true` : `false`
         }
     }

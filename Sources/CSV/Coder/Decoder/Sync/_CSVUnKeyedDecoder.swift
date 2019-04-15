@@ -1,5 +1,4 @@
 import Foundation
-import Core
 
 final class _CSVUnkeyedDecoder: UnkeyedDecodingContainer {
     let codingPath: [CodingKey]
