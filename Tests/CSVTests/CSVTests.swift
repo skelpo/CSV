@@ -1,6 +1,4 @@
-import Bits
 import XCTest
-import Random
 @testable import CSV
 
 class CSVTests: XCTestCase {
@@ -132,27 +130,24 @@ class CSVTests: XCTestCase {
     }
     
     func testDataToIntSpeed() {
+        let bytes = "12495768014".bytes
         measure {
             for _ in  0...1_000_000 {
-                guard let _ = [.one, .two, .four, .nine, .five, .seven, .six, .eight, .zero, .one, .four].int else {
+                guard let _ = bytes.int else {
                     XCTFail()
                     return
                 }
             }
         }
         
-        XCTAssertEqual([.one, .two, .four, .nine, .five, .seven, .six, .eight, .zero, .one, .four].int, 12495768014)
+        XCTAssertEqual(bytes.int, 12495768014)
     }
     
     func testBytesToStringSpeed() {
         let bytes: [UInt8] = [49, 50, 51, 52, 53, 54, 55, 56, 57, 48, 113, 119, 101, 114, 116, 121, 117, 105, 111, 112, 97, 115, 100, 102, 103, 104, 106, 107, 108, 122, 120, 99, 118, 98, 110, 109]
         measure {
-            do {
-                for _ in 0...1_000_000 {
-                    _ = try String(bytes)
-                }
-            } catch let error {
-                XCTFail(error.localizedDescription)
+            for _ in 0...1_000_000 {
+                _ = String(bytes)
             }
         }
         
@@ -169,7 +164,7 @@ class CSVTests: XCTestCase {
         
         measure {
             autoreleasepool {
-                _ = data.split(separator: .newLine).count
+                _ = data.split(separator: "\n").count
             }
         }
     }
@@ -321,7 +316,7 @@ class CSVTests: XCTestCase {
 }
 
 struct Response: Codable, Equatable {
-    static func makeKeys(from row: [String: [Bytes?]]) -> [CodingKey] {
+    static func makeKeys(from row: [String: [[UInt8]?]]) -> [CodingKey] {
         // return row.compactMap { cell in return Response.CodingKeys.init(stringValue: cell.key) }
         return Array(row.keys).compactMap(Response.CodingKeys.init)
     }
