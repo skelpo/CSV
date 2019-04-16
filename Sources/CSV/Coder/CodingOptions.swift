@@ -13,12 +13,13 @@ public final class CSVCodingOptions {
 public enum BoolCodingStrategy: Hashable {
     case integer
     case string
+    case fuzzy
     case custom(`true`: [UInt8],`false`: [UInt8])
 
     public func bytes(from bool: Bool) -> [UInt8] {
         switch self {
         case .integer: return bool ? "1" : "0"
-        case .string: return bool ? "true" : "false"
+        case .string, .fuzzy: return bool ? "true" : "false"
         case let .custom(`true`, `false`): return bool ? `true` : `false`
         }
     }
@@ -33,6 +34,12 @@ public enum BoolCodingStrategy: Hashable {
             switch bytes {
             case `false`: return false
             case `true`: return true
+            default: return nil
+            }
+        case (.fuzzy, _):
+            switch String(decoding: bytes, as: UTF8.self).lowercased() {
+            case "true", "yes", "t", "y", "1": return true
+            case "false", "no", "f", "n", "0": return false
             default: return nil
             }
         default: return nil
