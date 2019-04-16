@@ -30,7 +30,7 @@ internal final class _CSVAsyncDecoder: Decoder {
         self.onInstance = onInstance
         self.data = data
 
-        self.handler.onRow = { row in
+        self.handler.onRow = { [unowned self] row in
             self.data = .keyedValues(row)
             let decoded = try self.decoding.init(from: self)
             try self.onInstance(decoded)
@@ -62,7 +62,7 @@ internal final class _CSVAsyncDecoder: Decoder {
         guard case .singleValue = self.data else {
             throw DecodingError.dataCorrupted(.init(
                 codingPath: self.codingPath,
-                debugDescription: "Attempted to created single value container with keyed data"
+                debugDescription: "Attempted to create single value container with keyed data"
             ))
         }
 
