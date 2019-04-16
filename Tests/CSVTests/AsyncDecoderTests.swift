@@ -1,7 +1,7 @@
 import XCTest
 import CSV
 
-final class AsyncDecoderTests: XCTestCase {
+final class DecoderTests: XCTestCase {
     func testAsyncDecode() throws {
         var people: [Person] = []
         let contentLength = chunks.reduce(0) { $0 + $1.count }
