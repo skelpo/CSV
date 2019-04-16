@@ -1,11 +1,19 @@
 import Foundation
 
 public final class CSVCoder {
-    public static func decode<T>(_ data: Data, to type: T.Type = T.self)throws -> [T] where T: Decodable {
-        return try _CSVDecoder.decode(T.self, from: data)
+    public var decodingOptions: CSVCodingOptions
+    public var encodingOptions: CSVCodingOptions
+
+    public init(decodingOptions: CSVCodingOptions = .default, encodingOptions: CSVCodingOptions = .default) {
+        self.decodingOptions = decodingOptions
+        self.encodingOptions = encodingOptions
+    }
+
+    public func decode<T>(_ data: Data, to type: T.Type = T.self)throws -> [T] where T: Decodable {
+        return try _CSVDecoder(csv: Array(data), decodingOptions: self.decodingOptions).decode(T.self, from: data)
     }
     
-    public static func encode<T>(_ objects: [T], boolEncoding: BoolEncodingStrategy = .toString, stringEncoding: String.Encoding = .utf32)throws -> Data where T: Encodable {
+    public func encode<T>(_ objects: [T], boolEncoding: BoolEncodingStrategy = .toString, stringEncoding: String.Encoding = .utf32)throws -> Data where T: Encodable {
         return try Data(_CSVEncoder.encode(objects, boolEncoding: boolEncoding, stringEncoding: stringEncoding))
     }
 }
@@ -18,7 +26,7 @@ public final class CSVDecoder {
     }
 
     public var sync: CSVSyncDecoder {
-        return CSVSyncDecoder()
+        return CSVSyncDecoder(decodingOptions: self.decodingOptions)
     }
 
     public func async<D>(for: D.Type = D.self, length: Int, _ onInstance: @escaping (D) -> ()) -> CSVAsyncDecoder
@@ -34,13 +42,17 @@ public final class CSVDecoder {
 }
 
 public final class CSVSyncDecoder {
-    internal init() { }
+    internal var decodingOptions: CSVCodingOptions
+
+    internal init(decodingOptions: CSVCodingOptions) {
+        self.decodingOptions = decodingOptions
+    }
 
     public func decode<D>(_ type: D.Type = D.self, from data: Data)throws -> [D] where D: Decodable {
         var result: [D] = []
         result.reserveCapacity(data.lazy.split(separator: "\n").count)
 
-        let decoder = _CSVAsyncDecoder(decoding: type, path: [], decodingOptions: .default) { decoded in
+        let decoder = _CSVAsyncDecoder(decoding: type, path: [], decodingOptions: self.decodingOptions) { decoded in
             guard let typed = decoded as? D else {
                 assertionFailure("Passed incompatible value into decoding completion callback")
                 return
