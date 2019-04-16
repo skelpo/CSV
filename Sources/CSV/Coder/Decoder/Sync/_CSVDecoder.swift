@@ -7,11 +7,13 @@ final class _CSVDecoder: Decoder {
     var codingPath: [CodingKey]
     
     let container: DecoderDataContainer
+    let decodingOptions: CSVCodingOptions
     
-    init(csv: [UInt8], path: CodingPath = [], info: [CodingUserInfoKey : Any] = [:])throws {
+    init(csv: [UInt8], path: CodingPath = [], info: [CodingUserInfoKey : Any] = [:], decodingOptions: CSVCodingOptions)throws {
         self.codingPath = path
         self.userInfo = info
         self.container = try DecoderDataContainer(data: csv)
+        self.decodingOptions = decodingOptions
     }
     
     func container<Key>(keyedBy type: Key.Type) throws -> KeyedDecodingContainer<Key> where Key : CodingKey {
@@ -36,8 +38,8 @@ final class _CSVDecoder: Decoder {
         return _CSVSingleValueDecoder(decoder: self)
     }
     
-    static func decode<T>(_ type: T.Type, from data: Data)throws -> [T] where T: Decodable {
-        let decoder = try _CSVDecoder(csv: Array(data))
+    func decode<T>(_ type: T.Type, from data: Data)throws -> [T] where T: Decodable {
+        let decoder = try _CSVDecoder(csv: Array(data), decodingOptions: self.decodingOptions)
         return try Array<T>(from: decoder)
     }
 }

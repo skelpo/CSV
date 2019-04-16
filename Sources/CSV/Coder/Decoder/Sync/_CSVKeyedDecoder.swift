@@ -24,18 +24,17 @@ final class _CSVKeyedDecoder<K>: KeyedDecodingContainerProtocol where K: CodingK
     }
     
     func decodeNil(forKey key: K) throws -> Bool {
-        let cell = self.decoder.container.row[key.stringValue]
-        return cell == nil || cell == "N/A" || cell == "NA"
+        guard let cell = self.decoder.container.row[key.stringValue] else { return true }
+        return self.decoder.decodingOptions.nilCodingStrategy.isNull(cell)
     }
     
     func decode(_ type: Bool.Type, forKey key: K) throws -> Bool {
         let cell = try self.decoder.container.row.value(for: key)
-        let value = String(cell).lowercased()
-        switch value {
-        case "true", "yes", "t", "y", "1": return true
-        case "false", "no", "f", "n", "0": return false
-        default: throw DecodingError.unableToExtract(type: type, at: self.codingPath + [key])
+        guard let bool = self.decoder.decodingOptions.boolCodingStrategy.bool(from: cell) else {
+            throw DecodingError.unableToExtract(type: type, at: self.codingPath + [key])
         }
+
+        return bool
     }
     
     func decode(_ type: String.Type, forKey key: K) throws -> String {

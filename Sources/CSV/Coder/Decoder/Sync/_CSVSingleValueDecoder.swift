@@ -10,17 +10,17 @@ final class _CSVSingleValueDecoder: SingleValueDecodingContainer {
     }
     
     func decodeNil() -> Bool {
-        return decoder.container.cell == nil || decoder.container.cell == "N/A" || decoder.container.cell == "NA"
+        guard let cell = self.decoder.container.cell else { return true }
+        return self.decoder.decodingOptions.nilCodingStrategy.isNull(cell)
     }
     
     func decode(_ type: Bool.Type) throws -> Bool {
         guard let cell = self.decoder.container.cell else { throw DecodingError.nilValue(type: type, at: self.codingPath) }
-        let value = String(cell).lowercased()
-        switch value {
-        case "true", "yes", "t", "y", "1": return true
-        case "false", "no", "f", "n", "0": return false
-        default: throw DecodingError.unableToExtract(type: type, at: self.codingPath)
+        guard let bool = self.decoder.decodingOptions.boolCodingStrategy.bool(from: cell) else {
+            throw DecodingError.unableToExtract(type: type, at: self.codingPath)
         }
+
+        return bool
     }
     
     func decode(_ type: String.Type) throws -> String {
