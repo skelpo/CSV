@@ -109,7 +109,7 @@ final class ParserTests: XCTestCase {
     }
 }
 
-let data = """
+fileprivate let data = """
 first name,last_name,age,gender,tagLine
 Caleb,Kleveter,18,M,😜\r
 Benjamin,Franklin,269,M,A penny saved is a penny earned
@@ -120,7 +120,7 @@ all's right with the world"
 TinTin,,16,M,Great snakes!
 """
 
-let chunks: [String] = [
+fileprivate let chunks: [String] = [
     "first name,last_name,age",
     ",gender,tagLine\nCaleb,Kleveter,18,M,",
     "😜\r\nBenjamin,Franklin,269,M,A penny saved is a ",
