@@ -1,10 +1,22 @@
 import Foundation
 
+public struct ErrorList: Error {
+    public var errors: [Error]
+
+    public init(errors: [Error] = []) {
+        self.errors = errors
+    }
+
+    var result: Result<Void, ErrorList> {
+        return self.errors.count == 0 ? .success(()) : .failure(self)
+    }
+}
+
 extension CSV {
     public struct Parser {
-        public typealias HeaderHandler = (_ title: [UInt8]) -> ()
-        public typealias CellHandler = (_ title: [UInt8], _ contents: [UInt8]) -> ()
-        
+        public typealias HeaderHandler = (_ title: [UInt8])throws -> ()
+        public typealias CellHandler = (_ title: [UInt8], _ contents: [UInt8])throws -> ()
+
         internal enum Position {
             case headers
             case cells
@@ -42,12 +54,14 @@ extension CSV {
             
             self.state = State()
         }
-        
-        public mutating func parse(_ data: [UInt8], length: Int? = nil) {
+
+        @discardableResult
+        public mutating func parse(_ data: [UInt8], length: Int? = nil) -> Result<Void, ErrorList> {
             var currentCell: [UInt8] = self.state.store
             var index = data.startIndex
             var updateState = false
-            
+            var errors = ErrorList()
+
             while index < data.endIndex {
                 let byte = data[index]
                 switch byte {
@@ -81,9 +95,11 @@ extension CSV {
                         switch self.state.position {
                         case .headers:
                             self.state.headers.append(currentCell)
-                            self.onHeader?(currentCell)
+                            do { try self.onHeader?(currentCell) }
+                            catch let error { errors.errors.append(error) }
                         case .cells:
-                            self.onCell?(self.currentHeader, currentCell)
+                            do { try self.onCell?(self.currentHeader, currentCell) }
+                            catch let error { errors.errors.append(error) }
                             self.state.headerIndex += 1
                         }
                         currentCell = []
@@ -104,17 +120,21 @@ extension CSV {
                 
                 if (self.state.bytesLeft ?? 0) > currentCell.count {
                     self.state.store = currentCell
-                    return
+                    return errors.result
                 }
             }
             
             switch self.state.position {
             case .headers:
                 self.state.headers.append(currentCell)
-                self.onHeader?(currentCell)
+                do { try self.onHeader?(currentCell) }
+                catch let error { errors.errors.append(error) }
             case .cells:
-                self.onCell?(self.currentHeader, currentCell)
+                do { try self.onCell?(self.currentHeader, currentCell) }
+                catch let error { errors.errors.append(error) }
             }
+
+            return errors.result
         }
     }
     
