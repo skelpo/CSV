@@ -17,6 +17,10 @@ public final class CSVDecoder {
         self.decodingOptions = decodingOptions
     }
 
+    public var sync: CSVSyncDecoder {
+        return CSVSyncDecoder()
+    }
+
     public func async<D>(for: D.Type = D.self, length: Int, _ onInstance: @escaping (D) -> ()) -> CSVAsyncDecoder
         where D: Decodable
     {
@@ -26,6 +30,27 @@ public final class CSVDecoder {
             length: length,
             decodingOptions: self.decodingOptions
         )
+    }
+}
+
+public final class CSVSyncDecoder {
+    internal init() { }
+
+    public func decode<D>(_ type: D.Type = D.self, from data: Data)throws -> [D] where D: Decodable {
+        var result: [D] = []
+        result.reserveCapacity(data.lazy.split(separator: "\n").count)
+
+        let decoder = _CSVAsyncDecoder(decoding: type, path: [], decodingOptions: .default) { decoded in
+            guard let typed = decoded as? D else {
+                assertionFailure("Passed incompatible value into decoding completion callback")
+                return
+            }
+
+            result.append(typed)
+        }
+        try decoder.decode(Array(data), length: data.count)
+
+        return result
     }
 }
 
