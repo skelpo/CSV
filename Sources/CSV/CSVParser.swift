@@ -13,7 +13,7 @@ public struct ErrorList: Error {
 }
 
 extension CSV {
-    public final class Parser {
+    public struct Parser {
         public typealias HeaderHandler = (_ title: [UInt8])throws -> ()
         public typealias CellHandler = (_ title: [UInt8], _ contents: [UInt8])throws -> ()
 
@@ -56,7 +56,7 @@ extension CSV {
         }
 
         @discardableResult
-        public func parse(_ data: [UInt8], length: Int? = nil) -> Result<Void, ErrorList> {
+        public mutating func parse(_ data: [UInt8], length: Int? = nil) -> Result<Void, ErrorList> {
             var currentCell: [UInt8] = self.state.store
             var index = data.startIndex
             var updateState = false
@@ -147,7 +147,7 @@ extension CSV {
         
         public func parse(_ data: [UInt8]) -> [[UInt8]: [[UInt8]?]] {
             var results: [[UInt8]: [[UInt8]?]] = [:]
-            let parser = Parser(
+            var parser = Parser(
                 onHeader: { header in
                     results[header] = []
                 },
@@ -162,7 +162,7 @@ extension CSV {
         
         public func parse(_ data: String) -> [String: [String?]] {
             var results: [String: [String?]] = [:]
-            let parser = Parser(
+            var parser = Parser(
                 onHeader: { header in
                     if let title = String(bytes: header, encoding: .utf8) {
                         results[title] = []
