@@ -13,7 +13,7 @@ public struct ErrorList: Error {
 }
 
 extension CSV {
-    public struct Parser {
+    public final class Parser {
         public typealias HeaderHandler = (_ title: [UInt8])throws -> ()
         public typealias CellHandler = (_ title: [UInt8], _ contents: [UInt8])throws -> ()
 
@@ -56,7 +56,7 @@ extension CSV {
         }
 
         @discardableResult
-        public mutating func parse(_ data: [UInt8], length: Int? = nil) -> Result<Void, ErrorList> {
+        public func parse(_ data: [UInt8], length: Int? = nil) -> Result<Void, ErrorList> {
             var currentCell: [UInt8] = self.state.store
             var index = data.startIndex
             var updateState = false
