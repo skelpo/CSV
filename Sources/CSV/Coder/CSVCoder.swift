@@ -12,9 +12,59 @@ public final class CSVCoder {
     public func decode<T>(_ data: Data, to type: T.Type = T.self)throws -> [T] where T: Decodable {
         return try _CSVDecoder(csv: Array(data), decodingOptions: self.decodingOptions).decode(T.self, from: data)
     }
-    
-    public func encode<T>(_ objects: [T], boolEncoding: BoolEncodingStrategy = .toString, stringEncoding: String.Encoding = .utf32)throws -> Data where T: Encodable {
-        return try Data(_CSVEncoder.encode(objects, boolEncoding: boolEncoding, stringEncoding: stringEncoding))
+
+    public func encode<T>(_ objects: [T])throws -> Data where T: Encodable {
+        return try Data(_CSVEncoder.encode(objects, encodingOptions: self.encodingOptions))
+    }
+}
+
+public final class CSVEncoder {
+    public var encodingOptions: CSVCodingOptions
+
+    public init(encodingOptions: CSVCodingOptions) {
+        self.encodingOptions = encodingOptions
+    }
+
+    public var sync: CSVSyncEncoder {
+        return CSVSyncEncoder(encodingOptions: self.encodingOptions)
+    }
+
+    public func async(_ onRow: @escaping ([UInt8]) -> ()) -> CSVAsyncEncoder {
+        return CSVAsyncEncoder(encodingOptions: self.encodingOptions, onRow: onRow)
+    }
+}
+
+public final class CSVSyncEncoder {
+    internal var encodingOptions: CSVCodingOptions
+
+    internal init(encodingOptions: CSVCodingOptions) {
+        self.encodingOptions = encodingOptions
+    }
+
+    public func encode<T>(_ objects: [T])throws -> Data where T: Encodable {
+        var rows: [[UInt8]] = []
+        rows.reserveCapacity(objects.count)
+
+        let encoder = AsyncEncoder(encodingOptions: self.encodingOptions) { row in
+            rows.append(row)
+        }
+        try objects.forEach(encoder.encode)
+
+        return Data(rows.joined(separator: [CSV.Delimiter.newLine]))
+    }
+}
+
+public final class CSVAsyncEncoder {
+    internal var encodingOptions: CSVCodingOptions
+    private var encoder: AsyncEncoder
+
+    internal init(encodingOptions: CSVCodingOptions, onRow: @escaping ([UInt8]) -> ()) {
+        self.encodingOptions = encodingOptions
+        self.encoder = AsyncEncoder(encodingOptions: encodingOptions, onRow: onRow)
+    }
+
+    public func encode<T>(_ object: T)throws where T: Encodable {
+        try self.encoder.encode(object)
     }
 }
 

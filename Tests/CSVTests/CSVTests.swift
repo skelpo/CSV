@@ -160,7 +160,7 @@ class CSVTests: XCTestCase {
         let decoder = CSVCoder(decodingOptions: decodingOptions)
 
         let fielders = try decoder.decode(data, to: Response.self)
-        _ = try decoder.encode(fielders, boolEncoding: .custom(true: "Yes".bytes, false: "No".bytes))
+        _ = try decoder.encode(fielders)
     }
 
     func testCSVEncodingSpeed()throws {
@@ -172,14 +172,34 @@ class CSVTests: XCTestCase {
 
         let fielders = try decoder.decode(data, to: Response.self)
 
-        // 7.391
+        // 9.477
         measure {
             do {
                 _ = try decoder.encode(fielders)
             } catch { XCTFail(error.localizedDescription) }
         }
     }
-    
+
+    func testCSVSyncEncodingSpeed() throws {
+        let url = URL(string: "file:/Users/calebkleveter/Development/developer_survey_2018.csv")!
+        let data = try Data(contentsOf: url)
+
+        let decodingOptions = CSVCodingOptions(boolCodingStrategy: .fuzzy, nilCodingStrategy: .custom("NA"))
+        let decoder = CSVDecoder(decodingOptions: decodingOptions)
+
+        let fielders = try decoder.sync.decode(Response.self, from: data)
+
+        let encodingOptions = CSVCodingOptions(boolCodingStrategy: .fuzzy, nilCodingStrategy: .custom("NA"))
+        let encoder = CSVEncoder(encodingOptions: encodingOptions)
+
+        // 5.908
+        measure {
+            do {
+                _ = try encoder.sync.encode(fielders)
+            } catch { XCTFail(error.localizedDescription) }
+        }
+    }
+
     func testDataToIntSpeed() {
         let bytes = "12495768014".bytes
         measure {

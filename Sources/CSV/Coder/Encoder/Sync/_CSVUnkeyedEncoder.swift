@@ -3,14 +3,12 @@ import Foundation
 final class _CSVUnkeyedEncoder: UnkeyedEncodingContainer {
     var codingPath: [CodingKey]
     let container: DataContainer
-    let boolEncoding: BoolEncodingStrategy
-    let stringEncoding: String.Encoding
+    let encodingOptions: CSVCodingOptions
     
-    init(container: DataContainer, path: CodingPath, boolEncoding: BoolEncodingStrategy, stringEncoding: String.Encoding) {
+    init(container: DataContainer, path: CodingPath, encodingOptions: CSVCodingOptions) {
         self.container = container
         self.codingPath = path
-        self.boolEncoding = boolEncoding
-        self.stringEncoding = stringEncoding
+        self.encodingOptions = encodingOptions
     }
     
     var count: Int {
@@ -29,21 +27,29 @@ final class _CSVUnkeyedEncoder: UnkeyedEncodingContainer {
     func encode(_ value: Int) throws { throw self.fail(with: value) }
     
     func encode<T>(_ value: T) throws where T : Encodable {
-        let encoder = _CSVEncoder(container: DataContainer(titles: self.container.data.count > 0), path: self.codingPath, boolEncoding: self.boolEncoding, stringEncoding: self.stringEncoding)
+        let encoder = _CSVEncoder(
+            container: DataContainer(titles: self.container.data.count > 0),
+            path: self.codingPath,
+            encodingOptions: self.encodingOptions
+        )
         try value.encode(to: encoder)
         self.container.data.append(contentsOf: encoder.container.data.dropLast() + ["\n"])
     }
     
     func nestedContainer<NestedKey>(keyedBy keyType: NestedKey.Type) -> KeyedEncodingContainer<NestedKey> where NestedKey : CodingKey {
-        let container = _CSVKeyedEncoder<NestedKey>(container: self.container, path: self.codingPath, boolEncoding: self.boolEncoding, stringEncoding: self.stringEncoding)
+        let container = _CSVKeyedEncoder<NestedKey>(
+            container: self.container,
+            path: self.codingPath,
+            encodingOptions: self.encodingOptions
+        )
         return KeyedEncodingContainer(container)
     }
     
     func nestedUnkeyedContainer() -> UnkeyedEncodingContainer {
-        return _CSVUnkeyedEncoder(container: self.container, path: self.codingPath, boolEncoding: self.boolEncoding, stringEncoding: self.stringEncoding)
+        return _CSVUnkeyedEncoder(container: self.container, path: self.codingPath, encodingOptions: self.encodingOptions)
     }
     
     func superEncoder() -> Encoder {
-        return _CSVEncoder(container: self.container, path: self.codingPath, boolEncoding: self.boolEncoding, stringEncoding: self.stringEncoding)
+        return _CSVEncoder(container: self.container, path: self.codingPath, encodingOptions: self.encodingOptions)
     }
 }

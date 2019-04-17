@@ -3,18 +3,20 @@ import Foundation
 final class _CSVSingleValueEncoder: SingleValueEncodingContainer {
     let codingPath: [CodingKey]
     let container: DataContainer
-    let boolEncoding: BoolEncodingStrategy
-    let stringEncoding: String.Encoding
+    let encodingOptions: CSVCodingOptions
     
-    init(container: DataContainer, path: CodingPath, boolEncoding: BoolEncodingStrategy, stringEncoding: String.Encoding) {
+    init(container: DataContainer, path: CodingPath, encodingOptions: CSVCodingOptions) {
         self.codingPath = path
         self.container = container
-        self.boolEncoding = boolEncoding
-        self.stringEncoding = stringEncoding
+        self.encodingOptions = encodingOptions
     }
     
-    func encodeNil() throws { self.container.data = [] }
-    func encode(_ value: Bool) throws { self.container.data = boolEncoding.convert(value) }
+    func encodeNil() throws {
+        self.container.data = self.encodingOptions.nilCodingStrategy.bytes()
+    }
+    func encode(_ value: Bool) throws {
+        self.container.data = self.encodingOptions.boolCodingStrategy.bytes(from: value)
+    }
     func encode(_ value: String) throws { self.container.data = value.bytes }
     func encode(_ value: Double) throws { self.container.data = value.bytes }
     func encode(_ value: Float) throws { self.container.data = value.bytes }

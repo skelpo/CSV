@@ -1,16 +1,14 @@
 import Foundation
 
 final class _CSVKeyedEncoder<K>: KeyedEncodingContainerProtocol where K: CodingKey {
-    var codingPath: [CodingKey]
+    let codingPath: [CodingKey]
     let container: DataContainer
-    let boolEncoding: BoolEncodingStrategy
-    let stringEncoding: String.Encoding
+    let encodingOptions: CSVCodingOptions
     
-    init(container: DataContainer, path: CodingPath, boolEncoding: BoolEncodingStrategy, stringEncoding: String.Encoding) {
+    init(container: DataContainer, path: CodingPath, encodingOptions: CSVCodingOptions) {
         self.container = container
         self.codingPath = path
-        self.boolEncoding = boolEncoding
-        self.stringEncoding = stringEncoding
+        self.encodingOptions = encodingOptions
     }
     
     func titleEncode(for key: K, converter: ()throws -> [UInt8])rethrows {
@@ -24,8 +22,14 @@ final class _CSVKeyedEncoder<K>: KeyedEncodingContainerProtocol where K: CodingK
         }
     }
     
-    func encodeNil(forKey key: K) throws { self.titleEncode(for: key) { [] } }
-    func encode(_ value: Bool, forKey key: K) throws { self.titleEncode(for: key) { self.boolEncoding.convert(value) } }
+    func encodeNil(forKey key: K) throws {
+        let value = self.encodingOptions.nilCodingStrategy.bytes()
+        self.titleEncode(for: key) { value }
+    }
+    func encode(_ value: Bool, forKey key: K) throws {
+        let value = self.encodingOptions.boolCodingStrategy.bytes(from: value)
+        self.titleEncode(for: key) { value }
+    }
     func encode(_ value: Double, forKey key: K) throws { self.titleEncode(for: key) { value.bytes } }
     func encode(_ value: Float, forKey key: K) throws { self.titleEncode(for: key) { value.bytes } }
     func encode(_ value: Int, forKey key: K) throws { self.titleEncode(for: key) { value.bytes } }
@@ -33,26 +37,34 @@ final class _CSVKeyedEncoder<K>: KeyedEncodingContainerProtocol where K: CodingK
     
     func encode<T>(_ value: T, forKey key: K) throws where T : Encodable {
         try self.titleEncode(for: key) {
-            let encoder = _CSVEncoder(container: DataContainer(titles: true), path: self.codingPath, boolEncoding: self.boolEncoding, stringEncoding: self.stringEncoding)
+            let encoder = _CSVEncoder(
+                container: DataContainer(titles: true),
+                path: self.codingPath,
+                encodingOptions: self.encodingOptions
+            )
             try value.encode(to: encoder)
             return encoder.container.data
         }
     }
     
     func nestedContainer<NestedKey>(keyedBy keyType: NestedKey.Type, forKey key: K) -> KeyedEncodingContainer<NestedKey> where NestedKey : CodingKey {
-        let container = _CSVKeyedEncoder<NestedKey>(container: self.container, path: self.codingPath + [key], boolEncoding: self.boolEncoding, stringEncoding: self.stringEncoding)
+        let container = _CSVKeyedEncoder<NestedKey>(
+            container: self.container,
+            path: self.codingPath + [key],
+            encodingOptions: self.encodingOptions
+        )
         return KeyedEncodingContainer(container)
     }
     
     func nestedUnkeyedContainer(forKey key: K) -> UnkeyedEncodingContainer {
-        return _CSVUnkeyedEncoder(container: self.container, path: self.codingPath, boolEncoding: self.boolEncoding, stringEncoding: self.stringEncoding)
+        return _CSVUnkeyedEncoder(container: self.container, path: self.codingPath, encodingOptions: self.encodingOptions)
     }
     
     func superEncoder() -> Encoder {
-        return _CSVEncoder(container: self.container, path: self.codingPath, boolEncoding: self.boolEncoding, stringEncoding: self.stringEncoding)
+        return _CSVEncoder(container: self.container, path: self.codingPath, encodingOptions: self.encodingOptions)
     }
     
     func superEncoder(forKey key: K) -> Encoder {
-        return _CSVEncoder(container: self.container, path: self.codingPath + [key], boolEncoding: self.boolEncoding, stringEncoding: self.stringEncoding)
+        return _CSVEncoder(container: self.container, path: self.codingPath + [key], encodingOptions: self.encodingOptions)
     }
 }
