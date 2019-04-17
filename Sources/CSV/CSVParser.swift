@@ -61,20 +61,21 @@ extension CSV {
             var index = data.startIndex
             var updateState = false
             var errors = ErrorList()
+            var slice: (start: Int, end: Int) = (index, index)
 
             while index < data.endIndex {
                 let byte = data[index]
                 switch byte {
                 case Delimiter.quote:
-                    if self.state.inQuotes, index + 1 < data.endIndex, data[index + 1] == Delimiter.quote {
-                        currentCell.append(Delimiter.quote)
-                        index += 1
-                    } else {
-                        self.state.inQuotes.toggle()
+                    currentCell.append(contentsOf: data[slice.start..<slice.end])
+                    slice = (index + 1, index + 1)
+                    switch self.state.inQuotes && index + 1 < data.endIndex && data[index + 1] == Delimiter.quote {
+                    case true: index += 1
+                    case false: self.state.inQuotes.toggle()
                     }
                 case Delimiter.carriageReturn:
                     if self.state.inQuotes {
-                        currentCell.append(Delimiter.carriageReturn)
+                        slice.end += 1
                     } else {
                         if index + 1 < data.endIndex, data[index + 1] == Delimiter.newLine {
                             index += 1
@@ -83,15 +84,16 @@ extension CSV {
                     }
                 case Delimiter.newLine:
                     if self.state.inQuotes {
-                        currentCell.append(Delimiter.newLine)
+                        slice.end += 1
                     } else {
                         if self.state.position == .headers { updateState = true }
                         fallthrough
                     }
                 case Delimiter.comma:
                     if self.state.inQuotes {
-                        currentCell.append(Delimiter.comma)
+                        slice.end += 1
                     } else {
+                        currentCell.append(contentsOf: data[slice.start..<slice.end])
                         switch self.state.position {
                         case .headers:
                             self.state.headers.append(currentCell)
@@ -103,27 +105,29 @@ extension CSV {
                             self.state.headerIndex += 1
                         }
                         currentCell = []
+                        slice = (index + 1, index + 1)
                     }
-                default: currentCell.append(byte)
+                default: slice.end += 1
                 }
                 
                 if updateState { self.state.position = .cells }
                 index += 1
             }
-            
+
+            currentCell.append(contentsOf: data[slice.start..<slice.end])
             if let length = length {
                 if let left = self.state.bytesLeft {
                     self.state.bytesLeft = left - ((self.state.store.count + data.count) - currentCell.count)
                 } else {
                     self.state.bytesLeft = length - ((self.state.store.count + data.count) - currentCell.count)
                 }
-                
+
                 if (self.state.bytesLeft ?? 0) > currentCell.count {
                     self.state.store = currentCell
                     return errors.result
                 }
             }
-            
+
             switch self.state.position {
             case .headers:
                 self.state.headers.append(currentCell)
