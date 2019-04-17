@@ -138,12 +138,12 @@ extension CSV {
         }
     }
     
-    public struct SyncParser {
+    public final class SyncParser {
         public init() {}
         
         public func parse(_ data: [UInt8]) -> [[UInt8]: [[UInt8]?]] {
             var results: [[UInt8]: [[UInt8]?]] = [:]
-            var parser = Parser(
+            let parser = Parser(
                 onHeader: { header in
                     results[header] = []
                 },
@@ -158,7 +158,7 @@ extension CSV {
         
         public func parse(_ data: String) -> [String: [String?]] {
             var results: [String: [String?]] = [:]
-            var parser = Parser(
+            let parser = Parser(
                 onHeader: { header in
                     if let title = String(bytes: header, encoding: .utf8) {
                         results[title] = []
