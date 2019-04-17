@@ -17,7 +17,7 @@ class CSVTests: XCTestCase {
         let data = try Array(Data(contentsOf: url))
         let parser = CSV.SyncParser()
 
-        // 12.397
+        // 10.473
         measure {
             _ = parser.parse(data)
         }
@@ -28,7 +28,7 @@ class CSVTests: XCTestCase {
         let data = try String(contentsOf: url)
         let parser = CSV.SyncParser()
 
-        // 20.241
+        // 18.083
         measure {
             _ = parser.parse(data)
         }
@@ -127,11 +127,10 @@ class CSVTests: XCTestCase {
         let decodingOptions = CSVCodingOptions(boolCodingStrategy: .fuzzy, nilCodingStrategy: .custom("NA"))
         let decoder = CSVDecoder(decodingOptions: decodingOptions)
 
-        // 21.065
+        // 18.826
         measure {
             do {
                 _ = try decoder.sync.decode(Response.self, from: data)
-                print("Done!")
             } catch { XCTFail(error.localizedDescription) }
         }
     }
