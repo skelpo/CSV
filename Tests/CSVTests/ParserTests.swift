@@ -13,7 +13,7 @@ final class ParserTests: XCTestCase {
         var headers: [String] = []
         var cells: [String: [String?]] = [:]
         
-        var parser = CSV.Parser(
+        let parser = CSV.Parser(
             onHeader: { header in
                 if let title = String(bytes: header, encoding: .utf8) {
                     headers.append(title)
@@ -49,7 +49,7 @@ final class ParserTests: XCTestCase {
         var headers: [String] = []
         var cells: [String: [String?]] = [:]
         
-        var parser = CSV.Parser(
+        let parser = CSV.Parser(
             onHeader: { header in
                 if let title = String(bytes: header, encoding: .utf8) {
                     headers.append(title)
@@ -86,7 +86,7 @@ final class ParserTests: XCTestCase {
     }
     
     func testMeasureFullParse() {
-        var parser = CSV.Parser(onHeader: { _ in return }, onCell: { _, _ in return })
+        let parser = CSV.Parser(onHeader: { _ in return }, onCell: { _, _ in return })
         let csv = Array(data.utf8)
         
         measure {
@@ -97,7 +97,7 @@ final class ParserTests: XCTestCase {
     }
     
     func testMeasureChunkedParse() {
-        var parser = CSV.Parser(onHeader: { _ in return }, onCell: { _, _ in return })
+        let parser = CSV.Parser(onHeader: { _ in return }, onCell: { _, _ in return })
         let chnks = chunks.map { Array($0.utf8) }
         let length = chnks.reduce(0) { $0 + $1.count }
         
