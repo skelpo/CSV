@@ -5,11 +5,32 @@ class CSVTests: XCTestCase {
     func testParseSpeed()throws {
         let url = URL(string: "file:/Users/calebkleveter/Development/developer_survey_2018.csv")!
         let data = try Data(contentsOf: url)
-        
+
+        // 9.142
         measure {
-            autoreleasepool {
-                let _: [CSV.Column] = CSV.parse(data)
-            }
+            let _: [CSV.Column] = CSV.parse(data)
+        }
+    }
+
+    func testAsyncParseSpeed()throws {
+        let url = URL(string: "file:/Users/calebkleveter/Development/developer_survey_2018.csv")!
+        let data = try Array(Data(contentsOf: url))
+        let parser = CSV.SyncParser()
+
+        // 12.397
+        measure {
+            _ = parser.parse(data)
+        }
+    }
+
+    func testAsyncParseStringSpeed()throws {
+        let url = URL(string: "file:/Users/calebkleveter/Development/developer_survey_2018.csv")!
+        let data = try String(contentsOf: url)
+        let parser = CSV.SyncParser()
+
+        // 20.241
+        measure {
+            _ = parser.parse(data)
         }
     }
     
@@ -75,7 +96,11 @@ class CSVTests: XCTestCase {
     func testCSVDecode()throws {
         let url = URL(string: "file:/Users/calebkleveter/Development/developer_survey_2018.csv")!
         let data = try Data(contentsOf: url)
-        let responses = try CSVCoder.decode(data, to: Response.self)
+
+        let decodingOptions = CSVCodingOptions(boolCodingStrategy: .fuzzy, nilCodingStrategy: .custom("NA"))
+        let decoder = CSVCoder(decodingOptions: decodingOptions)
+
+        let responses = try decoder.decode(data, to: Response.self)
         self.compare(responses.first, to: .first)
         self.compare(responses.last, to: .last)
     }
@@ -83,15 +108,34 @@ class CSVTests: XCTestCase {
     func testCSVDecodeSpeed()throws {
         let url = URL(string: "file:/Users/calebkleveter/Development/developer_survey_2018.csv")!
         let data = try Data(contentsOf: url)
-        
+
+        let decodingOptions = CSVCodingOptions(boolCodingStrategy: .fuzzy, nilCodingStrategy: .custom("NA"))
+        let decoder = CSVCoder(decodingOptions: decodingOptions)
+
         // 18.489
         measure {
             do {
-                _ = try CSVCoder.decode(data, to: Response.self)
+                _ = try decoder.decode(data, to: Response.self)
             } catch { XCTFail(error.localizedDescription) }
         }
     }
-    
+
+    func testCSVSyncDecodeSpeed()throws {
+        let url = URL(string: "file:/Users/calebkleveter/Development/developer_survey_2018.csv")!
+        let data = try Data(contentsOf: url)
+
+        let decodingOptions = CSVCodingOptions(boolCodingStrategy: .fuzzy, nilCodingStrategy: .custom("NA"))
+        let decoder = CSVDecoder(decodingOptions: decodingOptions)
+
+        // 21.065
+        measure {
+            do {
+                _ = try decoder.sync.decode(Response.self, from: data)
+                print("Done!")
+            } catch { XCTFail(error.localizedDescription) }
+        }
+    }
+
     func testCSVColumnSeralization()throws {
         let url = URL(string: "file:/Users/calebkleveter/Development/developer_survey_2018.csv")!
         let data = try Data(contentsOf: url)
@@ -112,19 +156,27 @@ class CSVTests: XCTestCase {
     func testCSVEncoding()throws {
         let url = URL(string: "file:/Users/calebkleveter/Development/developer_survey_2018.csv")!
         let data = try Data(contentsOf: url)
-        let fielders = try CSVCoder.decode(data, to: Response.self)
-        _ = try CSVCoder.encode(fielders, boolEncoding: .custom(true: "Yes".bytes, false: "No".bytes))
+
+        let decodingOptions = CSVCodingOptions(boolCodingStrategy: .fuzzy, nilCodingStrategy: .custom("NA"))
+        let decoder = CSVCoder(decodingOptions: decodingOptions)
+
+        let fielders = try decoder.decode(data, to: Response.self)
+        _ = try decoder.encode(fielders, boolEncoding: .custom(true: "Yes".bytes, false: "No".bytes))
     }
 
     func testCSVEncodingSpeed()throws {
         let url = URL(string: "file:/Users/calebkleveter/Development/developer_survey_2018.csv")!
         let data = try Data(contentsOf: url)
-        let fielders = try CSVCoder.decode(data, to: Response.self)
+
+        let decodingOptions = CSVCodingOptions(boolCodingStrategy: .fuzzy, nilCodingStrategy: .custom("NA"))
+        let decoder = CSVCoder(decodingOptions: decodingOptions)
+
+        let fielders = try decoder.decode(data, to: Response.self)
 
         // 7.391
         measure {
             do {
-                _ = try CSVCoder.encode(fielders)
+                _ = try decoder.encode(fielders)
             } catch { XCTFail(error.localizedDescription) }
         }
     }
