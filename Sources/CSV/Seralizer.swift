@@ -1,33 +1,56 @@
 import Foundation
 
+/// The type where an instance can be represented by an array of bytes (`UInt8`).
 public protocol BytesRepresentable {
+
+    /// The bytes that represent the given instance of `Self`.
     var bytes: [UInt8] { get }
 }
 
+/// A `Collection` type that contains keyed values.
+///
+/// This protocol acts as an abstraction over `Dictionary` for the `Serializer` type. It is mostly
+/// for testing purposes but you can also conform your own types if you want.
 public protocol KeyedCollection: Collection where Self.Element == (key: Key, value: Value) {
+
+    /// The type of a key for a given value.
     associatedtype Key: Hashable
+
+    /// The collection type for a list of the collection's keys.
     associatedtype Keys: Collection where Keys.Element == Key
 
+    /// The type of a value.
     associatedtype Value
+
+    /// The collection type for a list of the collection's values.
     associatedtype Values: Collection where Values.Element == Value
 
+    /// All the collection's keyes.
     var keys: Keys { get }
+
+    /// All the collection's values.
     var values: Values { get }
 }
 
 extension String: BytesRepresentable {
+
+    /// The string's UTF-* view converted to an `Array`.
     public var bytes: [UInt8] {
         return Array(self.utf8)
     }
 }
 
 extension Array: BytesRepresentable where Element == UInt8 {
+
+    /// Returns `Self`.
     public var bytes: [UInt8] {
         return self
     }
 }
 
 extension Optional: BytesRepresentable where Wrapped: BytesRepresentable {
+
+    /// The wrapped value's bytes or an empty `Array`.
     public var bytes: [UInt8] {
         return self?.bytes ?? []
     }
@@ -35,15 +58,35 @@ extension Optional: BytesRepresentable where Wrapped: BytesRepresentable {
 
 extension Dictionary: KeyedCollection { }
 
+/// Serializes dictionary data to CSV document data.
+///
+/// - Note: You should create a new `Serializer` dictionary you serialize.
 public struct Serializer {
     private var serializedHeaders: Bool
+
+    /// The callback that will be called with each row that is serialized.
     public var onRow: ([UInt8])throws -> ()
 
+    /// Creates a new `Serializer` instance.
+    ///
+    /// - Parameter onRow: The callback that will be called with each row that is serialized.
     public init(onRow: @escaping ([UInt8])throws -> ()) {
         self.serializedHeaders = false
         self.onRow = onRow
     }
 
+    /// Serializes a dictionary to CSV document data. Usually this will be a dictionary of type
+    /// `[BytesRepresentable: [BytesRepresentable]], but it can be any type you conform to the proper protocols.
+    ///
+    /// You can pass multiple dictionaries of the same structure into this method. The headers will only be serialized the
+    /// first time it is called.
+    ///
+    /// - Note: When you pass a dictionary into this method, each value collection is expect to contain the same
+    ////  number of elements, and will crash with `index out of bounds` if that assumption is broken.
+    ///
+    /// - Parameter data: The dictionary (or other object) to parse.
+    /// - Returns: A `Result` instance with a `.failure` case with all the errors from the the `.onRow` callback calls.
+    ///   If there are no errors, the result will be a `.success` case.
     @discardableResult
     public mutating func serialize<Data>(_ data: Data) -> Result<Void, ErrorList> where
         Data: KeyedCollection, Data.Key: BytesRepresentable, Data.Value: Collection, Data.Value.Element: BytesRepresentable,
@@ -72,9 +115,20 @@ public struct Serializer {
     }
 }
 
+/// A synchronous wrapper for the `Serializer` struct for parsing a whole CSV document.
 public struct SyncSerializer {
+
+    /// Creates a new `SyncSerializer` instance.
     public init () { }
 
+    /// Serializes a dictionary to CSV document data. Usually this will be a dictionary of type
+    /// `[BytesRepresentable: [BytesRepresentable]], but it can be any type you conform to the proper protocols.
+    ///
+    /// - Note: When you pass a dictionary into this method, each value collection is expect to contain the same
+    ////  number of elements, and will crash with `index out of bounds` if that assumption is broken.
+    ///
+    /// - Parameter data: The dictionary (or other object) to parse.
+    /// - Returns: The serialized CSV data.
     public func serialize<Data>(_ data: Data) -> [UInt8] where
         Data: KeyedCollection, Data.Key: BytesRepresentable, Data.Value: Collection, Data.Value.Element: BytesRepresentable,
         Data.Value.Index: Strideable, Data.Value.Index.Stride: SignedInteger
