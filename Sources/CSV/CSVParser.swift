@@ -164,14 +164,12 @@ extension CSV {
             var results: [String: [String?]] = [:]
             var parser = Parser(
                 onHeader: { header in
-                    if let title = String(bytes: header, encoding: .utf8) {
-                        results[title] = []
-                    }
+                    results[String(decoding: header, as: UTF8.self)] = []
                 },
                 onCell: { header, cell in
-                    if let title = String(bytes: header, encoding: .utf8), let contents = String(bytes: cell, encoding: .utf8) {
-                        results[title, default: []].append(cell.count > 0 ? contents : nil)
-                    }
+                    let title = String(decoding: header, as: UTF8.self)
+                    let contents = String(decoding: cell, as: UTF8.self)
+                    results[title, default: []].append(cell.count > 0 ? contents : nil)
                 }
             )
             
