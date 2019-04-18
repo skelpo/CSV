@@ -28,7 +28,7 @@ class CSVTests: XCTestCase {
         let data = try String(contentsOf: url)
         let parser = SyncParser()
 
-        // 18.083
+        // 17.606
         measure {
             _ = parser.parse(data)
         }
