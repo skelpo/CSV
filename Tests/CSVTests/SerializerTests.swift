@@ -4,7 +4,7 @@ import CSV
 final class SerializerTests: XCTestCase {
     func testSyncSerialize() {
         let serializer = SyncSerializer()
-        let serialized = serializer.serialize(data)
+        let serialized = serializer.serialize(orderedData)
         let string = String(decoding: serialized, as: UTF8.self)
 
         let expected = """
@@ -24,7 +24,7 @@ final class SerializerTests: XCTestCase {
     func testMeasuerSyncSerializer() {
         let serializer = SyncSerializer()
 
-        // 6.268
+        // 6.324
         measure {
             for _ in 0..<100_000 {
                 _ = serializer.serialize(data)
@@ -33,7 +33,18 @@ final class SerializerTests: XCTestCase {
     }
 }
 
-fileprivate let data: OrderedKeyedCollection = [
+fileprivate let orderedData: OrderedKeyedCollection = [
+    "first name": ["Caleb", "Benjamin", "Doc", "Grace", "Anne", "TinTin"],
+    "last_name": ["Kleveter", "Franklin", "Holliday", "Hopper", "Shirley", nil],
+    "age": ["18", "269", "174", "119", "141", "16"],
+    "gender": ["M", "M", "M", "F", "F", "M"],
+    "tagLine": [
+        "😜", "A penny saved is a penny earned", "Bang", nil,
+        "God's in His heaven,\nall's right with the world", "Great snakes!"
+    ]
+]
+
+fileprivate let data = [
     "first name": ["Caleb", "Benjamin", "Doc", "Grace", "Anne", "TinTin"],
     "last_name": ["Kleveter", "Franklin", "Holliday", "Hopper", "Shirley", nil],
     "age": ["18", "269", "174", "119", "141", "16"],
