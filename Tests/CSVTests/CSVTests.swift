@@ -146,12 +146,25 @@ class CSVTests: XCTestCase {
         let url = URL(string: "file:/Users/calebkleveter/Development/developer_survey_2018.csv")!
         let data = try Data(contentsOf: url)
         let parsed: [CSV.Column] = CSV.parse(data)
-        
+
+        // 11.932
         measure {
             _ = parsed.seralize()
         }
     }
-    
+
+    func testCSVSyncSeralizationSpeed() throws {
+        let url = URL(string: "file:/Users/calebkleveter/Development/developer_survey_2018.csv")!
+        let data = try Array(Data(contentsOf: url))
+        let parsed = CSV.SyncParser().parse(data)
+        let serializer = SyncSerializer()
+
+        // 18.049
+        measure {
+            _ = serializer.serialize(parsed)
+        }
+    }
+
     func testCSVEncoding()throws {
         let url = URL(string: "file:/Users/calebkleveter/Development/developer_survey_2018.csv")!
         let data = try Data(contentsOf: url)
