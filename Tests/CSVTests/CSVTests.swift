@@ -127,7 +127,7 @@ class CSVTests: XCTestCase {
         let decodingOptions = CSVCodingOptions(boolCodingStrategy: .fuzzy, nilCodingStrategy: .custom("NA"))
         let decoder = CSVDecoder(decodingOptions: decodingOptions)
 
-        // 18.826
+        // 20.948
         measure {
             do {
                 _ = try decoder.sync.decode(Response.self, from: data)
