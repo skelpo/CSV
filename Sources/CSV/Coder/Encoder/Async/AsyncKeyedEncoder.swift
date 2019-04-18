@@ -11,8 +11,12 @@ final class AsyncKeyedEncoder<K>: KeyedEncodingContainerProtocol where K: Coding
     
     func _encode(_ value: [UInt8], for key: K) {
         switch self.encoder.container.section {
-        case .header: self.encoder.container.cells.append(key.stringValue.bytes)
-        case .row: self.encoder.container.cells.append(value)
+        case .header:
+            let bytes = Array([[34], key.stringValue.bytes, [34]].joined())
+            self.encoder.container.cells.append(bytes)
+        case .row:
+            let bytes = Array([[34], value, [34]].joined())
+            self.encoder.container.cells.append(bytes)
         }
     }
     func _encode(_ value: [UInt8]?, for key: K)throws {
@@ -32,8 +36,8 @@ final class AsyncKeyedEncoder<K>: KeyedEncodingContainerProtocol where K: Coding
         self._encode(value, for: key)
     }
     func encode(_ value: Double, forKey key: K) throws { self._encode(value.bytes, for: key) }
-    func encode(_ value: Float, forKey key: K) throws { self._encode(value.bytes, for: key) }
-    func encode(_ value: Int, forKey key: K) throws { self._encode(value.bytes, for: key) }
+    func encode(_ value: Float, forKey key: K)  throws { self._encode(value.bytes, for: key) }
+    func encode(_ value: Int, forKey key: K)    throws { self._encode(value.bytes, for: key) }
     func encode(_ value: String, forKey key: K) throws { self._encode(value.bytes, for: key) }
     
     func encode<T>(_ value: T, forKey key: K) throws where T : Encodable {
