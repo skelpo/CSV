@@ -5,20 +5,42 @@ import Foundation
 // '"' => 34
 // ',' => 44
 
+/// Wraps an accumulated list of errors.
 public struct ErrorList: Error {
+
+    /// A list of errors from a repeating operation.
     public var errors: [Error]
 
+    /// Creates a new `ErrorList` instance.
+    ///
+    /// - Parameter errors: The initial errors to populate the `errors` array. Defaults to an empty array.
     public init(errors: [Error] = []) {
         self.errors = errors
     }
 
+    /// A `Result` instance that wraps the current `ErrorList` as its error.
+    ///
+    /// If the `errors` array is empty, the `Result` instance will be a void `success` case.
     var result: Result<Void, ErrorList> {
         return self.errors.count == 0 ? .success(()) : .failure(self)
     }
 }
 
+/// A parser for streaming `CSV` data.
+///
+/// - Note: You should create a new `Parser` instance for each CSV document you parse.
 public struct Parser {
+
+    /// The type of handler that gets called when a header is parsed.
+    ///
+    /// - Parameter title: The data for the header that is parsed.
     public typealias HeaderHandler = (_ title: [UInt8])throws -> ()
+
+    /// The type of handler that gets called when a cell is parsed.
+    ///
+    /// - Parameters:
+    ///   - title: The header for the cell that is parsed.
+    ///   - contents: The data for the cell that is parsed.
     public typealias CellHandler = (_ title: [UInt8], _ contents: [UInt8])throws -> ()
 
     internal enum Position {
@@ -44,14 +66,23 @@ public struct Parser {
         }
     }
 
+    /// The callback that is called when a header is parsed.
     public var onHeader: HeaderHandler?
+
+    /// The callback that is called when a cell is parsed.
     public var onCell: CellHandler?
+
     private var state: State
 
     internal var currentHeader: [UInt8] {
         return self.state.headers[self.state.headerIndex % self.state.headers.count]
     }
 
+    /// Creates a new `Parser` instance.
+    ///
+    /// - Parameters:
+    ///   - onHeader: The callback that will be called when a header is parsed.
+    ///   - onCell: The callback that will be called when a cell is parsed.
     public init(onHeader: HeaderHandler? = nil, onCell: CellHandler? = nil) {
         self.onHeader = onHeader
         self.onCell = onCell
@@ -59,6 +90,20 @@ public struct Parser {
         self.state = State()
     }
 
+    /// Parses an arbitrary portion of a CSV document.
+    ///
+    /// The data passed in should be the next slice of the document directly after the previous one.
+    ///
+    /// When a header is parsed from the data, the data will be passed into the registered `.onHeader` callback.
+    /// When a cell is parsed from the data, the header for that given cell and the cell's data will be passed into
+    /// the `.onCell` callback.
+    ///
+    /// - Parameters:
+    ///   - data: The portion of the CSV document to parse.
+    ///   - length: The full content length of the document that is being parsed.
+    ///
+    /// - Returns: A `Result` instance that will have a `.failure` case with all the errors thrown from
+    ///   the registered callbacks. If there are no errors, then the result will be a `.success` case.
     @discardableResult
     public mutating func parse(_ data: [UInt8], length: Int? = nil) -> Result<Void, ErrorList> {
         var currentCell: [UInt8] = self.state.store
@@ -144,9 +189,17 @@ public struct Parser {
     }
 }
 
+/// A synchronous wrapper for the `Parser` type for parsing whole CSV documents at once.
 public final class SyncParser {
+
+    /// Creates a new `SyncParser` instance
     public init() {}
 
+    /// Parses a whole CSV document at once.
+    ///
+    /// - Parameter data: The CSV data to parse.
+    /// - Returns: A dictionary containing the parsed CSV data. The keys are the column names
+    ///   and the values are the column cells. A `nil` value is an empty cell.
     public func parse(_ data: [UInt8]) -> [[UInt8]: [[UInt8]?]] {
         var results: [[UInt8]: [[UInt8]?]] = [:]
         var parser = Parser(
@@ -162,6 +215,11 @@ public final class SyncParser {
         return results
     }
 
+    /// Parses a whole CSV document at once from a `String`.
+    ///
+    /// - Parameter data: The CSV data to parse.
+    /// - Returns: A dictionary containing the parsed CSV data. The keys are the column names
+    ///   and the values are the column cells. A `nil` value is an empty cell.
     public func parse(_ data: String) -> [String: [String?]] {
         var results: [String: [String?]] = [:]
         var parser = Parser(
