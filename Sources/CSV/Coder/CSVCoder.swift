@@ -21,7 +21,7 @@ public final class CSVCoder {
 public final class CSVEncoder {
     public var encodingOptions: CSVCodingOptions
 
-    public init(encodingOptions: CSVCodingOptions) {
+    public init(encodingOptions: CSVCodingOptions = .default) {
         self.encodingOptions = encodingOptions
     }
 
