@@ -53,8 +53,8 @@ public struct Serializer {
         guard data.count > 0 else { return errors.result }
 
         if !self.serializedHeaders {
-            let headers = data.keys.map { title in Array([[CSV.Delimiter.quote], title.bytes, [CSV.Delimiter.quote]].joined()) }
-            do { try self.onRow(Array(headers.joined(separator: [CSV.Delimiter.comma]))) }
+            let headers = data.keys.map { title in Array([[34], title.bytes, [34]].joined()) }
+            do { try self.onRow(Array(headers.joined(separator: [10]))) }
             catch let error { errors.errors.append(error) }
             self.serializedHeaders = true
         }
@@ -62,9 +62,9 @@ public struct Serializer {
         guard let first = data.first?.value else { return errors.result }
         (first.startIndex..<first.endIndex).forEach { index in
             let cells = data.values.map { column -> [UInt8] in
-                return Array([[CSV.Delimiter.quote], column[index].bytes, [CSV.Delimiter.quote]].joined())
+                return Array([[34], column[index].bytes, [34]].joined())
             }
-            do { try onRow(Array(cells.joined(separator: [CSV.Delimiter.comma]))) }
+            do { try onRow(Array(cells.joined(separator: [10]))) }
             catch let error { errors.errors.append(error) }
         }
 
@@ -85,7 +85,7 @@ public struct SyncSerializer {
         var serializer = Serializer { row in rows.append(row) }
         serializer.serialize(data)
 
-        return Array(rows.joined(separator: [CSV.Delimiter.newLine]))
+        return Array(rows.joined(separator: [10]))
     }
 }
 

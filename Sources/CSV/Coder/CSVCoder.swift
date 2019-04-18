@@ -50,7 +50,7 @@ public final class CSVSyncEncoder {
         }
         try objects.forEach(encoder.encode)
 
-        return Data(rows.joined(separator: [CSV.Delimiter.newLine]))
+        return Data(rows.joined(separator: [10]))
     }
 }
 

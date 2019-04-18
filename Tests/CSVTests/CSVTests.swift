@@ -15,7 +15,7 @@ class CSVTests: XCTestCase {
     func testAsyncParseSpeed()throws {
         let url = URL(string: "file:/Users/calebkleveter/Development/developer_survey_2018.csv")!
         let data = try Array(Data(contentsOf: url))
-        let parser = CSV.SyncParser()
+        let parser = SyncParser()
 
         // 10.473
         measure {
@@ -26,7 +26,7 @@ class CSVTests: XCTestCase {
     func testAsyncParseStringSpeed()throws {
         let url = URL(string: "file:/Users/calebkleveter/Development/developer_survey_2018.csv")!
         let data = try String(contentsOf: url)
-        let parser = CSV.SyncParser()
+        let parser = SyncParser()
 
         // 18.083
         measure {
@@ -127,7 +127,7 @@ class CSVTests: XCTestCase {
         let decodingOptions = CSVCodingOptions(boolCodingStrategy: .fuzzy, nilCodingStrategy: .custom("NA"))
         let decoder = CSVDecoder(decodingOptions: decodingOptions)
 
-        // 20.948
+        // 19.767
         measure {
             do {
                 _ = try decoder.sync.decode(Response.self, from: data)
@@ -156,7 +156,7 @@ class CSVTests: XCTestCase {
     func testCSVSyncSeralizationSpeed() throws {
         let url = URL(string: "file:/Users/calebkleveter/Development/developer_survey_2018.csv")!
         let data = try Array(Data(contentsOf: url))
-        let parsed = CSV.SyncParser().parse(data)
+        let parsed = SyncParser().parse(data)
         let serializer = SyncSerializer()
 
         // 18.049

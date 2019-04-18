@@ -75,7 +75,7 @@ internal final class _CSVAsyncDecoder: Decoder {
 }
 
 internal final class AsyncDecoderHandler {
-    var parser: CSV.Parser
+    var parser: Parser
     var currentRow: [String: [UInt8]]
     var onRow: ([String: [UInt8]])throws -> ()
 
@@ -83,7 +83,7 @@ internal final class AsyncDecoderHandler {
     private var currentColumn: Int
 
     init(onRow: @escaping ([String: [UInt8]])throws -> ()) {
-        self.parser = CSV.Parser()
+        self.parser = Parser()
         self.currentRow = [:]
         self.onRow = onRow
         self.columnCount = 0
