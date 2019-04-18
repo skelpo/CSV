@@ -154,10 +154,10 @@ public final class SyncParser {
         var parser = Parser(
             onHeader: { header in
                 results[header] = []
-        },
+            },
             onCell: { header, cell in
                 results[header, default: []].append(cell.count > 0 ? cell : nil)
-        }
+            }
         )
 
         parser.parse(data)
@@ -169,12 +169,12 @@ public final class SyncParser {
         var parser = Parser(
             onHeader: { header in
                 results[String(decoding: header, as: UTF8.self)] = []
-        },
+            },
             onCell: { header, cell in
                 let title = String(decoding: header, as: UTF8.self)
                 let contents = String(decoding: cell, as: UTF8.self)
                 results[title, default: []].append(cell.count > 0 ? contents : nil)
-        }
+            }
         )
 
         parser.parse(Array(data.utf8))
