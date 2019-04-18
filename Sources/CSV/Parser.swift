@@ -120,11 +120,9 @@ public struct Parser {
 
         currentCell.append(contentsOf: data[slice.start..<slice.end])
         if let length = length {
-            if let left = self.state.bytesLeft {
-                self.state.bytesLeft = left - ((self.state.store.count + data.count) - currentCell.count)
-            } else {
-                self.state.bytesLeft = length - ((self.state.store.count + data.count) - currentCell.count)
-            }
+            self.state.bytesLeft =
+                (self.state.bytesLeft ?? length) -
+                ((self.state.store.count + data.count) - currentCell.count)
 
             if (self.state.bytesLeft ?? 0) > currentCell.count {
                 self.state.store = currentCell

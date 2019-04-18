@@ -89,7 +89,7 @@ final class ParserTests: XCTestCase {
         var parser = Parser(onHeader: { _ in return }, onCell: { _, _ in return })
         let csv = Array(data.utf8)
 
-        // 1.497
+        // 0.900
         measure {
             for _ in 0..<100_000 {
                 parser.parse(csv)
@@ -102,7 +102,7 @@ final class ParserTests: XCTestCase {
         let chnks = chunks.map { Array($0.utf8) }
         let length = chnks.reduce(0) { $0 + $1.count }
 
-        // 1.946
+        // 1.215
         measure {
             for _ in 0..<100_000 {
                 chnks.forEach { chunk in parser.parse(chunk, length: length) }
