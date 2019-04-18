@@ -1,4 +1,4 @@
-internal final class _CSVAsyncDecoder: Decoder {
+internal final class AsyncDecoder: Decoder {
     internal enum Storage {
         case none
         case singleValue([UInt8])
@@ -50,7 +50,7 @@ internal final class _CSVAsyncDecoder: Decoder {
             ))
         }
 
-        let container = try _AsyncKeyedDecoder<Key>(path: self.codingPath, decoder: self)
+        let container = try AsyncKeyedDecoder<Key>(path: self.codingPath, decoder: self)
         return KeyedDecodingContainer(container)
     }
 
@@ -66,7 +66,7 @@ internal final class _CSVAsyncDecoder: Decoder {
             ))
         }
 
-        return try _AsyncSingleValueDecoder(path: self.codingPath, decoder: self)
+        return try AsyncSingleValueDecoder(path: self.codingPath, decoder: self)
     }
 
     func decode(_ data: [UInt8], length: Int)throws {

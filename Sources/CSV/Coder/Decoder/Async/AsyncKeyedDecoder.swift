@@ -1,9 +1,9 @@
-internal final class _AsyncKeyedDecoder<K>: KeyedDecodingContainerProtocol where K: CodingKey {
+internal final class AsyncKeyedDecoder<K>: KeyedDecodingContainerProtocol where K: CodingKey {
     internal var codingPath: [CodingKey]
-    internal var decoder: _CSVAsyncDecoder
+    internal var decoder: AsyncDecoder
     private var data: [String: [UInt8]]
 
-    internal init(path: [CodingKey], decoder: _CSVAsyncDecoder)throws {
+    internal init(path: [CodingKey], decoder: AsyncDecoder)throws {
         self.decoder = decoder
         self.codingPath = path
 
@@ -99,7 +99,7 @@ internal final class _AsyncKeyedDecoder<K>: KeyedDecodingContainerProtocol where
 
     public func decode<T>(_ type: T.Type, forKey key: K) throws -> T where T : Decodable {
         let bytes = try self.bytes(for: key, type: type)
-        let decoder = _CSVAsyncDecoder(
+        let decoder = AsyncDecoder(
             decoding: self.decoder.decoding,
             path: self.codingPath + [key],
             data: .singleValue(bytes),

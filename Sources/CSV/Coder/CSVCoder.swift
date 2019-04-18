@@ -102,7 +102,7 @@ public final class CSVSyncDecoder {
         var result: [D] = []
         result.reserveCapacity(data.lazy.split(separator: "\n").count)
 
-        let decoder = _CSVAsyncDecoder(decoding: type, path: [], decodingOptions: self.decodingOptions) { decoded in
+        let decoder = AsyncDecoder(decoding: type, path: [], decodingOptions: self.decodingOptions) { decoded in
             guard let typed = decoded as? D else {
                 assertionFailure("Passed incompatible value into decoding completion callback")
                 return
@@ -120,7 +120,7 @@ public final class CSVAsyncDecoder {
     internal var length: Int
     internal var decoding: Decodable.Type
     internal var decodingOptions: CSVCodingOptions
-    private var rowDecoder: _CSVAsyncDecoder
+    private var rowDecoder: AsyncDecoder
 
     internal init<D>(decoding: D.Type, onInstance: @escaping (D) -> (), length: Int, decodingOptions: CSVCodingOptions)
         where D: Decodable
@@ -136,7 +136,7 @@ public final class CSVAsyncDecoder {
         self.length = length
         self.decoding = decoding
         self.decodingOptions = decodingOptions
-        self.rowDecoder = _CSVAsyncDecoder(
+        self.rowDecoder = AsyncDecoder(
             decoding: D.self,
             path: [],
             decodingOptions: decodingOptions,

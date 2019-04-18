@@ -1,9 +1,9 @@
-internal final class _AsyncSingleValueDecoder: SingleValueDecodingContainer {
+internal final class AsyncSingleValueDecoder: SingleValueDecodingContainer {
     var codingPath: [CodingKey]
-    var decoder: _CSVAsyncDecoder
+    var decoder: AsyncDecoder
     var bytes: [UInt8]
 
-    internal init(path: [CodingKey], decoder: _CSVAsyncDecoder)throws {
+    internal init(path: [CodingKey], decoder: AsyncDecoder)throws {
         self.decoder = decoder
         self.codingPath = path
 
@@ -68,7 +68,7 @@ internal final class _AsyncSingleValueDecoder: SingleValueDecodingContainer {
     }
 
     func decode<T>(_ type: T.Type) throws -> T where T : Decodable {
-        let decoder = _CSVAsyncDecoder(
+        let decoder = AsyncDecoder(
             decoding: self.decoder.decoding,
             path: self.codingPath,
             data: .singleValue(self.bytes),
