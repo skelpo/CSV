@@ -205,7 +205,7 @@ class CSVTests: XCTestCase {
         let encodingOptions = CSVCodingOptions(boolCodingStrategy: .fuzzy, nilCodingStrategy: .custom("NA"))
         let encoder = CSVEncoder(encodingOptions: encodingOptions)
 
-        // 5.908
+        // 12.898
         measure {
             do {
                 _ = try encoder.sync.encode(fielders)
