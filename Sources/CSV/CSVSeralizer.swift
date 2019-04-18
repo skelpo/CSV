@@ -4,7 +4,7 @@ public protocol BytesRepresentable {
     var bytes: [UInt8] { get }
 }
 
-public protocol KeyedCollection: Collection where Element == (key: Key, value: Value) {
+public protocol KeyedCollection: Collection where Self.Element == (key: Key, value: Value) {
     associatedtype Key: Hashable
     associatedtype Keys: Collection where Keys.Element == Key
 
