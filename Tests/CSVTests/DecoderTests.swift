@@ -101,7 +101,7 @@ final class DecoderTests: XCTestCase {
     }
 }
 
-struct Person: Codable, Equatable {
+fileprivate struct Person: Codable, Equatable {
     let firstName: String
     let lastName: String?
     let age: Int
