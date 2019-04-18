@@ -15,7 +15,14 @@ final class AsyncKeyedEncoder<K>: KeyedEncodingContainerProtocol where K: Coding
         case .row: self.encoder.container.cells.append(value)
         }
     }
-    
+    func _encode(_ value: [UInt8]?, for key: K)throws {
+        if let value = value {
+            self._encode(value, for: key)
+        } else {
+            try self.encodeNil(forKey: key)
+        }
+    }
+
     func encodeNil(forKey key: K) throws {
         let value = self.encoder.encodingOptions.nilCodingStrategy.bytes()
         self._encode(value, for: key)
@@ -34,7 +41,23 @@ final class AsyncKeyedEncoder<K>: KeyedEncodingContainerProtocol where K: Coding
         try value.encode(to: encoder)
         self._encode(encoder.container.cells[0], for: key)
     }
-    
+
+    func encodeIfPresent(_ value: Bool?, forKey key: K)   throws {
+        let value = value.map(self.encoder.encodingOptions.boolCodingStrategy.bytes(from:))
+        try self._encode(value, for: key)
+    }
+    func encodeIfPresent(_ value: Double?, forKey key: K) throws { try self._encode(value?.bytes, for: key) }
+    func encodeIfPresent(_ value: Float?, forKey key: K)  throws { try self._encode(value?.bytes, for: key) }
+    func encodeIfPresent(_ value: Int?, forKey key: K)    throws { try self._encode(value?.bytes, for: key) }
+    func encodeIfPresent(_ value: String?, forKey key: K) throws { try self._encode(value?.bytes, for: key) }
+    func encodeIfPresent<T>(_ value: T?, forKey key: K) throws where T : Encodable {
+        if let value = value {
+            try self.encode(value, forKey: key)
+        } else {
+            try self.encodeNil(forKey: key)
+        }
+    }
+
     func nestedContainer<NestedKey>(keyedBy keyType: NestedKey.Type, forKey key: K) -> KeyedEncodingContainer<NestedKey>
         where NestedKey : CodingKey
     {
