@@ -18,7 +18,7 @@ final class UtilityTests: XCTestCase {
 
     func testMeasureBytesToInt() {
 
-        // 0.096
+        // 0.095
         measure {
             for _ in 0..<100_000 {
                 _ = self.intBytes.int
@@ -34,7 +34,7 @@ final class UtilityTests: XCTestCase {
 
     func testMeasureBytesToFloat() {
 
-        // 0.108
+        // 0.097
         measure {
             for _ in 0..<100_000 {
                 _ = self.floatBytes.float
@@ -50,7 +50,7 @@ final class UtilityTests: XCTestCase {
 
     func testMeasureBytesToDouble() {
 
-        // 0.115
+        // 0.100
         measure {
             for _ in 0..<100_000 {
                 _ = self.doubleBytes.double

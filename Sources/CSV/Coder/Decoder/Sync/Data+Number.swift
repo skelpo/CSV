@@ -18,16 +18,16 @@ extension Array where Element == UInt8 {
         
         while iterator < count {
             switch self[iterator]  {
-            case "0": result = result &* 10
-            case "1": result = (result &* 10) &+ 1
-            case "2": result = (result &* 10) &+ 2
-            case "3": result = (result &* 10) &+ 3
-            case "4": result = (result &* 10) &+ 4
-            case "5": result = (result &* 10) &+ 5
-            case "6": result = (result &* 10) &+ 6
-            case "7": result = (result &* 10) &+ 7
-            case "8": result = (result &* 10) &+ 8
-            case "9": result = (result &* 10) &+ 9
+            case "0": result = result * 10
+            case "1": result = (result * 10) + 1
+            case "2": result = (result * 10) + 2
+            case "3": result = (result * 10) + 3
+            case "4": result = (result * 10) + 4
+            case "5": result = (result * 10) + 5
+            case "6": result = (result * 10) + 6
+            case "7": result = (result * 10) + 7
+            case "8": result = (result * 10) + 8
+            case "9": result = (result * 10) + 9
             case ",": break
             default: return nil
             }
@@ -56,16 +56,16 @@ extension Array where Element == UInt8 {
         
         while iterator < count {
             switch self[iterator]  {
-            case "0": result = result &* 10
-            case "1": result = (result &* 10) &+ 1
-            case "2": result = (result &* 10) &+ 2
-            case "3": result = (result &* 10) &+ 3
-            case "4": result = (result &* 10) &+ 4
-            case "5": result = (result &* 10) &+ 5
-            case "6": result = (result &* 10) &+ 6
-            case "7": result = (result &* 10) &+ 7
-            case "8": result = (result &* 10) &+ 8
-            case "9": result = (result &* 10) &+ 9
+            case "0": result = result * 10
+            case "1": result = (result * 10) + 1
+            case "2": result = (result * 10) + 2
+            case "3": result = (result * 10) + 3
+            case "4": result = (result * 10) + 4
+            case "5": result = (result * 10) + 5
+            case "6": result = (result * 10) + 6
+            case "7": result = (result * 10) + 7
+            case "8": result = (result * 10) + 8
+            case "9": result = (result * 10) + 9
             case ".": decimal = pow(10, Float(count - 1 - iterator))
             case ",": break
             default: return nil
@@ -95,16 +95,16 @@ extension Array where Element == UInt8 {
         
         while iterator < count {
             switch self[iterator]  {
-            case "0": result = result &* 10
-            case "1": result = (result &* 10) &+ 1
-            case "2": result = (result &* 10) &+ 2
-            case "3": result = (result &* 10) &+ 3
-            case "4": result = (result &* 10) &+ 4
-            case "5": result = (result &* 10) &+ 5
-            case "6": result = (result &* 10) &+ 6
-            case "7": result = (result &* 10) &+ 7
-            case "8": result = (result &* 10) &+ 8
-            case "9": result = (result &* 10) &+ 9
+            case "0": result = result * 10
+            case "1": result = (result * 10) + 1
+            case "2": result = (result * 10) + 2
+            case "3": result = (result * 10) + 3
+            case "4": result = (result * 10) + 4
+            case "5": result = (result * 10) + 5
+            case "6": result = (result * 10) + 6
+            case "7": result = (result * 10) + 7
+            case "8": result = (result * 10) + 8
+            case "9": result = (result * 10) + 9
             case ".": decimal = pow(10, Double(count - 1 - iterator))
             case ",": break
             default: return nil
