@@ -4,6 +4,17 @@ public protocol BytesRepresentable {
     var bytes: [UInt8] { get }
 }
 
+public protocol KeyedCollection: Collection where Element == (key: Key, value: Value) {
+    associatedtype Key: Hashable
+    associatedtype Keys: Collection where Keys.Element == Key
+
+    associatedtype Value
+    associatedtype Values: Collection where Values.Element == Value
+
+    var keys: Keys { get }
+    var values: Values { get }
+}
+
 extension String: BytesRepresentable {
     public var bytes: [UInt8] {
         return Array(self.utf8)
@@ -22,6 +33,8 @@ extension Optional: BytesRepresentable where Wrapped: BytesRepresentable {
     }
 }
 
+extension Dictionary: KeyedCollection { }
+
 public struct Serializer {
     private var serializedHeaders: Bool
     public var onRow: ([UInt8])throws -> ()
@@ -32,9 +45,9 @@ public struct Serializer {
     }
 
     @discardableResult
-    public mutating func serialize<Key, Value>(_ data: Dictionary<Key, Value>) -> Result<Void, ErrorList> where
-        Key: BytesRepresentable, Value: Collection, Value.Element: BytesRepresentable, Value.Index: Strideable,
-        Value.Index.Stride: SignedInteger
+    public mutating func serialize<Data>(_ data: Data) -> Result<Void, ErrorList> where
+        Data: KeyedCollection, Data.Key: BytesRepresentable, Data.Value: Collection, Data.Value.Element: BytesRepresentable,
+        Data.Value.Index: Strideable, Data.Value.Index.Stride: SignedInteger
     {
         var errors = ErrorList()
         guard data.count > 0 else { return errors.result }
@@ -62,9 +75,9 @@ public struct Serializer {
 public struct SyncSerializer {
     public init () { }
 
-    public func serialize<Key, Value>(_ data: Dictionary<Key, Value>) -> [UInt8] where
-        Key: BytesRepresentable, Value: Collection, Value.Element: BytesRepresentable, Value.Index: Strideable,
-        Value.Index.Stride: SignedInteger
+    public func serialize<Data>(_ data: Data) -> [UInt8] where
+        Data: KeyedCollection, Data.Key: BytesRepresentable, Data.Value: Collection, Data.Value.Element: BytesRepresentable,
+        Data.Value.Index: Strideable, Data.Value.Index.Stride: SignedInteger
     {
         var rows: [[UInt8]] = []
         rows.reserveCapacity(data.first?.value.count ?? 0)
