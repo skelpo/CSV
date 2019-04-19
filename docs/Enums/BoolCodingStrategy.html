@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>BoolCodingStrategy Enumeration Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Enum/BoolCodingStrategy" class="dashAnchor"></a>
+    <a title="BoolCodingStrategy Enumeration Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html"> Docs</a> (100% documented)</p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html"> Reference</a>
+        <img id="carat" src="../img/carat.png" />
+        BoolCodingStrategy Enumeration Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/CSVAsyncDecoder.html">CSVAsyncDecoder</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/CSVAsyncEncoder.html">CSVAsyncEncoder</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/CSVCodingOptions.html">CSVCodingOptions</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/CSVDecoder.html">CSVDecoder</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/CSVEncoder.html">CSVEncoder</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/CSVSyncDecoder.html">CSVSyncDecoder</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/CSVSyncEncoder.html">CSVSyncEncoder</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SyncParser.html">SyncParser</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Enums.html">Enumerations</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Enums/BoolCodingStrategy.html">BoolCodingStrategy</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/NilCodingStrategy.html">NilCodingStrategy</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Extensions.html">Extensions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Extensions/Array.html">Array</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/Optional.html">Optional</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/String.html">String</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/UInt8.html">UInt8</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/BytesRepresentable.html">BytesRepresentable</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/KeyedCollection.html">KeyedCollection</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Structs.html">Structures</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Structs/ErrorList.html">ErrorList</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/Parser.html">Parser</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/Serializer.html">Serializer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SyncSerializer.html">SyncSerializer</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>BoolCodingStrategy</h1>
+              <div class="declaration">
+                <div class="language">
+                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">BoolCodingStrategy</span><span class="p">:</span> <span class="kt">Hashable</span></code></pre>
+
+                </div>
+              </div>
+            <p>The encoding/decodig strategies used on boolean values in a CSV document.</p>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:3CSV18BoolCodingStrategyO7integeryA2CmF"></a>
+                    <a name="//apple_ref/swift/Element/integer" class="dashAnchor"></a>
+                    <a class="token" href="#/s:3CSV18BoolCodingStrategyO7integeryA2CmF">integer</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The bools are represented by their number counter part, <code>false</code> is <code>0</code> and <code>true</code> is <code>1</code>.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">integer</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:3CSV18BoolCodingStrategyO6stringyA2CmF"></a>
+                    <a name="//apple_ref/swift/Element/string" class="dashAnchor"></a>
+                    <a class="token" href="#/s:3CSV18BoolCodingStrategyO6stringyA2CmF">string</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The bools are represented by their textual counter parts, <code>false</code> is <code>&quot;false&quot;</code> and <code>true</code> is <code>&quot;true&quot;</code>.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">string</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:3CSV18BoolCodingStrategyO5fuzzyyA2CmF"></a>
+                    <a name="//apple_ref/swift/Element/fuzzy" class="dashAnchor"></a>
+                    <a class="token" href="#/s:3CSV18BoolCodingStrategyO5fuzzyyA2CmF">fuzzy</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The bools are checked against multiple different values when they are decoded.
+They are encoded to their string values.</p>
+
+<p>When decoding data with this strategy, the characters in the data are lowercased and it is then
+checked against <code>true</code>, <code>yes</code>, <code>y</code>, <code>y</code>, and <code>1</code> for true and <code>false</code>, <code>no</code>, <code>f</code>, <code>n</code>, and <code>0</code> for false.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">fuzzy</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:3CSV18BoolCodingStrategyO6customyACSays5UInt8VG_AGtcACmF"></a>
+                    <a name="//apple_ref/swift/Element/custom(true:false:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:3CSV18BoolCodingStrategyO6customyACSays5UInt8VG_AGtcACmF">custom(true:false:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>A custom coding strategy with any given representations for the <code>true</code> and <code>false</code> values.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="nf">custom</span><span class="p">(`</span><span class="nv">true</span><span class="p">`:</span> <span class="p">[</span><span class="kt">UInt8</span><span class="p">],`</span><span class="nv">false</span><span class="p">`:</span> <span class="p">[</span><span class="kt">UInt8</span><span class="p">])</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>true</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The value that <code>true</code> gets converted to, and that <code>true</code> is represented by in the CSV document.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>false</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The value that <code>false</code> gets converted to, and that <code>false</code> is represented by in the CSV document.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:3CSV18BoolCodingStrategyO5bytes4fromSays5UInt8VGSb_tF"></a>
+                    <a name="//apple_ref/swift/Method/bytes(from:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:3CSV18BoolCodingStrategyO5bytes4fromSays5UInt8VGSb_tF">bytes(from:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Converts a <code>Bool</code> value to the bytes the reporesent it, given the current strategy.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">bytes</span><span class="p">(</span><span class="n">from</span> <span class="nv">bool</span><span class="p">:</span> <span class="kt">Bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="kt">UInt8</span><span class="p">]</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>bool</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The <code>Bool</code> instance to get the bytes for.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>The bytes value for the bool passed in.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:3CSV18BoolCodingStrategyO4bool4fromSbSgSays5UInt8VG_tF"></a>
+                    <a name="//apple_ref/swift/Method/bool(from:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:3CSV18BoolCodingStrategyO4bool4fromSbSgSays5UInt8VG_tF">bool(from:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Attempts get a <code>Bool</code> value from given bytes using the current strategy.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">bool</span><span class="p">(</span><span class="n">from</span> <span class="nv">bytes</span><span class="p">:</span> <span class="p">[</span><span class="kt">UInt8</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kt">Bool</span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>bytes</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The bytes to chek against the expected value for the given strategy.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>The <code>Bool</code> value for the bytes passed in, or <code>nil</code> if no match is found.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2019 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2019-04-19)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.1</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>
