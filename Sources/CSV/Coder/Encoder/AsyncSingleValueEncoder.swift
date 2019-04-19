@@ -4,7 +4,7 @@ final class AsyncSingleValueEncoder: SingleValueEncodingContainer {
     let codingPath: [CodingKey]
     let encoder: AsyncEncoder
     
-    init(path: CodingPath, encoder: AsyncEncoder) {
+    init(path: [CodingKey], encoder: AsyncEncoder) {
         self.codingPath = path
         self.encoder = encoder
     }

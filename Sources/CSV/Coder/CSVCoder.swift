@@ -1,23 +1,5 @@
 import Foundation
 
-public final class CSVCoder {
-    public var decodingOptions: CSVCodingOptions
-    public var encodingOptions: CSVCodingOptions
-
-    public init(decodingOptions: CSVCodingOptions = .default, encodingOptions: CSVCodingOptions = .default) {
-        self.decodingOptions = decodingOptions
-        self.encodingOptions = encodingOptions
-    }
-
-    public func decode<T>(_ data: Data, to type: T.Type = T.self)throws -> [T] where T: Decodable {
-        return try _CSVDecoder(csv: Array(data), decodingOptions: self.decodingOptions).decode(T.self, from: data)
-    }
-
-    public func encode<T>(_ objects: [T])throws -> Data where T: Encodable {
-        return try Data(_CSVEncoder.encode(objects, encodingOptions: self.encodingOptions))
-    }
-}
-
 /// Encodes Swift types to CSV data.
 ///
 /// This exampls shows how multiple instances of a `Person` type will be encoded

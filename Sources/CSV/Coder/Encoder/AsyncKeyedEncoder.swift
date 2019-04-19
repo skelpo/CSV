@@ -4,7 +4,7 @@ final class AsyncKeyedEncoder<K>: KeyedEncodingContainerProtocol where K: Coding
     var codingPath: [CodingKey]
     var encoder: AsyncEncoder
     
-    init(path: CodingPath, encoder: AsyncEncoder) {
+    init(path: [CodingKey], encoder: AsyncEncoder) {
         self.codingPath = path
         self.encoder = encoder
     }

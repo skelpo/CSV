@@ -8,7 +8,7 @@ final class AsyncEncoder: Encoder {
     let onRow: ([UInt8]) -> ()
     
     init(
-        path: CodingPath = [],
+        path: [CodingKey] = [],
         info: [CodingUserInfoKey : Any] = [:],
         encodingOptions: CSVCodingOptions,
         onRow: @escaping ([UInt8]) -> ()
