@@ -17,6 +17,17 @@ final class StressTests: XCTestCase {
 
         // Baseline: 4.630
         measure {
+            parser.parse(csv)
+        }
+    }
+
+    func testMeasureSyncParsing() {
+        let parser = SyncParser()
+        let csv = Array(data)
+
+        // Baseline: 10.825
+        // Time to beat: 9.142
+        measure {
             _ = parser.parse(csv)
         }
     }
