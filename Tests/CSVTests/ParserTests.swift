@@ -102,7 +102,7 @@ final class ParserTests: XCTestCase {
         let chnks = chunks.map { Array($0.utf8) }
         let length = chnks.reduce(0) { $0 + $1.count }
 
-        // 1.215
+        // 1.198
         measure {
             for _ in 0..<100_000 {
                 chnks.forEach { chunk in parser.parse(chunk, length: length) }

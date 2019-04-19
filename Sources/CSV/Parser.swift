@@ -153,13 +153,14 @@ public struct Parser {
                         catch let error { errors.errors.append(error) }
                         self.state.headerIndex += 1
                     }
+
                     currentCell = []
                     slice = (index + 1, index + 1)
+                    if updateState { self.state.position = .cells }
                 }
             default: slice.end += 1
             }
 
-            if updateState { self.state.position = .cells }
             index += 1
         }
 
