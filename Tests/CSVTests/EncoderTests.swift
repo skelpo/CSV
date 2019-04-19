@@ -15,6 +15,7 @@ final class EncoderTests: XCTestCase {
     }
 
     func testMeasureAsyncEncode() {
+        
         // 0.502
         measure {
             for _ in 0..<10_000 {
@@ -41,6 +42,7 @@ final class EncoderTests: XCTestCase {
     }
 
     func testMeasureSyncEncode() {
+
         // 0.583
         measure {
             for _ in 0..<10_000 {

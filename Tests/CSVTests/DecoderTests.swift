@@ -39,6 +39,7 @@ final class DecoderTests: XCTestCase {
         let bytes = chunks.map { Array($0.utf8) }
         let contentLength = chunks.reduce(0) { $0 + $1.count }
 
+        // Baseline: 0.062
         measure {
             for _ in 0..<1_000 {
                 let decoder = CSVDecoder().async(for: Person.self, length: contentLength) { _ in return }
@@ -84,6 +85,7 @@ final class DecoderTests: XCTestCase {
     func testSyncDecodeSpeed() throws {
         let csv = Data(data.utf8)
 
+        // Baseline: 0.066
         measure {
             for _ in 0..<1_000 {
                 let decoder = CSVDecoder().sync
