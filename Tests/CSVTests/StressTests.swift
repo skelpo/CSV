@@ -88,6 +88,22 @@ final class StressTests: XCTestCase {
             }
         }
     }
+
+    func testMeasureAsyncEcndoing() throws {
+        let people = try CSVDecoder(decodingOptions: self.codingOptions).sync.decode(Response.self, from: data)
+        let encoder = CSVEncoder(encodingOptions: codingOptions)
+
+        // Baseline: 11.477
+        // Time to beat: 9.477
+        measure {
+            do {
+                let async = encoder.async({ _ in return })
+                try people.forEach(async.encode)
+            } catch let error {
+                XCTFail(error.localizedDescription)
+            }
+        }
+    }
 }
 
 fileprivate struct Response: Codable, Equatable {
