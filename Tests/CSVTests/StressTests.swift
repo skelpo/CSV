@@ -31,4 +31,16 @@ final class StressTests: XCTestCase {
             _ = parser.parse(csv)
         }
     }
+
+    func testMeasureAsyncSerialize() {
+        var serializer = Serializer(onRow: { _ in return })
+        let csv = Array(data)
+        let parsed = SyncParser().parse(csv)
+
+        // Baseline: 18.957
+        // Time to beat: 11.932
+        measure {
+            serializer.serialize(parsed)
+        }
+    }
 }
