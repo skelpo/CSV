@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>CSVDecoder Class Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Class/CSVDecoder" class="dashAnchor"></a>
+    <a title="CSVDecoder Class Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html"> Docs</a> (100% documented)</p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html"> Reference</a>
+        <img id="carat" src="../img/carat.png" />
+        CSVDecoder Class Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/CSVAsyncDecoder.html">CSVAsyncDecoder</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/CSVAsyncEncoder.html">CSVAsyncEncoder</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/CSVCodingOptions.html">CSVCodingOptions</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/CSVDecoder.html">CSVDecoder</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/CSVEncoder.html">CSVEncoder</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/CSVSyncDecoder.html">CSVSyncDecoder</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/CSVSyncEncoder.html">CSVSyncEncoder</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SyncParser.html">SyncParser</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Enums.html">Enumerations</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Enums/BoolCodingStrategy.html">BoolCodingStrategy</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/NilCodingStrategy.html">NilCodingStrategy</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Extensions.html">Extensions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Extensions/Array.html">Array</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/Optional.html">Optional</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/String.html">String</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/UInt8.html">UInt8</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/BytesRepresentable.html">BytesRepresentable</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/KeyedCollection.html">KeyedCollection</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Structs.html">Structures</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Structs/ErrorList.html">ErrorList</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/Parser.html">Parser</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/Serializer.html">Serializer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/SyncSerializer.html">SyncSerializer</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>CSVDecoder</h1>
+              <div class="declaration">
+                <div class="language">
+                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="kt">CSVDecoder</span></code></pre>
+
+                </div>
+              </div>
+            <p>Decodes CSV document data to Swift types.</p>
+
+<p>This example shows how a simple <code>Person</code> type will be decoded from a CSV document.
+Person<code>conforms to</code>Codable<code>, so it is compatible with both the</code>CSVEndocder<code>and</code>CSVDecoder`.</p>
+<pre class="highlight swift"><code><span class="kd">struct</span> <span class="kt">Person</span><span class="p">:</span> <span class="kt">Codable</span> <span class="p">{</span>
+   <span class="k">let</span> <span class="nv">firstName</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span>
+   <span class="k">let</span> <span class="nv">lastName</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span>
+   <span class="k">let</span> <span class="nv">age</span><span class="p">:</span> <span class="kt">Int</span>
+<span class="p">}</span>
+
+<span class="k">let</span> <span class="nv">csv</span> <span class="o">=</span> <span class="s">"""
+"</span><span class="n">firstName</span><span class="s">","</span><span class="n">lastName</span><span class="s">","</span><span class="n">age</span><span class="s">"
+"</span><span class="kt">Grace</span><span class="s">","</span><span class="kt">Hopper</span><span class="s">","</span><span class="mi">113</span><span class="s">"
+"</span><span class="kt">Linus</span><span class="s">","</span><span class="kt">Torvold</span><span class="s">","</span><span class="mi">50</span><span class="s">"
+"""</span>
+<span class="k">let</span> <span class="nv">data</span> <span class="o">=</span> <span class="kt">Data</span><span class="p">(</span><span class="n">csv</span><span class="o">.</span><span class="n">utf8</span><span class="p">)</span>
+
+<span class="k">let</span> <span class="nv">people</span> <span class="o">=</span> <span class="k">try</span> <span class="kt">CSVDecoder</span><span class="o">.</span><span class="n">sync</span><span class="o">.</span><span class="nf">decode</span><span class="p">(</span><span class="kt">Person</span><span class="o">.</span><span class="k">self</span><span class="p">,</span> <span class="nv">from</span><span class="p">:</span> <span class="n">data</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="n">people</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="nv">$0</span><span class="o">.</span><span class="n">firstName</span> <span class="p">})</span> <span class="c1">// Prints: `["Grace","Linus"]`</span>
+</code></pre>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:3CSV10CSVDecoderC15decodingOptionsAA09CSVCodingD0Cvp"></a>
+                    <a name="//apple_ref/swift/Property/decodingOptions" class="dashAnchor"></a>
+                    <a class="token" href="#/s:3CSV10CSVDecoderC15decodingOptionsAA09CSVCodingD0Cvp">decodingOptions</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The decoding options to use when decoding data to an object.</p>
+
+<p>This is currently used to specify how <code>nil</code> and <code>Bool</code> values should be handled.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">decodingOptions</span><span class="p">:</span> <span class="kt"><a href="../Classes/CSVCodingOptions.html">CSVCodingOptions</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:3CSV10CSVDecoderC15decodingOptionsAcA09CSVCodingD0C_tcfc"></a>
+                    <a name="//apple_ref/swift/Method/init(decodingOptions:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:3CSV10CSVDecoderC15decodingOptionsAcA09CSVCodingD0C_tcfc">init(decodingOptions:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Creates a new <code>CSVDecoder</code> instance.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">decodingOptions</span><span class="p">:</span> <span class="kt"><a href="../Classes/CSVCodingOptions.html">CSVCodingOptions</a></span> <span class="o">=</span> <span class="o">.</span><span class="k">default</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>decodingOptions</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The decoding options to use when decoding data to an object.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:3CSV10CSVDecoderC4syncAA14CSVSyncDecoderCvp"></a>
+                    <a name="//apple_ref/swift/Property/sync" class="dashAnchor"></a>
+                    <a class="token" href="#/s:3CSV10CSVDecoderC4syncAA14CSVSyncDecoderCvp">sync</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Creates a <code><a href="../Classes/CSVSyncDecoder.html">CSVSyncDecoder</a></code> with the registered encoding options.</p>
+
+<p>This decoder is for if you have whole CSV document you want to decode at once.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">sync</span><span class="p">:</span> <span class="kt"><a href="../Classes/CSVSyncDecoder.html">CSVSyncDecoder</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:3CSV10CSVDecoderC5async3for6length_AA15CSVAsyncDecoderCxm_SiyxctSeRzlF"></a>
+                    <a name="//apple_ref/swift/Method/async(for:length:_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:3CSV10CSVDecoderC5async3for6length_AA15CSVAsyncDecoderCxm_SiyxctSeRzlF">async(for:length:_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Creates a <code><a href="../Classes/CSVAsyncDecoder.html">CSVAsyncDecoder</a></code> instance with the registered encoding options.</p>
+
+<p>This decoder is for if you have separate chunks of the same CSV document that you will
+be decoding at different times.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">async</span><span class="o">&lt;</span><span class="kt">D</span><span class="o">&gt;</span><span class="p">(</span><span class="k">for</span> <span class="nv">type</span><span class="p">:</span> <span class="kt">D</span><span class="o">.</span><span class="k">Type</span> <span class="o">=</span> <span class="kt">D</span><span class="o">.</span><span class="k">self</span><span class="p">,</span> <span class="nv">length</span><span class="p">:</span> <span class="kt">Int</span><span class="p">,</span> <span class="n">_</span> <span class="nv">onInstance</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">D</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/CSVAsyncDecoder.html">CSVAsyncDecoder</a></span>
+    <span class="k">where</span> <span class="kt">D</span><span class="p">:</span> <span class="kt">Decodable</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>type</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The <code>Decodable</code> type that the rows of the CSV document will be decoded to.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>length</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The content length of the whole CSV document.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>onInstance</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The closure that is called when an instance of <code>D</code> is decoded from the data passed in.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>A <code><a href="../Classes/CSVAsyncDecoder.html">CSVAsyncDecoder</a></code> instance with the current encoder&rsquo;s encoding options and the
+<code>.onInstance</code> closure as its callback.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2019 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2019-04-19)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.1</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>
