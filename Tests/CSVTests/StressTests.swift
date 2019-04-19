@@ -89,7 +89,7 @@ final class StressTests: XCTestCase {
         }
     }
 
-    func testMeasureAsyncEcndoing() throws {
+    func testMeasureAsyncEncoding() throws {
         let people = try CSVDecoder(decodingOptions: self.codingOptions).sync.decode(Response.self, from: data)
         let encoder = CSVEncoder(encodingOptions: codingOptions)
 
@@ -99,6 +99,21 @@ final class StressTests: XCTestCase {
             do {
                 let async = encoder.async({ _ in return })
                 try people.forEach(async.encode)
+            } catch let error {
+                XCTFail(error.localizedDescription)
+            }
+        }
+    }
+
+    func testMeasureSyncEncoding() throws {
+        let people = try CSVDecoder(decodingOptions: self.codingOptions).sync.decode(Response.self, from: data)
+        let encoder = CSVEncoder(encodingOptions: codingOptions).sync
+
+        // Baseline: 13.412
+        // Time to beat: 9.477
+        measure {
+            do {
+                _ = try encoder.encode(people)
             } catch let error {
                 XCTFail(error.localizedDescription)
             }
