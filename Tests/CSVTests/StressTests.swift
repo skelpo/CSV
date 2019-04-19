@@ -7,7 +7,7 @@ final class StressTests: XCTestCase {
         let string: String
         if let envVar = ProcessInfo.processInfo.environment["CSV_STRESS_TEST_DATA"] { string = "file:" + envVar }
         else { string = "https://drive.google.com/uc?export=download&id=1_9On2-nsBQIw3JiY43sWbrF8EjrqrR4U" }
-        print(string)
+        
         let url = URL(string: string)!
         return try! Data(contentsOf: url)
     }()
@@ -69,6 +69,20 @@ final class StressTests: XCTestCase {
                     { _ in return }
                 )
                 try async.decode(data)
+            } catch let error {
+                XCTFail(error.localizedDescription)
+            }
+        }
+    }
+
+    func testMeasureSyncDecoding() {
+        let decoder = CSVDecoder(decodingOptions: self.codingOptions).sync
+
+        // Baseline: 19.736
+        // Time to beat: 18.489
+        measure {
+            do {
+                _ = try decoder.decode(Response.self, from: data)
             } catch let error {
                 XCTFail(error.localizedDescription)
             }
