@@ -266,7 +266,7 @@ class CSVTests: XCTestCase {
         ("testBytesToStringSpeed", testBytesToStringSpeed)
     ]
     
-    func compare(_ lhs: Response?, to rhs: Response?) {
+    fileprivate func compare(_ lhs: Response?, to rhs: Response?) {
         XCTAssertEqual(lhs?.Respondent, rhs?.Respondent)
         XCTAssertEqual(lhs?.Hobby, rhs?.Hobby)
         XCTAssertEqual(lhs?.OpenSource, rhs?.OpenSource)
@@ -399,7 +399,7 @@ class CSVTests: XCTestCase {
     }
 }
 
-struct Response: Codable, Equatable {
+fileprivate struct Response: Codable, Equatable {
     static func makeKeys(from row: [String: [[UInt8]?]]) -> [CodingKey] {
         // return row.compactMap { cell in return Response.CodingKeys.init(stringValue: cell.key) }
         return Array(row.keys).compactMap(Response.CodingKeys.init)
