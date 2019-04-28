@@ -1,5 +1,6 @@
 import Foundation
 
+// '\t' => 9
 // '\n' => 10
 // '\r' => 13
 // '"' => 34
@@ -105,12 +106,13 @@ public struct Parser {
     /// - Returns: A `Result` instance that will have a `.failure` case with all the errors thrown from
     ///   the registered callbacks. If there are no errors, then the result will be a `.success` case.
     @discardableResult
-    public mutating func parse(_ data: [UInt8], length: Int? = nil) -> Result<Void, ErrorList> {
+    public mutating func parse(_ data: [UInt8], length: Int? = nil, delimiter: Character = ",") -> Result<Void, ErrorList> {
         var currentCell: [UInt8] = self.state.store
         var index = data.startIndex
         var updateState = false
         var errors = ErrorList()
         var slice: (start: Int, end: Int) = (index, index)
+        let delimiterASCII = delimiter.asciiValue
 
         while index < data.endIndex {
             let byte = data[index]
@@ -138,7 +140,7 @@ public struct Parser {
                     if self.state.position == .headers { updateState = true }
                     fallthrough
                 }
-            case 44:
+            case delimiterASCII:
                 if self.state.inQuotes {
                     slice.end += 1
                 } else {
@@ -201,7 +203,7 @@ public final class SyncParser {
     /// - Parameter data: The CSV data to parse.
     /// - Returns: A dictionary containing the parsed CSV data. The keys are the column names
     ///   and the values are the column cells. A `nil` value is an empty cell.
-    public func parse(_ data: [UInt8]) -> [[UInt8]: [[UInt8]?]] {
+    public func parse(_ data: [UInt8], delimiter: Character = ",") -> [[UInt8]: [[UInt8]?]] {
         var results: [[UInt8]: [[UInt8]?]] = [:]
         var parser = Parser(
             onHeader: { header in
@@ -212,7 +214,7 @@ public final class SyncParser {
             }
         )
 
-        parser.parse(data)
+        parser.parse(data, delimiter: delimiter)
         return results
     }
 
@@ -221,7 +223,7 @@ public final class SyncParser {
     /// - Parameter data: The CSV data to parse.
     /// - Returns: A dictionary containing the parsed CSV data. The keys are the column names
     ///   and the values are the column cells. A `nil` value is an empty cell.
-    public func parse(_ data: String) -> [String: [String?]] {
+    public func parse(_ data: String, delimiter: Character = ",") -> [String: [String?]] {
         var results: [String: [String?]] = [:]
         var parser = Parser(
             onHeader: { header in
@@ -234,7 +236,7 @@ public final class SyncParser {
             }
         )
 
-        parser.parse(Array(data.utf8))
+        parser.parse(Array(data.utf8), delimiter: delimiter)
         return results
     }
 }
