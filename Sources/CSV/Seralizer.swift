@@ -97,7 +97,7 @@ public struct Serializer {
 
         if !self.serializedHeaders {
             let headers = data.keys.map { title in Array([[34], title.bytes, [34]].joined()) }
-            do { try self.onRow(Array(headers.joined(separator: [10]))) }
+            do { try self.onRow(Array(headers.joined(separator: [44]))) }
             catch let error { errors.errors.append(error) }
             self.serializedHeaders = true
         }
@@ -107,7 +107,7 @@ public struct Serializer {
             let cells = data.values.map { column -> [UInt8] in
                 return Array([[34], column[index].bytes, [34]].joined())
             }
-            do { try onRow(Array(cells.joined(separator: [10]))) }
+            do { try onRow(Array(cells.joined(separator: [44]))) }
             catch let error { errors.errors.append(error) }
         }
 
