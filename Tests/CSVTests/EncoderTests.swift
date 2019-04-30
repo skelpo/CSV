@@ -35,8 +35,8 @@ final class EncoderTests: XCTestCase {
 
     func testSyncEncode() throws {
         let encoder = CSVEncoder().sync
-        let data = try encoder.encode(people)
-        let string = String(decoding: data, as: UTF8.self)
+        let encoded = try encoder.encode(people)
+        let string = String(decoding: encoded, as: UTF8.self)
 
         XCTAssertEqual(string, expected)
     }
@@ -93,14 +93,3 @@ fileprivate let people = [
     ),
     Person(firstName: "TinTin", lastName: nil, age: 16, gender: .male, tagLine: "Great snakes!")
 ]
-
-fileprivate let expected = """
-"first name","last_name","age","gender","tagLine"
-"Caleb","Kleveter","18","M","😜"
-"Benjamin","Franklin","269","M","A penny saved is a penny earned"
-"Doc","Holliday","174","M","Bang"
-"Grace","Hopper","119","F",""
-"Anne","Shirley","141","F","God's in His heaven,
-all's right with the world"
-"TinTin","","16","M","Great snakes!"
-"""
