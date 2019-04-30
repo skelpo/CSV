@@ -11,16 +11,16 @@ final class AsyncSingleValueEncoder: SingleValueEncodingContainer {
 
     func encodeNil() throws {
         let value = self.encoder.encodingOptions.nilCodingStrategy.bytes()
-        self.encoder.container.cells.append(value)
+        self.encoder.container.cells.append(value.escaped)
     }
     func encode(_ value: Bool) throws {
         let value = self.encoder.encodingOptions.boolCodingStrategy.bytes(from: value)
-        self.encoder.container.cells.append(value)
+        self.encoder.container.cells.append(value.escaped)
     }
-    func encode(_ value: String) throws { self.encoder.container.cells.append(value.bytes) }
-    func encode(_ value: Double) throws { self.encoder.container.cells.append(value.bytes) }
-    func encode(_ value: Float)  throws { self.encoder.container.cells.append(value.bytes) }
-    func encode(_ value: Int)    throws { self.encoder.container.cells.append(value.bytes) }
+    func encode(_ value: String) throws { self.encoder.container.cells.append(value.bytes.escaped) }
+    func encode(_ value: Double) throws { self.encoder.container.cells.append(value.bytes.escaped) }
+    func encode(_ value: Float)  throws { self.encoder.container.cells.append(value.bytes.escaped) }
+    func encode(_ value: Int)    throws { self.encoder.container.cells.append(value.bytes.escaped) }
 
     func encode<T>(_ value: T) throws where T : Encodable {
         let column = self.codingPath.map { $0.stringValue }.joined(separator: ".")

@@ -13,6 +13,12 @@ extension String {
     }
 }
 
+extension Array where Element == UInt8 {
+    var escaped: [UInt8] {
+        return self.contains(34) ? Array(self.split(separator: 34).joined(separator: [34, 34])) : self
+    }
+}
+
 // MARK: - Coding Key Interactions
 extension Dictionary where Key == String {
     func value(for key: CodingKey)throws -> Value {

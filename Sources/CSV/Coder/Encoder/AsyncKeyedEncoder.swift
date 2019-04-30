@@ -12,10 +12,10 @@ final class AsyncKeyedEncoder<K>: KeyedEncodingContainerProtocol where K: Coding
     func _encode(_ value: [UInt8], for key: K) {
         switch self.encoder.container.section {
         case .header:
-            let bytes = Array([[34], key.stringValue.bytes, [34]].joined())
+            let bytes = Array([[34], key.stringValue.bytes.escaped, [34]].joined())
             self.encoder.container.cells.append(bytes)
         case .row:
-            let bytes = Array([[34], value, [34]].joined())
+            let bytes = Array([[34], value.escaped, [34]].joined())
             self.encoder.container.cells.append(bytes)
         }
     }

@@ -16,7 +16,7 @@ final class EncoderTests: XCTestCase {
 
     func testMeasureAsyncEncode() {
         
-        // 0.502
+        // 0.543
         measure {
             for _ in 0..<10_000 {
                 let encoder = CSVEncoder().async { _ in return }
@@ -43,7 +43,7 @@ final class EncoderTests: XCTestCase {
 
     func testMeasureSyncEncode() {
 
-        // 0.583
+        // 0.621
         measure {
             for _ in 0..<10_000 {
                 let encoder = CSVEncoder().sync

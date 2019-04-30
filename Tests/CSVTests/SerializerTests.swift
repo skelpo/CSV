@@ -13,7 +13,7 @@ final class SerializerTests: XCTestCase {
     func testMeasuerSyncSerializer() {
         let serializer = SyncSerializer()
 
-        // 5.786
+        // 6.679
         measure {
             for _ in 0..<100_000 {
                 _ = serializer.serialize(data)
@@ -35,7 +35,7 @@ final class SerializerTests: XCTestCase {
     func testMeasureChunkedSerialize() {
         var serializer = Serializer { _ in return }
 
-        // 5.504
+        // 5.896
         measure {
             for _ in 0..<100_000 {
                 chunks.forEach { chunk in serializer.serialize(chunk) }
