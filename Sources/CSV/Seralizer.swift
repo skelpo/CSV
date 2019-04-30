@@ -34,7 +34,7 @@ public protocol KeyedCollection: Collection where Self.Element == (key: Key, val
 
 extension String: BytesRepresentable {
 
-    /// The string's UTF-* view converted to an `Array`.
+    /// The string's UTF-8 view converted to an `Array`.
     public var bytes: [UInt8] {
         return Array(self.utf8)
     }
@@ -82,7 +82,7 @@ public struct Serializer {
     /// first time it is called.
     ///
     /// - Note: When you pass a dictionary into this method, each value collection is expect to contain the same
-    ////  number of elements, and will crash with `index out of bounds` if that assumption is broken.
+    ///   number of elements, and will crash with `index out of bounds` if that assumption is broken.
     ///
     /// - Parameter data: The dictionary (or other object) to parse.
     /// - Returns: A `Result` instance with a `.failure` case with all the errors from the the `.onRow` callback calls.
@@ -125,7 +125,7 @@ public struct SyncSerializer {
     /// `[BytesRepresentable: [BytesRepresentable]], but it can be any type you conform to the proper protocols.
     ///
     /// - Note: When you pass a dictionary into this method, each value collection is expect to contain the same
-    ////  number of elements, and will crash with `index out of bounds` if that assumption is broken.
+    ///   number of elements, and will crash with `index out of bounds` if that assumption is broken.
     ///
     /// - Parameter data: The dictionary (or other object) to parse.
     /// - Returns: The serialized CSV data.
