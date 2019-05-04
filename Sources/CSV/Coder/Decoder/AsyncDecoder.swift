@@ -69,8 +69,8 @@ internal final class AsyncDecoder: Decoder {
         return try AsyncSingleValueDecoder(path: self.codingPath, decoder: self)
     }
 
-    func decode(_ data: [UInt8], length: Int, delimiter: Character = ",")throws {
-        try self.handler.parse(data, length: length, delimiter: delimiter).get()
+    func decode(_ data: [UInt8], length: Int, configuration: Config = Config())throws {
+        try self.handler.parse(data, length: length, configuration: configuration).get()
     }
 }
 
@@ -101,7 +101,7 @@ internal final class AsyncDecoderHandler {
         }
     }
 
-    func parse(_ bytes: [UInt8], length: Int, delimiter: Character = ",") -> Result<Void, ErrorList> {
-        return self.parser.parse(bytes, length: length, delimiter: delimiter)
+    func parse(_ bytes: [UInt8], length: Int, configuration: Config = Config()) -> Result<Void, ErrorList> {
+        return self.parser.parse(bytes, length: length, configuration: configuration)
     }
 }

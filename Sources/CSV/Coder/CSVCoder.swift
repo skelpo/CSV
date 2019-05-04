@@ -199,7 +199,7 @@ public final class CSVSyncDecoder {
     /// - Returns: An array of `D` instances, decoded from the data passed in.
     ///
     /// - Throws: Errors that occur during the decoding proccess.
-    public func decode<D>(_ type: D.Type = D.self, from data: Data, delimiter: Character = ",")throws -> [D] where D: Decodable {
+    public func decode<D>(_ type: D.Type = D.self, from data: Data, configuration: Config = Config())throws -> [D] where D: Decodable {
         var result: [D] = []
         result.reserveCapacity(data.lazy.split(separator: "\n").count)
 
@@ -211,7 +211,7 @@ public final class CSVSyncDecoder {
 
             result.append(typed)
         }
-        try decoder.decode(Array(data), length: data.count, delimiter: delimiter)
+        try decoder.decode(Array(data), length: data.count, configuration: configuration)
 
         return result
     }
@@ -260,7 +260,7 @@ public final class CSVAsyncDecoder {
     ///
     /// - Parameter data: A section of the CSV document to decode.
     /// - Throws: Errors that occur during the decoding process.
-    public func decode<C>(_ data: C, delimiter: Character = ",")throws where C: Collection, C.Element == UInt8 {
-        try self.rowDecoder.decode(Array(data), length: self.length, delimiter: delimiter)
+    public func decode<C>(_ data: C, configuration: Config = Config()) throws where C: Collection, C.Element == UInt8 {
+        try self.rowDecoder.decode(Array(data), length: self.length, configuration: configuration)
     }
 }
