@@ -44,7 +44,7 @@ final class DecoderTests: XCTestCase {
             for _ in 0..<1_000 {
                 let decoder = CSVDecoder().async(for: Person.self, length: contentLength) { _ in return }
                 do {
-                    try bytes.forEach(decoder.decode)
+                    try bytes.forEach{ try decoder.decode($0) }
                 } catch let error as DecodingError {
                     XCTFail(error.failureReason ?? "No failure reason")
                     error.errorDescription.map { print($0) }
