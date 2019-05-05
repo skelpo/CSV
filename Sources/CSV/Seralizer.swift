@@ -98,7 +98,13 @@ public struct Serializer {
         guard let delimiterASCII = configuration.delimiter.asciiValue else { return errors.result }
 
         if !self.serializedHeaders {
-            let headers = data.keys.map { title in Array([[34], title.bytes, [34]].joined()) }
+            let headers = data.keys.map { title -> [UInt8] in
+                if configuration.inQuotes {
+                    return Array([[34], title.bytes, [34]].joined())
+                }else {
+                    return Array(title.bytes)
+                }
+            }
             print(headers)
             print(Array(headers.joined(separator: [delimiterASCII])))
             do { try self.onRow(Array(headers.joined(separator: [delimiterASCII]))) }
@@ -109,7 +115,11 @@ public struct Serializer {
         guard let first = data.first?.value else { return errors.result }
         (first.startIndex..<first.endIndex).forEach { index in
             let cells = data.values.map { column -> [UInt8] in
-                return Array([[34], column[index].bytes, [34]].joined())
+                if configuration.inQuotes {
+                    return Array([[34], column[index].bytes, [34]].joined())
+                }else {
+                    return Array(column[index].bytes)
+                }
             }
             do { try onRow(Array(cells.joined(separator: [delimiterASCII]))) }
             catch let error { errors.errors.append(error) }
