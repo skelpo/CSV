@@ -5,18 +5,21 @@ final class AsyncEncoder: Encoder {
     let userInfo: [CodingUserInfoKey : Any]
     let container: DataContainer
     let encodingOptions: CSVCodingOptions
+    let configuration: Config
     let onRow: ([UInt8]) -> ()
     
     init(
         path: [CodingKey] = [],
         info: [CodingUserInfoKey : Any] = [:],
         encodingOptions: CSVCodingOptions,
+        configuration: Config = Config(),
         onRow: @escaping ([UInt8]) -> ()
     ) {
         self.codingPath = path
         self.userInfo = info
         self.container = DataContainer(section: .header)
         self.encodingOptions = encodingOptions
+        self.configuration = configuration
         self.onRow = onRow
     }
     
@@ -39,14 +42,14 @@ final class AsyncEncoder: Encoder {
         switch self.container.section {
         case .header:
             try object.encode(to: self)
-            self.onRow(Array(self.container.cells.joined(separator: [44])))
+            self.onRow(Array(self.container.cells.joined(separator: [self.configuration.delimiter.asciiValue ?? 44])))
             self.container.section = .row
             self.container.rowCount += 1
             self.container.cells = []
             fallthrough
         case .row:
             try object.encode(to: self)
-            self.onRow(Array(self.container.cells.joined(separator: [44])))
+            self.onRow(Array(self.container.cells.joined(separator: [self.configuration.delimiter.asciiValue ?? 44])))
             self.container.rowCount += 1
             self.container.cells = []
         }

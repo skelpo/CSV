@@ -41,7 +41,7 @@ final class AsyncKeyedEncoder<K>: KeyedEncodingContainerProtocol where K: Coding
     func encode(_ value: String, forKey key: K) throws { self._encode(value.bytes, for: key) }
     
     func encode<T>(_ value: T, forKey key: K) throws where T : Encodable {
-        let encoder = AsyncEncoder(encodingOptions: self.encoder.encodingOptions, onRow: self.encoder.onRow)
+        let encoder = AsyncEncoder(encodingOptions: self.encoder.encodingOptions, configuration: self.encoder.configuration, onRow: self.encoder.onRow)
         try value.encode(to: encoder)
         self._encode(encoder.container.cells[0], for: key)
     }

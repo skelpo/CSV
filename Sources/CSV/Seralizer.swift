@@ -88,16 +88,20 @@ public struct Serializer {
     /// - Returns: A `Result` instance with a `.failure` case with all the errors from the the `.onRow` callback calls.
     ///   If there are no errors, the result will be a `.success` case.
     @discardableResult
-    public mutating func serialize<Data>(_ data: Data) -> Result<Void, ErrorList> where
+    public mutating func serialize<Data>(_ data: Data, configuration: Config = Config()) -> Result<Void, ErrorList> where
         Data: KeyedCollection, Data.Key: BytesRepresentable, Data.Value: Collection, Data.Value.Element: BytesRepresentable,
         Data.Value.Index: Strideable, Data.Value.Index.Stride: SignedInteger
     {
         var errors = ErrorList()
         guard data.count > 0 else { return errors.result }
+        
+        guard let delimiterASCII = configuration.delimiter.asciiValue else { return errors.result }
 
         if !self.serializedHeaders {
             let headers = data.keys.map { title in Array([[34], title.bytes, [34]].joined()) }
-            do { try self.onRow(Array(headers.joined(separator: [10]))) }
+            print(headers)
+            print(Array(headers.joined(separator: [delimiterASCII])))
+            do { try self.onRow(Array(headers.joined(separator: [delimiterASCII]))) }
             catch let error { errors.errors.append(error) }
             self.serializedHeaders = true
         }
@@ -107,7 +111,7 @@ public struct Serializer {
             let cells = data.values.map { column -> [UInt8] in
                 return Array([[34], column[index].bytes, [34]].joined())
             }
-            do { try onRow(Array(cells.joined(separator: [10]))) }
+            do { try onRow(Array(cells.joined(separator: [delimiterASCII]))) }
             catch let error { errors.errors.append(error) }
         }
 
@@ -129,7 +133,7 @@ public struct SyncSerializer {
     ///
     /// - Parameter data: The dictionary (or other object) to parse.
     /// - Returns: The serialized CSV data.
-    public func serialize<Data>(_ data: Data) -> [UInt8] where
+    public func serialize<Data>(_ data: Data, configuration: Config = Config()) -> [UInt8] where
         Data: KeyedCollection, Data.Key: BytesRepresentable, Data.Value: Collection, Data.Value.Element: BytesRepresentable,
         Data.Value.Index: Strideable, Data.Value.Index.Stride: SignedInteger
     {
@@ -137,7 +141,7 @@ public struct SyncSerializer {
         rows.reserveCapacity(data.first?.value.count ?? 0)
 
         var serializer = Serializer { row in rows.append(row) }
-        serializer.serialize(data)
+        serializer.serialize(data, configuration: configuration)
 
         return Array(rows.joined(separator: [10]))
     }

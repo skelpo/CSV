@@ -33,12 +33,14 @@ public final class CSVEncoder {
     ///
     /// Currently, this decideds how `nil` and `bool` values should be handled.
     public var encodingOptions: CSVCodingOptions
+    public var configuration: Config
 
     /// Creates a new `CSVEncoder` instance.
     ///
     /// - Parameter encodingOptions: The encoding options the use when encoding an object.
-    public init(encodingOptions: CSVCodingOptions = .default) {
+    public init(encodingOptions: CSVCodingOptions = .default, configuration: Config = Config()) {
         self.encodingOptions = encodingOptions
+        self.configuration = configuration
     }
 
     /// Creates a `CSVSyncEncoder` using the registered encoding options.
@@ -46,7 +48,7 @@ public final class CSVEncoder {
     /// This encoder is for if you have several objects that you want to encode at
     /// a single time into a single document.
     public var sync: CSVSyncEncoder {
-        return CSVSyncEncoder(encodingOptions: self.encodingOptions)
+        return CSVSyncEncoder(encodingOptions: self.encodingOptions, configuration: self.configuration)
     }
 
     /// Creates a new `CSVAsyncEncoder` using the registered encoding options.
@@ -59,7 +61,7 @@ public final class CSVEncoder {
     /// - Returns: A `CSVAsyncEncoder` instance with the current encoder's encoding
     ///   options and the `onRow` closure as its callback.
     public func async(_ onRow: @escaping ([UInt8]) -> ()) -> CSVAsyncEncoder {
-        return CSVAsyncEncoder(encodingOptions: self.encodingOptions, onRow: onRow)
+        return CSVAsyncEncoder(encodingOptions: self.encodingOptions, configuration: self.configuration, onRow: onRow)
     }
 }
 
@@ -68,9 +70,11 @@ public final class CSVEncoder {
 /// You can get an instance of the `CSVSyncEncoder` with the `CSVEncoder.sync` property.
 public final class CSVSyncEncoder {
     internal var encodingOptions: CSVCodingOptions
+    internal var configuration: Config
 
-    internal init(encodingOptions: CSVCodingOptions) {
+    internal init(encodingOptions: CSVCodingOptions, configuration: Config = Config()) {
         self.encodingOptions = encodingOptions
+        self.configuration = configuration
     }
 
     /// Encodes an array of encodable objects into a single CSV document.
@@ -83,7 +87,7 @@ public final class CSVSyncEncoder {
         var rows: [[UInt8]] = []
         rows.reserveCapacity(objects.count)
 
-        let encoder = AsyncEncoder(encodingOptions: self.encodingOptions) { row in
+        let encoder = AsyncEncoder(encodingOptions: self.encodingOptions, configuration: self.configuration) { row in
             rows.append(row)
         }
         try objects.forEach(encoder.encode)
@@ -99,9 +103,9 @@ public final class CSVAsyncEncoder {
     internal var encodingOptions: CSVCodingOptions
     private var encoder: AsyncEncoder
 
-    internal init(encodingOptions: CSVCodingOptions, onRow: @escaping ([UInt8]) -> ()) {
+    internal init(encodingOptions: CSVCodingOptions, configuration: Config = Config(), onRow: @escaping ([UInt8]) -> ()) {
         self.encodingOptions = encodingOptions
-        self.encoder = AsyncEncoder(encodingOptions: encodingOptions, onRow: onRow)
+        self.encoder = AsyncEncoder(encodingOptions: encodingOptions, configuration: configuration, onRow: onRow)
     }
 
     /// Encodes an `Encodable` object into a row for a CSV document and passes it into
