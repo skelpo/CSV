@@ -201,7 +201,7 @@ public final class CSVSyncDecoder {
     /// - Throws: Errors that occur during the decoding proccess.
     public func decode<D>(_ type: D.Type = D.self, from data: Data)throws -> [D] where D: Decodable {
         var result: [D] = []
-        result.reserveCapacity(data.lazy.split(separator: "\n").count)
+        result.reserveCapacity(data.lazy.split(separator: 10).count)
 
         let decoder = AsyncDecoder(decoding: type, path: [], decodingOptions: self.decodingOptions) { decoded in
             guard let typed = decoded as? D else {
