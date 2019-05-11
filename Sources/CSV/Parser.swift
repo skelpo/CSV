@@ -85,6 +85,8 @@ public struct Parser {
 
     /// The callback that is called when a cell is parsed.
     public var onCell: CellHandler?
+    
+    public var configuration: Config
 
     private var state: State
 
@@ -97,9 +99,10 @@ public struct Parser {
     /// - Parameters:
     ///   - onHeader: The callback that will be called when a header is parsed.
     ///   - onCell: The callback that will be called when a cell is parsed.
-    public init(onHeader: HeaderHandler? = nil, onCell: CellHandler? = nil) {
+    public init(onHeader: HeaderHandler? = nil, onCell: CellHandler? = nil, configuration: Config = Config()) {
         self.onHeader = onHeader
         self.onCell = onCell
+        self.configuration = configuration
 
         self.state = State()
     }
@@ -119,7 +122,7 @@ public struct Parser {
     /// - Returns: A `Result` instance that will have a `.failure` case with all the errors thrown from
     ///   the registered callbacks. If there are no errors, then the result will be a `.success` case.
     @discardableResult
-    public mutating func parse(_ data: [UInt8], length: Int? = nil, configuration: Config = Config()) -> Result<Void, ErrorList> {
+    public mutating func parse(_ data: [UInt8], length: Int? = nil) -> Result<Void, ErrorList> {
         var currentCell: [UInt8] = self.state.store
         var index = data.startIndex
         var updateState = false
@@ -208,15 +211,17 @@ public struct Parser {
 /// A synchronous wrapper for the `Parser` type for parsing whole CSV documents at once.
 public final class SyncParser {
 
+    public var configuration: Config
+    
     /// Creates a new `SyncParser` instance
-    public init() {}
+    public init(configuration: Config = Config() ) { self.configuration = configuration }
 
     /// Parses a whole CSV document at once.
     ///
     /// - Parameter data: The CSV data to parse.
     /// - Returns: A dictionary containing the parsed CSV data. The keys are the column names
     ///   and the values are the column cells. A `nil` value is an empty cell.
-    public func parse(_ data: [UInt8], configuration: Config = Config()) -> [[UInt8]: [[UInt8]?]] {
+    public func parse(_ data: [UInt8]) -> [[UInt8]: [[UInt8]?]] {
         var results: [[UInt8]: [[UInt8]?]] = [:]
         var parser = Parser(
             onHeader: { header in
@@ -224,10 +229,11 @@ public final class SyncParser {
             },
             onCell: { header, cell in
                 results[header, default: []].append(cell.count > 0 ? cell : nil)
-            }
+            },
+            configuration: configuration
         )
 
-        parser.parse(data, configuration: configuration)
+        parser.parse(data)
         return results
     }
 
@@ -236,7 +242,7 @@ public final class SyncParser {
     /// - Parameter data: The CSV data to parse.
     /// - Returns: A dictionary containing the parsed CSV data. The keys are the column names
     ///   and the values are the column cells. A `nil` value is an empty cell.
-    public func parse(_ data: String, configuration: Config = Config()) -> [String: [String?]] {
+    public func parse(_ data: String) -> [String: [String?]] {
         var results: [String: [String?]] = [:]
         var parser = Parser(
             onHeader: { header in
@@ -246,10 +252,11 @@ public final class SyncParser {
                 let title = String(decoding: header, as: UTF8.self)
                 let contents = String(decoding: cell, as: UTF8.self)
                 results[title, default: []].append(cell.count > 0 ? contents : nil)
-            }
+            },
+            configuration: configuration
         )
 
-        parser.parse(Array(data.utf8), configuration: configuration)
+        parser.parse(Array(data.utf8))
         return results
     }
 }

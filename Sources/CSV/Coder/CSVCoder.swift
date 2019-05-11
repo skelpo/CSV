@@ -146,19 +146,25 @@ public final class CSVDecoder {
     ///
     /// This is currently used to specify how `nil` and `Bool` values should be handled.
     public var decodingOptions: CSVCodingOptions
+    
+    /// The CSV configuration to use when decoding or encoding
+    ///
+    /// This is used to specify if cells are wrapped in quotes and what the delimiter is (comma or tab, etc.)
+    public var configuration: Config
 
     /// Creates a new `CSVDecoder` instance.
     ///
     /// - Parameter decodingOptions: The decoding options to use when decoding data to an object.
-    public init(decodingOptions: CSVCodingOptions = .default) {
+    public init(decodingOptions: CSVCodingOptions = .default, configuration: Config = Config()) {
         self.decodingOptions = decodingOptions
+        self.configuration = configuration
     }
 
     /// Creates a `CSVSyncDecoder` with the registered encoding options.
     ///
     /// This decoder is for if you have whole CSV document you want to decode at once.
     public var sync: CSVSyncDecoder {
-        return CSVSyncDecoder(decodingOptions: self.decodingOptions)
+        return CSVSyncDecoder(decodingOptions: self.decodingOptions, configuration: self.configuration)
     }
 
     /// Creates a `CSVAsyncDecoder` instance with the registered encoding options.
@@ -180,7 +186,8 @@ public final class CSVDecoder {
             decoding: D.self,
             onInstance: onInstance,
             length: length,
-            decodingOptions: self.decodingOptions
+            decodingOptions: self.decodingOptions,
+            configuration: self.configuration
         )
     }
 }
@@ -190,9 +197,11 @@ public final class CSVDecoder {
 /// You can get an instance of `CSVSyncDecoder` from the `CSVDecoder.sync` property.
 public final class CSVSyncDecoder {
     internal var decodingOptions: CSVCodingOptions
+    internal var configuration: Config
 
-    internal init(decodingOptions: CSVCodingOptions) {
+    internal init(decodingOptions: CSVCodingOptions, configuration: Config = Config()) {
         self.decodingOptions = decodingOptions
+        self.configuration = configuration
     }
 
     /// Decodes a whole CSV document into an array of a specified `Decodable` type.
@@ -203,7 +212,7 @@ public final class CSVSyncDecoder {
     /// - Returns: An array of `D` instances, decoded from the data passed in.
     ///
     /// - Throws: Errors that occur during the decoding proccess.
-    public func decode<D>(_ type: D.Type = D.self, from data: Data, configuration: Config = Config())throws -> [D] where D: Decodable {
+    public func decode<D>(_ type: D.Type = D.self, from data: Data)throws -> [D] where D: Decodable {
         var result: [D] = []
         result.reserveCapacity(data.lazy.split(separator: "\n").count)
 
@@ -215,7 +224,7 @@ public final class CSVSyncDecoder {
 
             result.append(typed)
         }
-        try decoder.decode(Array(data), length: data.count, configuration: configuration)
+        try decoder.decode(Array(data), length: data.count)
 
         return result
     }
@@ -228,9 +237,10 @@ public final class CSVAsyncDecoder {
     internal var length: Int
     internal var decoding: Decodable.Type
     internal var decodingOptions: CSVCodingOptions
+    internal var configuration: Config
     private var rowDecoder: AsyncDecoder
 
-    internal init<D>(decoding: D.Type, onInstance: @escaping (D) -> (), length: Int, decodingOptions: CSVCodingOptions)
+    internal init<D>(decoding: D.Type, onInstance: @escaping (D) -> (), length: Int, decodingOptions: CSVCodingOptions, configuration: Config = Config())
         where D: Decodable
     {
         let callback = { (decoded: Decodable) in
@@ -244,10 +254,12 @@ public final class CSVAsyncDecoder {
         self.length = length
         self.decoding = decoding
         self.decodingOptions = decodingOptions
+        self.configuration = configuration
         self.rowDecoder = AsyncDecoder(
             decoding: D.self,
             path: [],
             decodingOptions: decodingOptions,
+            configuration: configuration,
             onInstance: callback
         )
 
@@ -264,7 +276,7 @@ public final class CSVAsyncDecoder {
     ///
     /// - Parameter data: A section of the CSV document to decode.
     /// - Throws: Errors that occur during the decoding process.
-    public func decode<C>(_ data: C, configuration: Config = Config()) throws where C: Collection, C.Element == UInt8 {
-        try self.rowDecoder.decode(Array(data), length: self.length, configuration: configuration)
+    public func decode<C>(_ data: C) throws where C: Collection, C.Element == UInt8 {
+        try self.rowDecoder.decode(Array(data), length: self.length)
     }
 }

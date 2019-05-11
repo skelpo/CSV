@@ -63,6 +63,7 @@ extension Dictionary: KeyedCollection { }
 /// - Note: You should create a new `Serializer` dictionary you serialize.
 public struct Serializer {
     private var serializedHeaders: Bool
+    var configuration: Config
 
     /// The callback that will be called with each row that is serialized.
     public var onRow: ([UInt8])throws -> ()
@@ -70,8 +71,9 @@ public struct Serializer {
     /// Creates a new `Serializer` instance.
     ///
     /// - Parameter onRow: The callback that will be called with each row that is serialized.
-    public init(onRow: @escaping ([UInt8])throws -> ()) {
+    public init(configuration: Config = Config(), onRow: @escaping ([UInt8])throws -> ()) {
         self.serializedHeaders = false
+        self.configuration = configuration
         self.onRow = onRow
     }
 
@@ -88,7 +90,7 @@ public struct Serializer {
     /// - Returns: A `Result` instance with a `.failure` case with all the errors from the the `.onRow` callback calls.
     ///   If there are no errors, the result will be a `.success` case.
     @discardableResult
-    public mutating func serialize<Data>(_ data: Data, configuration: Config = Config()) -> Result<Void, ErrorList> where
+    public mutating func serialize<Data>(_ data: Data) -> Result<Void, ErrorList> where
         Data: KeyedCollection, Data.Key: BytesRepresentable, Data.Value: Collection, Data.Value.Element: BytesRepresentable,
         Data.Value.Index: Strideable, Data.Value.Index.Stride: SignedInteger
     {
@@ -99,7 +101,7 @@ public struct Serializer {
 
         if !self.serializedHeaders {
             let headers = data.keys.map { title -> [UInt8] in
-                if configuration.inQuotes {
+                if self.configuration.inQuotes {
                     return Array([[34], title.bytes, [34]].joined())
                 }else {
                     return Array(title.bytes)
@@ -115,7 +117,7 @@ public struct Serializer {
         guard let first = data.first?.value else { return errors.result }
         (first.startIndex..<first.endIndex).forEach { index in
             let cells = data.values.map { column -> [UInt8] in
-                if configuration.inQuotes {
+                if self.configuration.inQuotes {
                     return Array([[34], column[index].bytes, [34]].joined())
                 }else {
                     return Array(column[index].bytes)
@@ -131,9 +133,10 @@ public struct Serializer {
 
 /// A synchronous wrapper for the `Serializer` struct for parsing a whole CSV document.
 public struct SyncSerializer {
+    var configuration: Config
 
     /// Creates a new `SyncSerializer` instance.
-    public init () { }
+    public init (configuration: Config = Config()) { self.configuration = configuration}
 
     /// Serializes a dictionary to CSV document data. Usually this will be a dictionary of type
     /// `[BytesRepresentable: [BytesRepresentable]], but it can be any type you conform to the proper protocols.
@@ -143,15 +146,15 @@ public struct SyncSerializer {
     ///
     /// - Parameter data: The dictionary (or other object) to parse.
     /// - Returns: The serialized CSV data.
-    public func serialize<Data>(_ data: Data, configuration: Config = Config()) -> [UInt8] where
+    public func serialize<Data>(_ data: Data) -> [UInt8] where
         Data: KeyedCollection, Data.Key: BytesRepresentable, Data.Value: Collection, Data.Value.Element: BytesRepresentable,
         Data.Value.Index: Strideable, Data.Value.Index.Stride: SignedInteger
     {
         var rows: [[UInt8]] = []
         rows.reserveCapacity(data.first?.value.count ?? 0)
 
-        var serializer = Serializer { row in rows.append(row) }
-        serializer.serialize(data, configuration: configuration)
+        var serializer = Serializer(configuration: self.configuration) { row in rows.append(row) }
+        serializer.serialize(data)
 
         return Array(rows.joined(separator: [10]))
     }
