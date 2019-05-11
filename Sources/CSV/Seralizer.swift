@@ -107,8 +107,6 @@ public struct Serializer {
                     return Array(title.bytes)
                 }
             }
-            print(headers)
-            print(Array(headers.joined(separator: [delimiterASCII])))
             do { try self.onRow(Array(headers.joined(separator: [delimiterASCII]))) }
             catch let error { errors.errors.append(error) }
             self.serializedHeaders = true
