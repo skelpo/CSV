@@ -27,19 +27,6 @@ public struct ErrorList: Error {
     }
 }
 
-/// Wraps the Configuration options for Parse/Encode/Decode
-public struct Config {
-    public let delimiter: Character
-    public let inQuotes: Bool
-    public let enclosingCharacter: Character // Should this be called fieldWrapper?
-    
-    public init(delimiter: Character = ",", inQuotes: Bool = true, enclosingCharacter: Character = "\"") {
-        self.delimiter = delimiter
-        self.inQuotes = inQuotes
-        self.enclosingCharacter = enclosingCharacter
-    }
-}
-
 /// A parser for streaming `CSV` data.
 ///
 /// - Note: You should create a new `Parser` instance for each CSV document you parse.
