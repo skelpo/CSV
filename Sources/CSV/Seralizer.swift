@@ -96,18 +96,16 @@ public struct Serializer {
     {
         var errors = ErrorList()
         guard data.count > 0 else { return errors.result }
-        
-        guard let delimiterASCII = configuration.delimiter.asciiValue else { return errors.result }
 
         if !self.serializedHeaders {
             let headers = data.keys.map { title -> [UInt8] in
-                if self.configuration.inQuotes {
-                    return Array([[34], title.bytes, [34]].joined())
+                if let delim = self.configuration.cellDelimiter {
+                    return Array([[delim], title.bytes, [delim]].joined())
                 }else {
                     return Array(title.bytes)
                 }
             }
-            do { try self.onRow(Array(headers.joined(separator: [delimiterASCII]))) }
+            do { try self.onRow(Array(headers.joined(separator: [configuration.cellSeparator]))) }
             catch let error { errors.errors.append(error) }
             self.serializedHeaders = true
         }
@@ -115,13 +113,13 @@ public struct Serializer {
         guard let first = data.first?.value else { return errors.result }
         (first.startIndex..<first.endIndex).forEach { index in
             let cells = data.values.map { column -> [UInt8] in
-                if self.configuration.inQuotes {
-                    return Array([[34], column[index].bytes, [34]].joined())
+                if let delim = self.configuration.cellDelimiter {
+                    return Array([[delim], column[index].bytes, [delim]].joined())
                 }else {
                     return Array(column[index].bytes)
                 }
             }
-            do { try onRow(Array(cells.joined(separator: [delimiterASCII]))) }
+            do { try onRow(Array(cells.joined(separator: [configuration.cellSeparator]))) }
             catch let error { errors.errors.append(error) }
         }
 

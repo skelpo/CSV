@@ -115,7 +115,6 @@ public struct Parser {
         var updateState = false
         var errors = ErrorList()
         var slice: (start: Int, end: Int) = (index, index)
-        let delimiterASCII = configuration.delimiter.asciiValue
 
         while index < data.endIndex {
             let byte = data[index]
@@ -143,7 +142,7 @@ public struct Parser {
                     if self.state.position == .headers { updateState = true }
                     fallthrough
                 }
-            case delimiterASCII:
+            case configuration.cellSeparator:
                 if self.state.inQuotes {
                     slice.end += 1
                 } else {

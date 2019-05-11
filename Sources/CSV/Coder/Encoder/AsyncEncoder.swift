@@ -42,14 +42,14 @@ final class AsyncEncoder: Encoder {
         switch self.container.section {
         case .header:
             try object.encode(to: self)
-            self.onRow(Array(self.container.cells.joined(separator: [self.configuration.delimiter.asciiValue ?? 44])))
+            self.onRow(Array(self.container.cells.joined(separator: [self.configuration.cellSeparator])))
             self.container.section = .row
             self.container.rowCount += 1
             self.container.cells = []
             fallthrough
         case .row:
             try object.encode(to: self)
-            self.onRow(Array(self.container.cells.joined(separator: [self.configuration.delimiter.asciiValue ?? 44])))
+            self.onRow(Array(self.container.cells.joined(separator: [self.configuration.cellSeparator])))
             self.container.rowCount += 1
             self.container.cells = []
         }
