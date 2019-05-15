@@ -1,5 +1,3 @@
-import Foundation
-
 /// The type where an instance can be represented by an array of bytes (`UInt8`).
 public protocol BytesRepresentable {
 

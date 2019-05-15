@@ -1,5 +1,3 @@
-import Foundation
-
 // MARK: - String <-> Bytes conversion
 extension CustomStringConvertible {
     var bytes: [UInt8] {
