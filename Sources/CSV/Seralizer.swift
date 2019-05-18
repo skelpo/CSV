@@ -63,6 +63,8 @@ extension Dictionary: KeyedCollection { }
 /// - Note: You should create a new `Serializer` dictionary you serialize.
 public struct Serializer {
     private var serializedHeaders: Bool
+    
+    /// The struct configures serialization options
     var configuration: Config
 
     /// The callback that will be called with each row that is serialized.
@@ -70,7 +72,9 @@ public struct Serializer {
 
     /// Creates a new `Serializer` instance.
     ///
-    /// - Parameter onRow: The callback that will be called with each row that is serialized.
+    /// - Parameter: The struct configures serialization options
+    ///   - configuration: The struct that configures serialization options
+    ///   - onRow: The callback that will be called with each row that is serialized.
     public init(configuration: Config = Config(), onRow: @escaping ([UInt8])throws -> ()) {
         self.serializedHeaders = false
         self.configuration = configuration
@@ -132,6 +136,9 @@ public struct SyncSerializer {
     var configuration: Config
 
     /// Creates a new `SyncSerializer` instance.
+    ///
+    /// - Parameter configuration: The struct that configures serialization options
+    
     public init (configuration: Config = Config()) { self.configuration = configuration}
 
     /// Serializes a dictionary to CSV document data. Usually this will be a dictionary of type

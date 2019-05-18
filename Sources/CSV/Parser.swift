@@ -73,6 +73,7 @@ public struct Parser {
     /// The callback that is called when a cell is parsed.
     public var onCell: CellHandler?
     
+    /// The struct that configures parsing options
     public var configuration: Config
 
     private var state: State
@@ -86,6 +87,7 @@ public struct Parser {
     /// - Parameters:
     ///   - onHeader: The callback that will be called when a header is parsed.
     ///   - onCell: The callback that will be called when a cell is parsed.
+    ///   - configuration: The struct that configures parsing options
     public init(onHeader: HeaderHandler? = nil, onCell: CellHandler? = nil, configuration: Config = Config()) {
         self.onHeader = onHeader
         self.onCell = onCell
@@ -196,10 +198,14 @@ public struct Parser {
 
 /// A synchronous wrapper for the `Parser` type for parsing whole CSV documents at once.
 public final class SyncParser {
-
+    
+    /// The struct configures parsing options
     public var configuration: Config
     
     /// Creates a new `SyncParser` instance
+    ///
+    /// - Parameter configuration: The struct configures parsing options
+
     public init(configuration: Config = Config() ) { self.configuration = configuration }
 
     /// Parses a whole CSV document at once.

@@ -33,11 +33,16 @@ public final class CSVEncoder {
     ///
     /// Currently, this decideds how `nil` and `bool` values should be handled.
     public var encodingOptions: CSVCodingOptions
+    
+    
+    /// The struct that configures serialization options
     public var configuration: Config
 
     /// Creates a new `CSVEncoder` instance.
     ///
-    /// - Parameter encodingOptions: The encoding options the use when encoding an object.
+    /// - Parameters:
+    ///   - encodingOptions: The encoding options the use when encoding an object.
+    ///   - configuration: The struct that configures serialization options
     public init(encodingOptions: CSVCodingOptions = .default, configuration: Config = Config()) {
         self.encodingOptions = encodingOptions
         self.configuration = configuration
@@ -155,6 +160,12 @@ public final class CSVDecoder {
     /// Creates a new `CSVDecoder` instance.
     ///
     /// - Parameter decodingOptions: The decoding options to use when decoding data to an object.
+    
+    /// Creates a new `CSVDecoder` instance.
+    ///
+    /// - Parameters:
+    ///   - decodingOptions: The decoding options to use when decoding data to an object.
+    ///   - configuration: The struct that configures serialization options
     public init(decodingOptions: CSVCodingOptions = .default, configuration: Config = Config()) {
         self.decodingOptions = decodingOptions
         self.configuration = configuration
