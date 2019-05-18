@@ -121,10 +121,10 @@ public struct Parser {
         while index < data.endIndex {
             let byte = data[index]
             switch byte {
-            case 34:
+            case configuration.cellDelimiter:
                 currentCell.append(contentsOf: data[slice.start..<slice.end])
                 slice = (index + 1, index + 1)
-                switch self.state.inQuotes && index + 1 < data.endIndex && data[index + 1] == 34 {
+                switch self.state.inQuotes && index + 1 < data.endIndex && data[index + 1] == configuration.cellDelimiter {
                 case true: index += 1
                 case false: self.state.inQuotes.toggle()
                 }
