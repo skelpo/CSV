@@ -3,7 +3,7 @@ import CSV
 
 final class SerializerTests: XCTestCase {
     func testSyncSerialize() {
-        let serializer = SyncSerializer(configuration: Config(cellDelimiter: 34))
+        let serializer = SyncSerializer(configuration: Config.default)
         let serialized = serializer.serialize(orderedData)
         let string = String(decoding: serialized, as: UTF8.self)
 
@@ -23,7 +23,7 @@ final class SerializerTests: XCTestCase {
 
     func testChunkedSerialize() throws {
         var rows: [[UInt8]] = []
-        var serializer = Serializer(configuration: Config(cellDelimiter: 34)) { row in rows.append(row) }
+        var serializer = Serializer(configuration: Config.default) { row in rows.append(row) }
         for chunk in orderedChunks {
             try serializer.serialize(chunk).get()
         }
