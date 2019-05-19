@@ -75,7 +75,7 @@ public struct Serializer {
     /// - Parameter: The struct configures serialization options
     ///   - configuration: The struct that configures serialization options
     ///   - onRow: The callback that will be called with each row that is serialized.
-    public init(configuration: Config = Config(), onRow: @escaping ([UInt8])throws -> ()) {
+    public init(configuration: Config = Config.default, onRow: @escaping ([UInt8])throws -> ()) {
         self.serializedHeaders = false
         self.configuration = configuration
         self.onRow = onRow
@@ -139,7 +139,7 @@ public struct SyncSerializer {
     ///
     /// - Parameter configuration: The struct that configures serialization options
     
-    public init (configuration: Config = Config()) { self.configuration = configuration}
+    public init (configuration: Config = Config.default) { self.configuration = configuration}
 
     /// Serializes a dictionary to CSV document data. Usually this will be a dictionary of type
     /// `[BytesRepresentable: [BytesRepresentable]], but it can be any type you conform to the proper protocols.

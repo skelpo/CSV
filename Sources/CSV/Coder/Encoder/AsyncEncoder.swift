@@ -12,7 +12,7 @@ final class AsyncEncoder: Encoder {
         path: [CodingKey] = [],
         info: [CodingUserInfoKey : Any] = [:],
         encodingOptions: CSVCodingOptions,
-        configuration: Config = Config(),
+        configuration: Config = Config.default,
         onRow: @escaping ([UInt8]) -> ()
     ) {
         self.codingPath = path

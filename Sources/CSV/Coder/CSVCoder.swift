@@ -43,7 +43,7 @@ public final class CSVEncoder {
     /// - Parameters:
     ///   - encodingOptions: The encoding options the use when encoding an object.
     ///   - configuration: The struct that configures serialization options
-    public init(encodingOptions: CSVCodingOptions = .default, configuration: Config = Config()) {
+    public init(encodingOptions: CSVCodingOptions = .default, configuration: Config = Config.default) {
         self.encodingOptions = encodingOptions
         self.configuration = configuration
     }
@@ -77,7 +77,7 @@ public final class CSVSyncEncoder {
     internal var encodingOptions: CSVCodingOptions
     internal var configuration: Config
 
-    internal init(encodingOptions: CSVCodingOptions, configuration: Config = Config()) {
+    internal init(encodingOptions: CSVCodingOptions, configuration: Config = Config.default) {
         self.encodingOptions = encodingOptions
         self.configuration = configuration
     }
@@ -108,7 +108,7 @@ public final class CSVAsyncEncoder {
     internal var encodingOptions: CSVCodingOptions
     private var encoder: AsyncEncoder
 
-    internal init(encodingOptions: CSVCodingOptions, configuration: Config = Config(), onRow: @escaping ([UInt8]) -> ()) {
+    internal init(encodingOptions: CSVCodingOptions, configuration: Config = Config.default, onRow: @escaping ([UInt8]) -> ()) {
         self.encodingOptions = encodingOptions
         self.encoder = AsyncEncoder(encodingOptions: encodingOptions, configuration: configuration, onRow: onRow)
     }
@@ -166,7 +166,7 @@ public final class CSVDecoder {
     /// - Parameters:
     ///   - decodingOptions: The decoding options to use when decoding data to an object.
     ///   - configuration: The struct that configures serialization options
-    public init(decodingOptions: CSVCodingOptions = .default, configuration: Config = Config()) {
+    public init(decodingOptions: CSVCodingOptions = .default, configuration: Config = Config.default) {
         self.decodingOptions = decodingOptions
         self.configuration = configuration
     }
@@ -210,7 +210,7 @@ public final class CSVSyncDecoder {
     internal var decodingOptions: CSVCodingOptions
     internal var configuration: Config
 
-    internal init(decodingOptions: CSVCodingOptions, configuration: Config = Config()) {
+    internal init(decodingOptions: CSVCodingOptions, configuration: Config = Config.default) {
         self.decodingOptions = decodingOptions
         self.configuration = configuration
     }
@@ -251,7 +251,7 @@ public final class CSVAsyncDecoder {
     internal var configuration: Config
     private var rowDecoder: AsyncDecoder
 
-    internal init<D>(decoding: D.Type, onInstance: @escaping (D) -> (), length: Int, decodingOptions: CSVCodingOptions, configuration: Config = Config())
+    internal init<D>(decoding: D.Type, onInstance: @escaping (D) -> (), length: Int, decodingOptions: CSVCodingOptions, configuration: Config = Config.default)
         where D: Decodable
     {
         let callback = { (decoded: Decodable) in
