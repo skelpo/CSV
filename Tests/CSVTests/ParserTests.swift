@@ -110,26 +110,3 @@ final class ParserTests: XCTestCase {
         }
     }
 }
-
-fileprivate let data = """
-first name,last_name,age,gender,tagLine
-Caleb,Kleveter,18,M,😜\r
-Benjamin,Franklin,269,M,A penny saved is a penny earned
-"Doc","Holliday","174","M",Bang\r
-Grace,Hopper,119,F,
-Anne,Shirley,141,F,"God's in His heaven,
-all's right with the world"
-TinTin,,16,M,Great snakes!
-"""
-
-fileprivate let chunks: [String] = [
-    "first name,last_name,age",
-    ",gender,tagLine\nCaleb,Kleveter,18,M,",
-    "😜\r\nBenjamin,Franklin,269,M,A penny saved is a ",
-    "penny earned\n\"",
-    #"Doc","Holliday","174","M",Bang\#r\#n"#,
-    "Grace,Hopper,119,F,",
-    #"\#nAnne,Shirley,141,F,"God's in His heaven,\#n"#,
-    #"all's right with the world""#,
-    "\nTinTin,,16,M,Great snakes!"
-]

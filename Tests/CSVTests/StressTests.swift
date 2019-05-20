@@ -69,6 +69,10 @@ final class StressTests: XCTestCase {
                     { _ in return }
                 )
                 try async.decode(data)
+            } catch let error as EncodingError {
+                XCTFail(error.failureReason ?? "No failure reason")
+                error.errorDescription.map { print($0) }
+                error.recoverySuggestion.map { print($0) }
             } catch let error {
                 XCTFail(error.localizedDescription)
             }
@@ -122,17 +126,17 @@ final class StressTests: XCTestCase {
 }
 
 fileprivate struct Response: Codable, Equatable {
-    let Respondent: Int
-    let Hobby: Bool
-    let OpenSource: Bool
-    let Country: String
-    let Student: String
-    let Employment: String
-    let FormalEducation: String
+    let Respondent: Int?
+    let Hobby: Bool?
+    let OpenSource: Bool?
+    let Country: String?
+    let Student: String?
+    let Employment: String?
+    let FormalEducation: String?
     let UndergradMajor: String?
-    let CompanySize: String
-    let DevType: String
-    let YearsCoding: String
+    let CompanySize: String?
+    let DevType: String?
+    let YearsCoding: String?
     let YearsCodingProf: String?
     let JobSatisfaction: String?
     let CareerSatisfaction: String?
@@ -250,5 +254,5 @@ fileprivate struct Response: Codable, Equatable {
     let Dependents: Bool?
     let MilitaryUS: Bool?
     let SurveyTooLong: String?
-    let SurveyEasy: String
+    let SurveyEasy: String?
 }

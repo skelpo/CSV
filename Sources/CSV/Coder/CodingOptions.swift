@@ -54,8 +54,8 @@ public enum BoolCodingStrategy: Hashable {
     /// - Returns: The bytes value for the bool passed in.
     public func bytes(from bool: Bool) -> [UInt8] {
         switch self {
-        case .integer: return bool ? "1" : "0"
-        case .string, .fuzzy: return bool ? "true" : "false"
+        case .integer: return bool ? [49] : [48]
+        case .string, .fuzzy: return bool ? [116, 114, 117, 101] : [102, 97, 108, 115, 101]
         case let .custom(`true`, `false`): return bool ? `true` : `false`
         }
     }
@@ -66,10 +66,10 @@ public enum BoolCodingStrategy: Hashable {
     /// - Returns: The `Bool` value for the bytes passed in, or `nil` if no match is found.
     public func bool(from bytes: [UInt8]) -> Bool? {
         switch (self, bytes) {
-        case (.integer, ["0"]): return false
-        case (.integer, ["1"]): return true
-        case (.string, "false"): return false
-        case (.string, "true"): return true
+        case (.integer, [49]): return true
+        case (.integer, [48]): return false
+        case (.string, [116, 114, 117, 101]): return true
+        case (.string, [102, 97, 108, 115, 101]): return false
         case (let .custom(`true`, `false`), _):
             switch bytes {
             case `false`: return false

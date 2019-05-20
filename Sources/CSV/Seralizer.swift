@@ -34,7 +34,7 @@ public protocol KeyedCollection: Collection where Self.Element == (key: Key, val
 
 extension String: BytesRepresentable {
 
-    /// The string's UTF-* view converted to an `Array`.
+    /// The string's UTF-8 view converted to an `Array`.
     public var bytes: [UInt8] {
         return Array(self.utf8)
     }
@@ -88,7 +88,7 @@ public struct Serializer {
     /// first time it is called.
     ///
     /// - Note: When you pass a dictionary into this method, each value collection is expect to contain the same
-    ////  number of elements, and will crash with `index out of bounds` if that assumption is broken.
+    ///   number of elements, and will crash with `index out of bounds` if that assumption is broken.
     ///
     /// - Parameter data: The dictionary (or other object) to parse.
     /// - Returns: A `Result` instance with a `.failure` case with all the errors from the the `.onRow` callback calls.
@@ -105,8 +105,8 @@ public struct Serializer {
             let headers = data.keys.map { title -> [UInt8] in
                 if let delim = self.configuration.cellDelimiter {
                     return Array([[delim], title.bytes, [delim]].joined())
-                }else {
-                    return Array(title.bytes)
+                } else {
+                    return title.bytes
                 }
             }
             do { try self.onRow(Array(headers.joined(separator: [configuration.cellSeparator]))) }
@@ -119,8 +119,8 @@ public struct Serializer {
             let cells = data.values.map { column -> [UInt8] in
                 if let delim = self.configuration.cellDelimiter {
                     return Array([[delim], column[index].bytes, [delim]].joined())
-                }else {
-                    return Array(column[index].bytes)
+                } else {
+                    return column[index].bytes
                 }
             }
             do { try onRow(Array(cells.joined(separator: [configuration.cellSeparator]))) }
@@ -145,7 +145,7 @@ public struct SyncSerializer {
     /// `[BytesRepresentable: [BytesRepresentable]], but it can be any type you conform to the proper protocols.
     ///
     /// - Note: When you pass a dictionary into this method, each value collection is expect to contain the same
-    ////  number of elements, and will crash with `index out of bounds` if that assumption is broken.
+    ///   number of elements, and will crash with `index out of bounds` if that assumption is broken.
     ///
     /// - Parameter data: The dictionary (or other object) to parse.
     /// - Returns: The serialized CSV data.
