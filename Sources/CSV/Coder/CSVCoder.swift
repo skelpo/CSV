@@ -33,12 +33,19 @@ public final class CSVEncoder {
     ///
     /// Currently, this decideds how `nil` and `bool` values should be handled.
     public var encodingOptions: CSVCodingOptions
+    
+    
+    /// The struct that configures serialization options
+    public var configuration: Config
 
     /// Creates a new `CSVEncoder` instance.
     ///
-    /// - Parameter encodingOptions: The encoding options the use when encoding an object.
-    public init(encodingOptions: CSVCodingOptions = .default) {
+    /// - Parameters:
+    ///   - encodingOptions: The encoding options the use when encoding an object.
+    ///   - configuration: The struct that configures serialization options
+    public init(encodingOptions: CSVCodingOptions = .default, configuration: Config = Config.default) {
         self.encodingOptions = encodingOptions
+        self.configuration = configuration
     }
 
     /// Creates a `CSVSyncEncoder` using the registered encoding options.
@@ -46,7 +53,7 @@ public final class CSVEncoder {
     /// This encoder is for if you have several objects that you want to encode at
     /// a single time into a single document.
     public var sync: CSVSyncEncoder {
-        return CSVSyncEncoder(encodingOptions: self.encodingOptions)
+        return CSVSyncEncoder(encodingOptions: self.encodingOptions, configuration: self.configuration)
     }
 
     /// Creates a new `CSVAsyncEncoder` using the registered encoding options.
@@ -59,7 +66,7 @@ public final class CSVEncoder {
     /// - Returns: A `CSVAsyncEncoder` instance with the current encoder's encoding
     ///   options and the `onRow` closure as its callback.
     public func async(_ onRow: @escaping ([UInt8]) -> ()) -> CSVAsyncEncoder {
-        return CSVAsyncEncoder(encodingOptions: self.encodingOptions, onRow: onRow)
+        return CSVAsyncEncoder(encodingOptions: self.encodingOptions, configuration: self.configuration, onRow: onRow)
     }
 }
 
@@ -68,9 +75,11 @@ public final class CSVEncoder {
 /// You can get an instance of the `CSVSyncEncoder` with the `CSVEncoder.sync` property.
 public final class CSVSyncEncoder {
     internal var encodingOptions: CSVCodingOptions
+    internal var configuration: Config
 
-    internal init(encodingOptions: CSVCodingOptions) {
+    internal init(encodingOptions: CSVCodingOptions, configuration: Config = Config.default) {
         self.encodingOptions = encodingOptions
+        self.configuration = configuration
     }
 
     /// Encodes an array of encodable objects into a single CSV document.
@@ -83,7 +92,7 @@ public final class CSVSyncEncoder {
         var rows: [[UInt8]] = []
         rows.reserveCapacity(objects.count)
 
-        let encoder = AsyncEncoder(encodingOptions: self.encodingOptions) { row in
+        let encoder = AsyncEncoder(encodingOptions: self.encodingOptions, configuration: self.configuration) { row in
             rows.append(row)
         }
         try objects.forEach(encoder.encode)
@@ -99,9 +108,9 @@ public final class CSVAsyncEncoder {
     internal var encodingOptions: CSVCodingOptions
     private var encoder: AsyncEncoder
 
-    internal init(encodingOptions: CSVCodingOptions, onRow: @escaping ([UInt8]) -> ()) {
+    internal init(encodingOptions: CSVCodingOptions, configuration: Config = Config.default, onRow: @escaping ([UInt8]) -> ()) {
         self.encodingOptions = encodingOptions
-        self.encoder = AsyncEncoder(encodingOptions: encodingOptions, onRow: onRow)
+        self.encoder = AsyncEncoder(encodingOptions: encodingOptions, configuration: configuration, onRow: onRow)
     }
 
     /// Encodes an `Encodable` object into a row for a CSV document and passes it into
@@ -142,19 +151,31 @@ public final class CSVDecoder {
     ///
     /// This is currently used to specify how `nil` and `Bool` values should be handled.
     public var decodingOptions: CSVCodingOptions
+    
+    /// The CSV configuration to use when decoding or encoding
+    ///
+    /// This is used to specify if cells are wrapped in quotes and what the delimiter is (comma or tab, etc.)
+    public var configuration: Config
 
     /// Creates a new `CSVDecoder` instance.
     ///
     /// - Parameter decodingOptions: The decoding options to use when decoding data to an object.
-    public init(decodingOptions: CSVCodingOptions = .default) {
+    
+    /// Creates a new `CSVDecoder` instance.
+    ///
+    /// - Parameters:
+    ///   - decodingOptions: The decoding options to use when decoding data to an object.
+    ///   - configuration: The struct that configures serialization options
+    public init(decodingOptions: CSVCodingOptions = .default, configuration: Config = Config.default) {
         self.decodingOptions = decodingOptions
+        self.configuration = configuration
     }
 
     /// Creates a `CSVSyncDecoder` with the registered encoding options.
     ///
     /// This decoder is for if you have whole CSV document you want to decode at once.
     public var sync: CSVSyncDecoder {
-        return CSVSyncDecoder(decodingOptions: self.decodingOptions)
+        return CSVSyncDecoder(decodingOptions: self.decodingOptions, configuration: self.configuration)
     }
 
     /// Creates a `CSVAsyncDecoder` instance with the registered encoding options.
@@ -176,7 +197,8 @@ public final class CSVDecoder {
             decoding: D.self,
             onInstance: onInstance,
             length: length,
-            decodingOptions: self.decodingOptions
+            decodingOptions: self.decodingOptions,
+            configuration: self.configuration
         )
     }
 }
@@ -186,9 +208,11 @@ public final class CSVDecoder {
 /// You can get an instance of `CSVSyncDecoder` from the `CSVDecoder.sync` property.
 public final class CSVSyncDecoder {
     internal var decodingOptions: CSVCodingOptions
+    internal var configuration: Config
 
-    internal init(decodingOptions: CSVCodingOptions) {
+    internal init(decodingOptions: CSVCodingOptions, configuration: Config = Config.default) {
         self.decodingOptions = decodingOptions
+        self.configuration = configuration
     }
 
     /// Decodes a whole CSV document into an array of a specified `Decodable` type.
@@ -224,9 +248,10 @@ public final class CSVAsyncDecoder {
     internal var length: Int
     internal var decoding: Decodable.Type
     internal var decodingOptions: CSVCodingOptions
+    internal var configuration: Config
     private var rowDecoder: AsyncDecoder
 
-    internal init<D>(decoding: D.Type, onInstance: @escaping (D) -> (), length: Int, decodingOptions: CSVCodingOptions)
+    internal init<D>(decoding: D.Type, onInstance: @escaping (D) -> (), length: Int, decodingOptions: CSVCodingOptions, configuration: Config = Config.default)
         where D: Decodable
     {
         let callback = { (decoded: Decodable) in
@@ -240,10 +265,12 @@ public final class CSVAsyncDecoder {
         self.length = length
         self.decoding = decoding
         self.decodingOptions = decodingOptions
+        self.configuration = configuration
         self.rowDecoder = AsyncDecoder(
             decoding: D.self,
             path: [],
             decodingOptions: decodingOptions,
+            configuration: configuration,
             onInstance: callback
         )
 
@@ -260,7 +287,7 @@ public final class CSVAsyncDecoder {
     ///
     /// - Parameter data: A section of the CSV document to decode.
     /// - Throws: Errors that occur during the decoding process.
-    public func decode<C>(_ data: C)throws where C: Collection, C.Element == UInt8 {
+    public func decode<C>(_ data: C) throws where C: Collection, C.Element == UInt8 {
         try self.rowDecoder.decode(Array(data), length: self.length)
     }
 }

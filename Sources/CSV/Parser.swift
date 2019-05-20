@@ -1,5 +1,6 @@
 import Foundation
 
+// '\t' => 9
 // '\n' => 10
 // '\r' => 13
 // '"' => 34
@@ -71,6 +72,9 @@ public struct Parser {
 
     /// The callback that is called when a cell is parsed.
     public var onCell: CellHandler?
+    
+    /// The struct that configures parsing options
+    public var configuration: Config
 
     private var state: State
 
@@ -83,9 +87,11 @@ public struct Parser {
     /// - Parameters:
     ///   - onHeader: The callback that will be called when a header is parsed.
     ///   - onCell: The callback that will be called when a cell is parsed.
-    public init(onHeader: HeaderHandler? = nil, onCell: CellHandler? = nil) {
+    ///   - configuration: The struct that configures parsing options
+    public init(onHeader: HeaderHandler? = nil, onCell: CellHandler? = nil, configuration: Config = Config.default) {
         self.onHeader = onHeader
         self.onCell = onCell
+        self.configuration = configuration
 
         self.state = State()
     }
@@ -115,10 +121,10 @@ public struct Parser {
         while index < data.endIndex {
             let byte = data[index]
             switch byte {
-            case 34:
+            case configuration.cellDelimiter:
                 currentCell.append(contentsOf: data[slice.start..<slice.end])
                 slice = (index + 1, index + 1)
-                switch self.state.inQuotes && index + 1 < data.endIndex && data[index + 1] == 34 {
+                switch self.state.inQuotes && index + 1 < data.endIndex && data[index + 1] == configuration.cellDelimiter {
                 case true: index += 1
                 case false: self.state.inQuotes.toggle()
                 }
@@ -138,7 +144,7 @@ public struct Parser {
                     if self.state.position == .headers { updateState = true }
                     fallthrough
                 }
-            case 44:
+            case configuration.cellSeparator:
                 if self.state.inQuotes {
                     slice.end += 1
                 } else {
@@ -192,9 +198,15 @@ public struct Parser {
 
 /// A synchronous wrapper for the `Parser` type for parsing whole CSV documents at once.
 public final class SyncParser {
-
+    
+    /// The struct configures parsing options
+    public var configuration: Config
+    
     /// Creates a new `SyncParser` instance
-    public init() {}
+    ///
+    /// - Parameter configuration: The struct configures parsing options
+
+    public init(configuration: Config = Config.default ) { self.configuration = configuration }
 
     /// Parses a whole CSV document at once.
     ///
@@ -209,7 +221,8 @@ public final class SyncParser {
             },
             onCell: { header, cell in
                 results[header, default: []].append(cell.count > 0 ? cell : nil)
-            }
+            },
+            configuration: configuration
         )
 
         parser.parse(data)
@@ -231,7 +244,8 @@ public final class SyncParser {
                 let title = String(decoding: header, as: UTF8.self)
                 let contents = String(decoding: cell, as: UTF8.self)
                 results[title, default: []].append(cell.count > 0 ? contents : nil)
-            }
+            },
+            configuration: configuration
         )
 
         parser.parse(Array(data.utf8))

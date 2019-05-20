@@ -63,15 +63,21 @@ extension Dictionary: KeyedCollection { }
 /// - Note: You should create a new `Serializer` dictionary you serialize.
 public struct Serializer {
     private var serializedHeaders: Bool
+    
+    /// The struct configures serialization options
+    var configuration: Config
 
     /// The callback that will be called with each row that is serialized.
     public var onRow: ([UInt8])throws -> ()
 
     /// Creates a new `Serializer` instance.
     ///
-    /// - Parameter onRow: The callback that will be called with each row that is serialized.
-    public init(onRow: @escaping ([UInt8])throws -> ()) {
+    /// - Parameter: The struct configures serialization options
+    ///   - configuration: The struct that configures serialization options
+    ///   - onRow: The callback that will be called with each row that is serialized.
+    public init(configuration: Config = Config.default, onRow: @escaping ([UInt8])throws -> ()) {
         self.serializedHeaders = false
+        self.configuration = configuration
         self.onRow = onRow
     }
 
@@ -96,8 +102,10 @@ public struct Serializer {
         guard data.count > 0 else { return errors.result }
 
         if !self.serializedHeaders {
-            let headers = data.keys.map { title in Array([[34], title.bytes.escaped, [34]].joined()) }
-            do { try self.onRow(Array(headers.joined(separator: [44]))) }
+            let headers = data.keys.map { title -> [UInt8] in
+                return title.bytes.escaping(self.configuration.cellDelimiter)
+            }
+            do { try self.onRow(Array(headers.joined(separator: [configuration.cellSeparator]))) }
             catch let error { errors.errors.append(error) }
             self.serializedHeaders = true
         }
@@ -105,9 +113,9 @@ public struct Serializer {
         guard let first = data.first?.value else { return errors.result }
         (first.startIndex..<first.endIndex).forEach { index in
             let cells = data.values.map { column -> [UInt8] in
-                return Array([[34], column[index].bytes.escaped, [34]].joined())
+                return column[index].bytes.escaping(self.configuration.cellDelimiter)
             }
-            do { try onRow(Array(cells.joined(separator: [44]))) }
+            do { try onRow(Array(cells.joined(separator: [configuration.cellSeparator]))) }
             catch let error { errors.errors.append(error) }
         }
 
@@ -118,8 +126,15 @@ public struct Serializer {
 /// A synchronous wrapper for the `Serializer` struct for parsing a whole CSV document.
 public struct SyncSerializer {
 
+    /// The serilization options for the `SyncSerializer` instance.
+    let configuration: Config
+
     /// Creates a new `SyncSerializer` instance.
-    public init () { }
+    ///
+    /// - Parameter configuration: The serilization options for the `SyncSerializer` instance.
+    public init (configuration: Config = Config.default) {
+        self.configuration = configuration
+    }
 
     /// Serializes a dictionary to CSV document data. Usually this will be a dictionary of type
     /// `[BytesRepresentable: [BytesRepresentable]], but it can be any type you conform to the proper protocols.
@@ -136,7 +151,7 @@ public struct SyncSerializer {
         var rows: [[UInt8]] = []
         rows.reserveCapacity(data.first?.value.count ?? 0)
 
-        var serializer = Serializer { row in rows.append(row) }
+        var serializer = Serializer(configuration: self.configuration) { row in rows.append(row) }
         serializer.serialize(data)
 
         return Array(rows.joined(separator: [10]))
