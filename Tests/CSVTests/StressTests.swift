@@ -38,7 +38,7 @@ final class StressTests: XCTestCase {
         let csv = Array(data)
         let parsed = SyncParser().parse(csv)
 
-        // Baseline: 21.951
+        // Baseline: 21.453
         // Time to beat: 11.932
         measure {
             serializer.serialize(parsed)
@@ -50,7 +50,7 @@ final class StressTests: XCTestCase {
         let csv = Array(data)
         let parsed = SyncParser().parse(csv)
 
-        // Baseline: 22.721
+        // Baseline: 22.903
         // Time to beat: 11.932
         measure {
             _ = serializer.serialize(parsed)
