@@ -20,12 +20,13 @@ internal final class AsyncDecoder: Decoder {
         info: [CodingUserInfoKey : Any] = [:],
         data: Storage = .none,
         decodingOptions: CSVCodingOptions,
+        configuration: Config = Config.default,
         onInstance: @escaping (Decodable)throws -> ()
     ) {
         self.codingPath = path
         self.userInfo = info
         self.decoding = decoding
-        self.handler = AsyncDecoderHandler { _ in return }
+        self.handler = AsyncDecoderHandler(configuration: configuration){ _ in return }
         self.decodingOptions = decodingOptions
         self.onInstance = onInstance
         self.data = data
@@ -82,8 +83,8 @@ internal final class AsyncDecoderHandler {
     private var columnCount: Int
     private var currentColumn: Int
 
-    init(onRow: @escaping ([String: [UInt8]])throws -> ()) {
-        self.parser = Parser()
+    init(configuration: Config = Config.default, onRow: @escaping ([String: [UInt8]])throws -> ()) {
+        self.parser = Parser(configuration: configuration)
         self.currentRow = [:]
         self.onRow = onRow
         self.columnCount = 0

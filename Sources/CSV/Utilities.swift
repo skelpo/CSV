@@ -12,8 +12,15 @@ extension String {
 }
 
 extension Array where Element == UInt8 {
-    var escaped: [UInt8] {
-        return self.contains(34) ? Array(self.split(separator: 34).joined(separator: [34, 34])) : self
+    func escaping(_ character: UInt8?) -> [UInt8] {
+        guard let code = character else {
+            return self
+        }
+
+        let contents = self.contains(code) ?
+            Array(self.split(separator: code, omittingEmptySubsequences: false).joined(separator: [code, code])) :
+            self
+        return Array([[code], contents, [code]].joined())
     }
 }
 

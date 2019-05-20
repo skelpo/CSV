@@ -8,14 +8,18 @@ final class AsyncKeyedEncoder<K>: KeyedEncodingContainerProtocol where K: Coding
         self.codingPath = path
         self.encoder = encoder
     }
-    
+
+    var delimiter: UInt8? {
+        return self.encoder.configuration.cellDelimiter
+    }
+
     func _encode(_ value: [UInt8], for key: K) {
         switch self.encoder.container.section {
         case .header:
-            let bytes = Array([[34], key.stringValue.bytes.escaped, [34]].joined())
+            let bytes = key.stringValue.bytes.escaping(self.delimiter)
             self.encoder.container.cells.append(bytes)
         case .row:
-            let bytes = Array([[34], value.escaped, [34]].joined())
+            let bytes = value.escaping(self.delimiter)
             self.encoder.container.cells.append(bytes)
         }
     }
@@ -41,9 +45,17 @@ final class AsyncKeyedEncoder<K>: KeyedEncodingContainerProtocol where K: Coding
     func encode(_ value: String, forKey key: K) throws { self._encode(value.bytes, for: key) }
     
     func encode<T>(_ value: T, forKey key: K) throws where T : Encodable {
-        let encoder = AsyncEncoder(encodingOptions: self.encoder.encodingOptions, onRow: self.encoder.onRow)
-        try value.encode(to: encoder)
-        self._encode(encoder.container.cells[0], for: key)
+        switch self.encoder.container.section {
+        case .header: self.encoder.container.cells.append(key.stringValue.bytes.escaping(self.delimiter))
+        case .row:
+            let encoder = AsyncEncoder(
+                encodingOptions: self.encoder.encodingOptions,
+                configuration: self.encoder.configuration,
+                onRow: self.encoder.onRow
+            )
+            try value.encode(to: encoder)
+            self.encoder.container.cells.append(encoder.container.cells[0])
+        }
     }
 
     func encodeIfPresent(_ value: Bool?, forKey key: K)   throws {

@@ -3,7 +3,7 @@ import CSV
 
 final class SerializerTests: XCTestCase {
     func testSyncSerialize() {
-        let serializer = SyncSerializer()
+        let serializer = SyncSerializer(configuration: Config.default)
         let serialized = serializer.serialize(orderedData)
         let string = String(decoding: serialized, as: UTF8.self)
 
@@ -23,7 +23,7 @@ final class SerializerTests: XCTestCase {
 
     func testChunkedSerialize() throws {
         var rows: [[UInt8]] = []
-        var serializer = Serializer { row in rows.append(row) }
+        var serializer = Serializer(configuration: Config.default) { row in rows.append(row) }
         for chunk in orderedChunks {
             try serializer.serialize(chunk).get()
         }
@@ -41,6 +41,28 @@ final class SerializerTests: XCTestCase {
                 orderedChunks.forEach { chunk in serializer.serialize(chunk) }
             }
         }
+    }
+
+    func testEscapedDelimiter() {
+        let quoteData: OrderedKeyedCollection = ["list": ["Standard string", #"A string with "quotes""#]]
+        let hashData: OrderedKeyedCollection = ["list": ["Some string without hashes", "A #string with# hashes"]]
+
+        let quoteResult = """
+        "list"
+        "Standard string"
+        "A string with ""quotes""\"
+        """
+        let hashResult = """
+        #list#
+        #Some string without hashes#
+        #A ##string with## hashes#
+        """
+
+        let quoteSerializer = SyncSerializer()
+        let hashSerializer = SyncSerializer(configuration: .init(cellSeparator: 44, cellDelimiter: 35))
+
+        XCTAssertEqual(quoteSerializer.serialize(quoteData), Array(quoteResult.utf8))
+        XCTAssertEqual(hashSerializer.serialize(hashData), Array(hashResult.utf8))
     }
 }
 

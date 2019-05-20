@@ -59,6 +59,26 @@ final class EncoderTests: XCTestCase {
             }
         }
     }
+
+    func testEscapingDelimiters() throws {
+        let quotePerson = Person(firstName: "A", lastName: "J", age: 42, gender: .male, tagLine: #"All "with quotes""#)
+        let hashPerson = Person(firstName: "M", lastName: "A", age: 28, gender: .female, tagLine: "#iWin#")
+
+        let quoteResult = """
+        "first name","last_name","age","gender","tagLine"
+        "A","J","42","M","All ""with quotes""\"
+        """
+        let hashResult = """
+        #first name#,#last_name#,#age#,#gender#,#tagLine#
+        #M#,#A#,#28#,#F#,###iWin###
+        """
+
+        let quoteEncoder = CSVEncoder().sync
+        let hashEncoder = CSVEncoder(encodingOptions: .default, configuration: .init(cellSeparator: 44, cellDelimiter: 35)).sync
+
+        try XCTAssertEqual(quoteEncoder.encode([quotePerson]), Data(quoteResult.utf8))
+        try XCTAssertEqual(hashEncoder.encode([hashPerson]), Data(hashResult.utf8))
+    }
 }
 
 fileprivate struct Person: Codable, Equatable {
