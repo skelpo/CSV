@@ -42,6 +42,28 @@ final class SerializerTests: XCTestCase {
             }
         }
     }
+
+    func testEscapedDelimiter() {
+        let quoteData: OrderedKeyedCollection = ["list": ["Standard string", #"A string with "quotes""#]]
+        let hashData: OrderedKeyedCollection = ["list": ["Some string without hashes", "A #string with# hashes"]]
+
+        let quoteResult = """
+        "list"
+        "Standard string"
+        "A string with ""quotes""\"
+        """
+        let hashResult = """
+        #list#
+        #Some string without hashes#
+        #A ##string with## hashes#
+        """
+
+        let quoteSerializer = SyncSerializer()
+        let hashSerializer = SyncSerializer(configuration: .init(cellSeparator: 44, cellDelimiter: 35))
+
+        XCTAssertEqual(quoteSerializer.serialize(quoteData), Array(quoteResult.utf8))
+        XCTAssertEqual(hashSerializer.serialize(hashData), Array(hashResult.utf8))
+    }
 }
 
 internal struct OrderedKeyedCollection<K, V>: KeyedCollection, ExpressibleByDictionaryLiteral where K: Hashable {
