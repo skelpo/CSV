@@ -78,9 +78,6 @@
               <li class="nav-group-task">
                 <a href="Extensions/String.html">String</a>
               </li>
-              <li class="nav-group-task">
-                <a href="Extensions/UInt8.html">UInt8</a>
-              </li>
             </ul>
           </li>
           <li class="nav-group-name">
@@ -97,6 +94,9 @@
           <li class="nav-group-name">
             <a href="Structs.html">Structures</a>
             <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Structs/Config.html">Config</a>
+              </li>
               <li class="nav-group-task">
                 <a href="Structs/ErrorList.html">ErrorList</a>
               </li>
@@ -119,12 +119,138 @@
             
             <h1 id='csv' class='heading'>CSV</h1>
 
-<p>A description of this package.</p>
+<p>A pure Swift CSV parser and serializer, with related encoders and decoders for types that conform to <code>Codable</code>.</p>
+<h2 id='swift-package-manager' class='heading'>📦 Swift Package Manager</h2>
+
+<p>The <code>skelpo/CSV</code> package can be installed to any project that has an SPM manifest. Add the <code>.package</code> instance to the <code>dependencies</code> array:</p>
+<pre class="highlight swift"><code><span class="o">.</span><span class="nf">package</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="s">"https://github.com/skelpo/CSV.git"</span><span class="p">,</span> <span class="nv">from</span><span class="p">:</span> <span class="s">"1.0.0"</span><span class="p">)</span>
+</code></pre>
+
+<p>And add the <code>CSV</code> target to the dependencies of any target you want to use the package in:</p>
+<pre class="highlight swift"><code><span class="o">.</span><span class="nf">target</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"App"</span><span class="p">,</span> <span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span><span class="s">"CSV"</span><span class="p">])</span>
+</code></pre>
+
+<p>Then run <code>swift package update</code> and <code>swift package generate-xcodeproj</code> (if you are using Xcode).</p>
+<h2 id='api' class='heading'>🛠 API</h2>
+
+<p>You can find the generated API documentation <a href="http://www.skelpo.codes/CSV/">here</a>. In the mean time, here is a rundown of how the different methods if parsing and serializing work:</p>
+<h3 id='parser' class='heading'>Parser</h3>
+
+<p>Each type has a basic async version, and a sync wrapper around that. <code><a href="Structs/Parser.html">Parser</a></code> is the core async implementation, while <code><a href="Classes/SyncParser.html">SyncParser</a></code> is the wrapper for sync operations.</p>
+
+<p>To create a <code><a href="Structs/Parser.html">Parser</a></code>, you need to pass in a handler for header data and cell data. The header handler takes in a single parameter, which is a byte array (<code>[UInt8]</code>) of the header&rsquo;s contents. The cell handler takes in two parameters, the header for the cell, and the cell&rsquo;s contents. These are also both byte arrays. Both of these handlers allowing throwing.</p>
+
+<p><strong>Note:</strong> For you to be able to call <code>.parse(_:length:)</code>, your parser must be a variable. The method mutates internal state that you can&rsquo;t access. Anoying, I know. Hopefully this gets fixed in the future.</p>
+
+<p>You can parse the CSV data by passing chunks of data into the <code>.parser(_:length:)</code> method, along with the total length of the CSV file that will be parsed. This allows us to parse the last chunk properly instead of never handling it.</p>
+
+<p>As the data is parsed, the handlers for the parser will be called with the parsed data. The parsing method returns a type <code>Result&lt;Void, ErrorList&gt;</code>. This method has been marked <code>@discarableResult</code>, so you can ignore the returned value. An <code><a href="Structs/ErrorList.html">ErrorList</a></code> is just a wrapper for an array of errors, which will be the errors thrown from the handler functions, if you ever throw anything from them.</p>
+
+<p>Here is an example <code><a href="Structs/Parser.html">Parser</a></code> instance:</p>
+<pre class="highlight swift"><code><span class="k">var</span> <span class="nv">data</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[:]</span>
+
+<span class="k">var</span> <span class="nv">parser</span> <span class="o">=</span> <span class="kt">Parser</span><span class="p">(</span>
+    <span class="nv">onHeader</span><span class="p">:</span> <span class="p">{</span> <span class="n">header</span> <span class="k">in</span> 
+        <span class="k">let</span> <span class="nv">title</span> <span class="o">=</span> <span class="kt">String</span><span class="p">(</span><span class="nv">decoding</span><span class="p">:</span> <span class="n">header</span><span class="p">,</span> <span class="nv">as</span><span class="p">:</span> <span class="kt">UTF8</span><span class="o">.</span><span class="k">self</span><span class="p">)</span>
+        <span class="n">data</span><span class="p">[</span><span class="n">title</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="p">},</span>
+    <span class="nv">onCell</span><span class="p">:</span> <span class="p">{</span> <span class="n">header</span><span class="p">,</span> <span class="n">cell</span> <span class="k">in</span>
+        <span class="k">let</span> <span class="nv">title</span> <span class="o">=</span> <span class="kt">String</span><span class="p">(</span><span class="nv">decoding</span><span class="p">:</span> <span class="n">header</span><span class="p">,</span> <span class="nv">as</span><span class="p">:</span> <span class="kt">UTF8</span><span class="o">.</span><span class="k">self</span><span class="p">)</span>
+        <span class="k">let</span> <span class="nv">contents</span> <span class="o">=</span> <span class="kt">String</span><span class="p">(</span><span class="nv">decoding</span><span class="p">:</span> <span class="n">cell</span><span class="p">,</span> <span class="nv">as</span><span class="p">:</span> <span class="kt">UTF8</span><span class="o">.</span><span class="k">self</span><span class="p">)</span>
+        <span class="n">data</span><span class="p">[</span><span class="n">title</span><span class="p">,</span> <span class="k">default</span><span class="p">:</span> <span class="p">[]]</span><span class="o">.</span><span class="nf">append</span><span class="p">(</span><span class="n">contents</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+
+<span class="k">let</span> <span class="nv">length</span> <span class="o">=</span> <span class="n">chunks</span><span class="o">.</span><span class="nf">reduce</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="nv">$0</span> <span class="o">+</span> <span class="nv">$1</span><span class="o">.</span><span class="n">count</span> <span class="p">}</span>
+<span class="k">for</span> <span class="n">chunk</span> <span class="k">in</span> <span class="n">chunks</span> <span class="p">{</span>
+    <span class="n">parser</span><span class="o">.</span><span class="nf">parse</span><span class="p">(</span><span class="n">chunk</span><span class="p">,</span> <span class="nv">length</span><span class="p">:</span> <span class="n">length</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>If you want to parse a whole CSV document synchronously, you can use <code><a href="Classes/SyncParser.html">SyncParser</a></code> instead. This type has two methods that both take in a byte array and return a dictionary that uses the headers as the keys and the columns are arrays of the cell data. One variation of the method returns the data as byte arrays, and the other returns strings.</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">parser</span> <span class="o">=</span> <span class="kt">SyncParser</span><span class="p">()</span>
+<span class="k">let</span> <span class="nv">data</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">]]</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="nf">parse</span><span class="p">(</span><span class="n">csv</span><span class="p">)</span>
+</code></pre>
+<h3 id='serializer' class='heading'>Serializer</h3>
+
+<p>List the parser types, there is an async <code><a href="Structs/Serializer.html">Serializer</a></code> type and a corrosponding <code><a href="Structs/SyncSerializer.html">SyncSerializer</a></code> type. The <code><a href="Structs/Serializer.html">Serializer</a></code> initializer takes in a row handler, that is called when a row is serialized from the data passed in. This is used for both the header and cell rows.</p>
+
+<p>The <code><a href="Structs/Serializer.html#/s:3CSV10SerializerV9serializeys6ResultOyytAA9ErrorListVGxAA15KeyedCollectionRzAA18BytesRepresentable3KeyRpzSl5ValueRpzAakN_7ElementRPzSxAN_5IndexRPzSZAN_AR6StrideRPzlF">Serializer.serialize(_:)</a></code> method takes in data in the form of a <code><a href="Protocols/KeyedCollection.html">KeyedCollection</a></code> with variaous generic constrainst. You can just pass in a dictionary of type <code>[String: [String]]</code> or <code>[[UInt8]: [[UInt8]]]</code>. The protocol is mostly for testing purposes within the package test suite.</p>
+
+<p>If you serialize chunks of parsed data, you will need to make sure that the columns are all the same length in the data passed in, or the method will trap. That&rsquo;s another opprotunity for a PR if you want 😄.</p>
+
+<p>Here is what an example <code><a href="Structs/Serializer.html">Serializer</a></code> might look like:</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">parsedData</span> <span class="o">=</span> <span class="o">...</span>
+<span class="k">var</span> <span class="nv">rows</span><span class="p">:</span> <span class="p">[[</span><span class="kt">UInt8</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">var</span> <span class="nv">serializer</span> <span class="o">=</span> <span class="kt">Serializer</span> <span class="p">{</span> <span class="n">row</span> <span class="k">in</span>
+    <span class="n">rows</span><span class="o">.</span><span class="nf">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="n">serializer</span><span class="o">.</span><span class="nf">serialize</span><span class="p">(</span><span class="n">parsedData</span><span class="p">)</span>
+
+<span class="k">let</span> <span class="nv">document</span> <span class="o">=</span> <span class="n">rows</span><span class="o">.</span><span class="nf">joined</span><span class="p">(</span><span class="nv">separator</span><span class="p">:</span> <span class="kt">UInt8</span><span class="p">(</span><span class="nv">ascii</span><span class="p">:</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">))</span>
+</code></pre>
+
+<p>The <code><a href="Structs/SyncSerializer.html">SyncSerializer</a></code> takes in data just like the <code><a href="Structs/Serializer.html">Serializer</a></code>, and returns the whole serialized document as a byte array:</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">parsedData</span> <span class="o">=</span> <span class="o">...</span>
+<span class="k">let</span> <span class="nv">serializer</span> <span class="o">=</span> <span class="kt">SyncSerializer</span><span class="p">()</span>
+
+<span class="k">let</span> <span class="nv">document</span> <span class="o">=</span> <span class="n">serializer</span><span class="o">.</span><span class="nf">serialize</span><span class="p">(</span><span class="n">parsedData</span><span class="p">)</span>
+</code></pre>
+<h3 id='decoder' class='heading'>Decoder</h3>
+
+<p>The <code><a href="Classes/CSVDecoder.html">CSVDecoder</a></code> handles decoding CSV data into <code>Decodable</code> types in a sync or async way. You start by creating a <code><a href="Classes/CSVDecoder.html">CSVDecoder</a></code> instance with a <code><a href="Classes/CSVCodingOptions.html">CSVCodingOptions</a></code>. This defaults to the <code>.default</code> instance of the <code><a href="Classes/CSVCodingOptions.html">CSVCodingOptions</a></code> type. Once you have a <code><a href="Classes/CSVDecoder.html">CSVDecoder</a></code> instance, you can get <code><a href="Classes/CSVSyncDecoder.html">CSVSyncDecoder</a></code> or <code><a href="Classes/CSVAsyncDecoder.html">CSVAsyncDecoder</a></code> based on your needs.</p>
+
+<p>To get an async decoder, you can use the <code>.async(for:length:_:)</code> method. This method takes in the type that the CSV rows will be decoded to, the total length of the CSV document that will be decoded, and a handler that is called when a row is decoded. Then you can call <code>.decode(_:)</code> on the <code><a href="Classes/CSVAsyncDecoder.html">CSVAsyncDecoder</a></code> instance with the data to decode. This method throws any errors that occur when decoding the data.</p>
+
+<p>Here is an example of a <code><a href="Classes/CSVAsyncDecoder.html">CSVAsyncDecoder</a></code>:</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">length</span> <span class="o">=</span> <span class="n">chunks</span><span class="o">.</span><span class="nf">reduce</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="nv">$0</span> <span class="o">+</span> <span class="nv">$1</span><span class="o">.</span><span class="n">count</span> <span class="p">}</span>
+<span class="k">let</span> <span class="nv">decoder</span> <span class="o">=</span> <span class="kt">CSVDecoder</span><span class="p">()</span><span class="o">.</span><span class="nf">async</span><span class="p">(</span><span class="nv">for</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">:</span> <span class="kt">String</span><span class="p">]</span><span class="o">.</span><span class="k">self</span><span class="p">,</span> <span class="nv">length</span><span class="p">:</span> <span class="n">length</span><span class="p">)</span> <span class="p">{</span> <span class="n">row</span> <span class="k">in</span>
+    <span class="n">database</span><span class="o">.</span><span class="nf">insert</span><span class="p">(</span><span class="nv">into</span><span class="p">:</span> <span class="s">"table"</span><span class="p">)</span><span class="o">.</span><span class="nf">values</span><span class="p">(</span><span class="n">row</span><span class="p">)</span><span class="o">.</span><span class="nf">run</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="k">for</span> <span class="n">chunk</span> <span class="k">in</span> <span class="n">chunks</span> <span class="p">{</span>
+    <span class="k">try</span> <span class="n">decoder</span><span class="o">.</span><span class="nf">decode</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>There is also the <code><a href="Classes/CSVSyncDecoder.html">CSVSyncDecoder</a></code> that works like most of the other decoders you encounter. You can create an instance with the <code>.sync</code> computed property on the <code><a href="Classes/CSVDecoder.html">CSVDecoder</a></code> type. The sync decoder has a <code>.decode(_:from:)</code> method that takes in the type to decode the data to and the CSV data to decode. The method then returns an array of the type passed in.</p>
+
+<p>Here is an example of a <code><a href="Classes/CSVSyncDecoder.html">CSVSyncDecoder</a></code>:</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">decoder</span> <span class="o">=</span> <span class="kt">CSVDecoder</span><span class="p">()</span><span class="o">.</span><span class="n">sync</span>
+<span class="k">let</span> <span class="nv">data</span> <span class="o">=</span> <span class="k">try</span> <span class="n">decoder</span><span class="o">.</span><span class="nf">decode</span><span class="p">([</span><span class="kt">String</span><span class="p">:</span> <span class="kt">String</span><span class="p">]</span><span class="o">.</span><span class="k">self</span><span class="p">,</span> <span class="nv">from</span><span class="p">:</span> <span class="n">data</span><span class="p">)</span>
+</code></pre>
+<h3 id='encoder' class='heading'>Encoder</h3>
+
+<p>Like the <code><a href="Classes/CSVDecoder.html">CSVDecoder</a></code>, you can create a <code><a href="Classes/CSVEncoder.html">CSVEncoder</a></code> with a <code><a href="Classes/CSVCodingOptions.html">CSVCodingOptions</a></code> instance and then get a sync or async version for handling your data.</p>
+
+<p>The <code><a href="Classes/CSVEncoder.html#/s:3CSV10CSVEncoderC5asyncyAA15CSVAsyncEncoderCySays5UInt8VGcF">CSVEncoder.async(_:)</a></code> method takes in 1 parameter, which is a callback function that takes in an encoded CSV row. Then when you encode your Swift type instance, they become CSV rows and you can what you want with them.</p>
+
+<p>Here is an example <code><a href="Classes/CSVAsyncEncoder.html">CSVAsyncEncoder</a></code>:</p>
+<pre class="highlight swift"><code><span class="k">var</span> <span class="nv">rows</span><span class="p">:</span> <span class="p">[[</span><span class="kt">UInt8</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">let</span> <span class="nv">encoder</span> <span class="o">=</span> <span class="kt">CSVEncoder</span><span class="p">()</span><span class="o">.</span><span class="n">async</span> <span class="p">{</span> <span class="n">row</span> <span class="k">in</span>
+    <span class="n">rows</span><span class="o">.</span><span class="nf">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="k">for</span> <span class="n">data</span> <span class="k">in</span> <span class="n">encodables</span> <span class="p">{</span>
+    <span class="k">try</span> <span class="n">encoder</span><span class="o">.</span><span class="nf">encode</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="k">let</span> <span class="nv">document</span> <span class="o">=</span> <span class="n">rows</span><span class="o">.</span><span class="nf">joined</span><span class="p">(</span><span class="nv">separator</span><span class="p">:</span> <span class="kt">UInt8</span><span class="p">(</span><span class="nv">ascii</span><span class="p">:</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">))</span>
+</code></pre>
+
+<p>The sync encoder, as expected, takes in an array of an <code>Encodable</code> type and encodes it to a CSV document:</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">encoder</span> <span class="o">=</span> <span class="kt">CSVEncoder</span><span class="p">()</span><span class="o">.</span><span class="n">sync</span>
+<span class="k">let</span> <span class="nv">document</span> <span class="o">=</span> <span class="k">try</span> <span class="n">encoder</span><span class="o">.</span><span class="nf">encode</span><span class="p">(</span><span class="n">parsedData</span><span class="p">)</span>
+</code></pre>
+<h2 id='license' class='heading'>📄 License</h2>
+
+<p>This package and anything it contains is under the <a href="https://github.com/skelpo/CSV/blob/master/LICENSE">MIT license agreement</a>.</p>
 
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2019 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2019-04-19)</p>
+          <p>&copy; 2019 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2019-05-20)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.1</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>
