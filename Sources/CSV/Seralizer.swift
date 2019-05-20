@@ -103,8 +103,8 @@ public struct Serializer {
 
         if !self.serializedHeaders {
             let headers = data.keys.map { title -> [UInt8] in
-                if let delim = self.configuration.cellDelimiter {
-                    return Array([[delim], title.bytes, [delim]].joined())
+                if let delimiter = self.configuration.cellDelimiter {
+                    return title.bytes.escaping(delimiter)
                 } else {
                     return title.bytes
                 }
@@ -117,8 +117,8 @@ public struct Serializer {
         guard let first = data.first?.value else { return errors.result }
         (first.startIndex..<first.endIndex).forEach { index in
             let cells = data.values.map { column -> [UInt8] in
-                if let delim = self.configuration.cellDelimiter {
-                    return Array([[delim], column[index].bytes, [delim]].joined())
+                if let delimiter = self.configuration.cellDelimiter {
+                    return column[index].bytes.escaping(delimiter)
                 } else {
                     return column[index].bytes
                 }
