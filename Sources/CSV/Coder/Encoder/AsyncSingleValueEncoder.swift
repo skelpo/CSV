@@ -9,18 +9,22 @@ final class AsyncSingleValueEncoder: SingleValueEncodingContainer {
         self.encoder = encoder
     }
 
+    var delimiter: UInt8? {
+        return self.encoder.configuration.cellDelimiter
+    }
+
     func encodeNil() throws {
-        let value = self.encoder.encodingOptions.nilCodingStrategy.bytes()
-        self.encoder.container.cells.append(value.escaped)
+        let value = self.encoder.encodingOptions.nilCodingStrategy.bytes().escaping(self.delimiter)
+        self.encoder.container.cells.append(value)
     }
     func encode(_ value: Bool) throws {
-        let value = self.encoder.encodingOptions.boolCodingStrategy.bytes(from: value)
-        self.encoder.container.cells.append(value.escaped)
+        let value = self.encoder.encodingOptions.boolCodingStrategy.bytes(from: value).escaping(self.delimiter)
+        self.encoder.container.cells.append(value)
     }
-    func encode(_ value: String) throws { self.encoder.container.cells.append(value.bytes.escaped) }
-    func encode(_ value: Double) throws { self.encoder.container.cells.append(value.bytes.escaped) }
-    func encode(_ value: Float)  throws { self.encoder.container.cells.append(value.bytes.escaped) }
-    func encode(_ value: Int)    throws { self.encoder.container.cells.append(value.bytes.escaped) }
+    func encode(_ value: String) throws { self.encoder.container.cells.append(value.bytes.escaping(self.delimiter)) }
+    func encode(_ value: Double) throws { self.encoder.container.cells.append(value.bytes.escaping(self.delimiter)) }
+    func encode(_ value: Float)  throws { self.encoder.container.cells.append(value.bytes.escaping(self.delimiter)) }
+    func encode(_ value: Int)    throws { self.encoder.container.cells.append(value.bytes.escaping(self.delimiter)) }
 
     func encode<T>(_ value: T) throws where T : Encodable {
         let column = self.codingPath.map { $0.stringValue }.joined(separator: ".")

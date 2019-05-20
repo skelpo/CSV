@@ -8,14 +8,18 @@ final class AsyncKeyedEncoder<K>: KeyedEncodingContainerProtocol where K: Coding
         self.codingPath = path
         self.encoder = encoder
     }
-    
+
+    var delimiter: UInt8? {
+        return self.encoder.configuration.cellDelimiter
+    }
+
     func _encode(_ value: [UInt8], for key: K) {
         switch self.encoder.container.section {
         case .header:
-            let bytes = Array([[34], key.stringValue.bytes.escaped, [34]].joined())
+            let bytes = key.stringValue.bytes.escaping(self.delimiter)
             self.encoder.container.cells.append(bytes)
         case .row:
-            let bytes = Array([[34], value.escaped, [34]].joined())
+            let bytes = value.escaping(self.delimiter)
             self.encoder.container.cells.append(bytes)
         }
     }
