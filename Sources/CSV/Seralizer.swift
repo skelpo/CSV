@@ -125,13 +125,16 @@ public struct Serializer {
 
 /// A synchronous wrapper for the `Serializer` struct for parsing a whole CSV document.
 public struct SyncSerializer {
-    var configuration: Config
+
+    /// The serilization options for the `SyncSerializer` instance.
+    let configuration: Config
 
     /// Creates a new `SyncSerializer` instance.
     ///
-    /// - Parameter configuration: The struct that configures serialization options
-    
-    public init (configuration: Config = Config.default) { self.configuration = configuration}
+    /// - Parameter configuration: The serilization options for the `SyncSerializer` instance.
+    public init (configuration: Config = Config.default) {
+        self.configuration = configuration
+    }
 
     /// Serializes a dictionary to CSV document data. Usually this will be a dictionary of type
     /// `[BytesRepresentable: [BytesRepresentable]], but it can be any type you conform to the proper protocols.
