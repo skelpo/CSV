@@ -19,7 +19,9 @@ extension Array where Element == UInt8 {
             return self
         }
 
-        let contents = self.contains(code) ? Array(self.split(separator: code).joined(separator: [code, code])) : self
+        let contents = self.contains(code) ?
+            Array(self.split(separator: code, omittingEmptySubsequences: false).joined(separator: [code, code])) :
+            self
         return Array([[code], contents, [code]].joined())
     }
 }
