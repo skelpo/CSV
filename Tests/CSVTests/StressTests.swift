@@ -16,7 +16,7 @@ final class StressTests: XCTestCase {
         var parser = Parser(onHeader: { _ in return }, onCell: { _, _ in return })
         let csv = Array(data)
 
-        // Baseline: 4.630
+        // Baseline: 3.686
         measure {
             parser.parse(csv)
         }
@@ -26,7 +26,7 @@ final class StressTests: XCTestCase {
         let parser = SyncParser()
         let csv = Array(data)
 
-        // Baseline: 10.825
+        // Baseline: 10.510
         // Time to beat: 9.142
         measure {
             _ = parser.parse(csv)
@@ -38,7 +38,7 @@ final class StressTests: XCTestCase {
         let csv = Array(data)
         let parsed = SyncParser().parse(csv)
 
-        // Baseline: 18.957
+        // Baseline: 21.951
         // Time to beat: 11.932
         measure {
             serializer.serialize(parsed)
@@ -50,7 +50,7 @@ final class StressTests: XCTestCase {
         let csv = Array(data)
         let parsed = SyncParser().parse(csv)
 
-        // Baseline: 18.047
+        // Baseline: 22.721
         // Time to beat: 11.932
         measure {
             _ = serializer.serialize(parsed)
@@ -60,7 +60,7 @@ final class StressTests: XCTestCase {
     func testMeasureAsyncDecoding() {
         let decoder = CSVDecoder(decodingOptions: self.codingOptions)
 
-        // Baseline: 14.347
+        // Baseline: 18.217
         measure {
             do {
                 let async = decoder.async(
@@ -82,7 +82,7 @@ final class StressTests: XCTestCase {
     func testMeasureSyncDecoding() {
         let decoder = CSVDecoder(decodingOptions: self.codingOptions).sync
 
-        // Baseline: 19.736
+        // Baseline: 18.970
         // Time to beat: 18.489
         measure {
             do {
@@ -97,7 +97,7 @@ final class StressTests: XCTestCase {
         let people = try CSVDecoder(decodingOptions: self.codingOptions).sync.decode(Response.self, from: data)
         let encoder = CSVEncoder(encodingOptions: codingOptions)
 
-        // Baseline: 11.477
+        // Baseline: 14.969
         // Time to beat: 9.477
         measure {
             do {
@@ -113,7 +113,7 @@ final class StressTests: XCTestCase {
         let people = try CSVDecoder(decodingOptions: self.codingOptions).sync.decode(Response.self, from: data)
         let encoder = CSVEncoder(encodingOptions: codingOptions).sync
 
-        // Baseline: 13.412
+        // Baseline: 18.147
         // Time to beat: 9.477
         measure {
             do {
