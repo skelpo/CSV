@@ -25,4 +25,14 @@ public struct Config {
         self.cellSeparator = cellSeparator
         self.cellDelimiter = cellDelimiter
     }
+
+    /// Creates a new `Config` instance from `UnicdeScalar` literals.
+    ///
+    /// - Parameters:
+    ///   - separator: The `UnicodeScalar` for the separator between cells (`','`).
+    ///   - delimiter: The `UnicdeScalar` for the delimiter that marks the start and end of a cell (`'"'`).
+    public init(separator: UnicodeScalar, delimiter: UnicodeScalar) {
+        self.cellSeparator = UInt8(ascii: separator)
+        self.cellDelimiter = UInt8(ascii: delimiter)
+    }
 }
