@@ -89,26 +89,34 @@ final class EncoderTests: XCTestCase {
             ["a": "foo", "b": "false", "c": "8"],
             ["a": "bar", "b": "true", "c": "13"],
         ]
-        let expected = """
-        "a","b","c"
-        "hello","true","1"
-        "world","false","2"
-        "fizz","false","3"
-        "buzz","true","5"
-        "foo","false","8"
-        "bar","true",13"
-        """
 
-        var csv = Data()
+        var header = Optional<Array<String>>.none
+        var index = 0
+
         let encoder = CSVEncoder().async { row in
-            csv.append(contentsOf: row)
-            csv.append(10)
+            guard let keys = header else {
+                header = String(decoding: row, as: UTF8.self).split(separator: ",").map {
+                    String($0).trimmingCharacters(in: .punctuationCharacters)
+                }
+
+                return
+            }
+
+            let object = data[index]
+            let cells = String(decoding: row, as: UTF8.self).split(separator: ",").map {
+                String($0).trimmingCharacters(in: .punctuationCharacters)
+            }
+
+            keys.enumerated().forEach { offset, name in
+                XCTAssertEqual(
+                    object[name], cells[offset],
+                    "Row \(index), column '\(name)' has value '\(cells[offset])'. Expected '\(object[name] ?? "<null>")'"
+                )
+            }
+
+            index += 1
         }
         try data.forEach(encoder.encode(_:))
-        XCTAssertEqual(String(decoding: csv, as: UTF8.self), expected)
-
-        csv = try CSVEncoder().sync.encode(data)
-        XCTAssertEqual(String(decoding: csv, as: UTF8.self), expected)
     }
 }
 

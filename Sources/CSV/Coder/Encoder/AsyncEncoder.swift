@@ -45,13 +45,13 @@ final class AsyncEncoder: Encoder {
             self.onRow(Array(self.container.cells.joined(separator: [self.configuration.cellSeparator])))
             self.container.section = .row
             self.container.rowCount += 1
-            self.container.cells = []
+            self.container.cells = Array(repeating: [], count: self.container.headers.count)
             fallthrough
         case .row:
             try object.encode(to: self)
             self.onRow(Array(self.container.cells.joined(separator: [self.configuration.cellSeparator])))
             self.container.rowCount += 1
-            self.container.cells = []
+            self.container.cells = Array(repeating: [], count: self.container.headers.count)
         }
     }
 
@@ -63,12 +63,18 @@ final class AsyncEncoder: Encoder {
     final class DataContainer {
         var cells: [[UInt8]]
         var section: EncodingSection
+
         var rowCount: Int
+        var columnCount: Int
+        var headers: [String]
 
         init(cells: [[UInt8]] = [], section: EncodingSection = .row) {
             self.cells = cells
             self.section = section
+
             self.rowCount = 0
+            self.columnCount = 0
+            self.headers = []
         }
     }
 }
