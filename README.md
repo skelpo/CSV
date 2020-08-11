@@ -28,7 +28,7 @@ Each type has a basic async version, and a sync wrapper around that. `Parser` is
 
 To create a `Parser`, you need to pass in a handler for header data and cell data. The header handler takes in a single parameter, which is a byte array (`[UInt8]`) of the header's contents. The cell handler takes in two parameters, the header for the cell, and the cell's contents. These are also both byte arrays. Both of these handlers allowing throwing.
 
-**Note:** For you to be able to call `.parse(_:length:)`, your parser must be a variable. The method mutates internal state that you can't access. Anoying, I know. Hopefully this gets fixed in the future.
+**Note:** For you to be able to call `.parse(_:length:)`, your parser must be a variable. The method mutates internal state that you can't access. Annoying, I know. Hopefully this gets fixed in the future.
 
 You can parse the CSV data by passing chunks of data into the `.parser(_:length:)` method, along with the total length of the CSV file that will be parsed. This allows us to parse the last chunk properly instead of never handling it.
 
