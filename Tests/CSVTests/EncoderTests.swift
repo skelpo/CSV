@@ -79,6 +79,37 @@ final class EncoderTests: XCTestCase {
         try XCTAssertEqual(quoteEncoder.encode([quotePerson]), Data(quoteResult.utf8))
         try XCTAssertEqual(hashEncoder.encode([hashPerson]), Data(hashResult.utf8))
     }
+
+    func testEncodingColumnValues() throws {
+        let data = [
+            ["a": "hello", "b": "true", "c": "1"],
+            ["a": "world", "b": "false", "c": "2"],
+            ["a": "fizz", "b": "false", "c": "3"],
+            ["a": "buzz", "b": "true", "c": "5"],
+            ["a": "foo", "b": "false", "c": "8"],
+            ["a": "bar", "b": "true", "c": "13"],
+        ]
+        let expected = """
+        "a","b","c"
+        "hello","true","1"
+        "world","false","2"
+        "fizz","false","3"
+        "buzz","true","5"
+        "foo","false","8"
+        "bar","true",13"
+        """
+
+        var csv = Data()
+        let encoder = CSVEncoder().async { row in
+            csv.append(contentsOf: row)
+            csv.append(10)
+        }
+        try data.forEach(encoder.encode(_:))
+        XCTAssertEqual(String(decoding: csv, as: UTF8.self), expected)
+
+        csv = try CSVEncoder().sync.encode(data)
+        XCTAssertEqual(String(decoding: csv, as: UTF8.self), expected)
+    }
 }
 
 fileprivate struct Person: Codable, Equatable {
