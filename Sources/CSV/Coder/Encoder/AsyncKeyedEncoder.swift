@@ -18,9 +18,11 @@ final class AsyncKeyedEncoder<K>: KeyedEncodingContainerProtocol where K: Coding
         case .header:
             let bytes = key.stringValue.bytes.escaping(self.delimiter)
             self.encoder.container.cells.append(bytes)
+            self.encoder.container.headers.append(key.stringValue)
         case .row:
             let bytes = value.escaping(self.delimiter)
-            self.encoder.container.cells.append(bytes)
+            let column = self.encoder.container.headers.firstIndex(of: key.stringValue)!
+            self.encoder.container.cells[column] = bytes
         }
     }
     func _encode(_ value: [UInt8]?, for key: K)throws {
@@ -46,7 +48,9 @@ final class AsyncKeyedEncoder<K>: KeyedEncodingContainerProtocol where K: Coding
     
     func encode<T>(_ value: T, forKey key: K) throws where T : Encodable {
         switch self.encoder.container.section {
-        case .header: self.encoder.container.cells.append(key.stringValue.bytes.escaping(self.delimiter))
+        case .header:
+            self.encoder.container.cells.append(key.stringValue.bytes.escaping(self.delimiter))
+            self.encoder.container.headers.append(key.stringValue)
         case .row:
             let encoder = AsyncEncoder(
                 encodingOptions: self.encoder.encodingOptions,
@@ -54,7 +58,9 @@ final class AsyncKeyedEncoder<K>: KeyedEncodingContainerProtocol where K: Coding
                 onRow: self.encoder.onRow
             )
             try value.encode(to: encoder)
-            self.encoder.container.cells.append(encoder.container.cells[0])
+
+            let column = self.encoder.container.headers.firstIndex(of: key.stringValue)!
+            self.encoder.container.cells[column] = encoder.container.cells[0]
         }
     }
 

@@ -1,5 +1,3 @@
-import Foundation
-
 // '\t' => 9
 // '\n' => 10
 // '\r' => 13

@@ -79,6 +79,45 @@ final class EncoderTests: XCTestCase {
         try XCTAssertEqual(quoteEncoder.encode([quotePerson]), Data(quoteResult.utf8))
         try XCTAssertEqual(hashEncoder.encode([hashPerson]), Data(hashResult.utf8))
     }
+
+    func testEncodingColumnValues() throws {
+        let data = [
+            ["a": "hello", "b": "true", "c": "1"],
+            ["a": "world", "b": "false", "c": "2"],
+            ["a": "fizz", "b": "false", "c": "3"],
+            ["a": "buzz", "b": "true", "c": "5"],
+            ["a": "foo", "b": "false", "c": "8"],
+            ["a": "bar", "b": "true", "c": "13"],
+        ]
+
+        var header = Optional<Array<String>>.none
+        var index = 0
+
+        let encoder = CSVEncoder().async { row in
+            guard let keys = header else {
+                header = String(decoding: row, as: UTF8.self).split(separator: ",").map {
+                    String($0).trimmingCharacters(in: .punctuationCharacters)
+                }
+
+                return
+            }
+
+            let object = data[index]
+            let cells = String(decoding: row, as: UTF8.self).split(separator: ",").map {
+                String($0).trimmingCharacters(in: .punctuationCharacters)
+            }
+
+            keys.enumerated().forEach { offset, name in
+                XCTAssertEqual(
+                    object[name], cells[offset],
+                    "Row \(index), column '\(name)' has value '\(cells[offset])'. Expected '\(object[name] ?? "<null>")'"
+                )
+            }
+
+            index += 1
+        }
+        try data.forEach(encoder.encode(_:))
+    }
 }
 
 fileprivate struct Person: Codable, Equatable {
