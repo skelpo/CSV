@@ -85,9 +85,6 @@ public struct Serializer {
     /// You can pass multiple dictionaries of the same structure into this method. The headers will only be serialized the
     /// first time it is called.
     ///
-    /// - Note: When you pass a dictionary into this method, each value collection is expect to contain the same
-    ///   number of elements, and will crash with `index out of bounds` if that assumption is broken.
-    ///
     /// - Parameter data: The dictionary (or other object) to parse.
     /// - Returns: A `Result` instance with a `.failure` case with all the errors from the the `.onRow` callback calls.
     ///   If there are no errors, the result will be a `.success` case.
@@ -111,6 +108,7 @@ public struct Serializer {
         guard let first = data.first?.value else { return errors.result }
         (first.startIndex..<first.endIndex).forEach { index in
             let cells = data.values.map { column -> [UInt8] in
+                guard column.indices.contains(index) else { return [] }
                 return column[index].bytes.escaping(self.configuration.cellDelimiter)
             }
             do { try onRow(Array(cells.joined(separator: [configuration.cellSeparator]))) }
@@ -136,9 +134,6 @@ public struct SyncSerializer {
 
     /// Serializes a dictionary to CSV document data. Usually this will be a dictionary of type
     /// `[BytesRepresentable: [BytesRepresentable]], but it can be any type you conform to the proper protocols.
-    ///
-    /// - Note: When you pass a dictionary into this method, each value collection is expect to contain the same
-    ///   number of elements, and will crash with `index out of bounds` if that assumption is broken.
     ///
     /// - Parameter data: The dictionary (or other object) to parse.
     /// - Returns: The serialized CSV data.

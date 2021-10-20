@@ -64,6 +64,28 @@ final class SerializerTests: XCTestCase {
         XCTAssertEqual(quoteSerializer.serialize(quoteData), Array(quoteResult.utf8))
         XCTAssertEqual(hashSerializer.serialize(hashData), Array(hashResult.utf8))
     }
+
+    func testMismatchColumnLength() throws {
+        let data: OrderedKeyedCollection = [
+            "names": ["Ralph", "Caleb", "Gwynne", "Tim", "Tanner", "Logan", "Joannis"],
+            "specialties": ["Manager", "Grunt", "Know-it-All", "Vapor", "Rockets"]
+        ]
+
+        let serializer = SyncSerializer()
+        let result = String(decoding: serializer.serialize(data), as: UTF8.self)
+        let match = """
+        "names","specialties"
+        "Ralph","Manager"
+        "Caleb","Grunt"
+        "Gwynne","Know-it-All"
+        "Tim","Vapor"
+        "Tanner","Rockets"
+        "Logan",
+        "Joannis",
+        """
+
+        XCTAssertEqual(result, match)
+    }
 }
 
 internal struct OrderedKeyedCollection<K, V>: KeyedCollection, ExpressibleByDictionaryLiteral where K: Hashable {
